@@ -1,0 +1,31 @@
+{
+  "name": "light-observable-ts",
+  "version": "1.0.0",
+  "description": "light-observable-ts",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "nyc ./node_modules/.bin/_mocha 'test/**/*.test.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BarushevEA/light-observable-ts.git"
+  },
+  "author": "Barushev E.A.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BarushevEA/light-observable-ts/issues"
+  },
+  "homepage": "https://github.com/BarushevEA/light-observable-ts#readme",
+  "devDependencies": {
+    "typescript": "^4.4.2",
+    "@testdeck/mocha": "^0.1.2",
+    "@types/chai": "^4.2.21",
+    "chai": "^4.3.4",
+    "mocha": "^9.1.1",
+    "nyc": "^15.1.0",
+    "ts-node": "^10.2.1"
+  }
+}
