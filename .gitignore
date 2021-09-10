@@ -68,3 +68,5 @@ yarn.lock
 .idea/Intrusion.iml
 
 electron/package-lock.json
+
+.idea/
