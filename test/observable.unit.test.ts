@@ -15,6 +15,9 @@ class ObservableUnitTest {
     }
 
     @test 'Observable is created'() {
-        expect(this.EVENT$.getValue()).to.be.equal('');
+        // @ts-ignore
+        expect(this.EVENT$.value).to.be.equal('');
+        // @ts-ignore
+        expect(this.EVENT$.listeners).to.be.eql([]);
     }
 }

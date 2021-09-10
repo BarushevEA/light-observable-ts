@@ -54,7 +54,7 @@ export class Observable<T> implements IObserver<T> {
     private listeners: IListeners = [];
     private _isEnable: boolean = true;
 
-    constructor(private _value: T) {
+    constructor(private value: T) {
     }
 
     disable(): void {
@@ -73,7 +73,7 @@ export class Observable<T> implements IObserver<T> {
         if (!this._isEnable) {
             return;
         }
-        this._value = value;
+        this.value = value;
         for (let i = 0; i < this.listeners.length; i++) {
             (<ICallback>this.listeners[i])(value);
         }
@@ -89,7 +89,7 @@ export class Observable<T> implements IObserver<T> {
     }
 
     public destroy(): void {
-        this._value = <any>0;
+        this.value = <any>0;
         this.unsubscribeAll();
         this.listeners = <any>0;
     }
@@ -103,7 +103,7 @@ export class Observable<T> implements IObserver<T> {
     }
 
     public getValue(): T {
-        return this._value;
+        return this.value;
     }
 
     public getNumberOfSubscribers(): number {
