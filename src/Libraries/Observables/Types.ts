@@ -31,7 +31,7 @@ export type ISubscriptionLike<T> = {
     unsubscribe(): void;
 };
 
-export type ISetup<T> = ICondition<T> & IOnce<T> & ISubscribe<T>;
+export type ISetup<T> = IPositiveCondition<T> & IOnce<T> & ISubscribe<T>;
 
 export type ISubscribeObject<T> =
     ISubscriptionLike<T> &
@@ -77,8 +77,16 @@ export type ISend<T> = {
     send(value: T): void;
 }
 
-export type ICondition<T> = {
+export type IPositiveCondition<T> = {
     setPositiveCondition(condition: ICallback<any>): ISubscribe<T>;
+}
+
+export type INegativeCondition<T> = {
+    setNegativeCondition(condition: ICallback<any>): ISubscribe<T>;
+}
+
+export type IExactMatchCondition<T> = {
+    setExactMatchCondition(condition: ICallback<any>): ISubscribe<T>;
 }
 
 export type IExtendedSubscription<T> = ISubscriptionLike<T> & IPause;
