@@ -168,7 +168,7 @@ class ObservableUnitTest {
         expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
     }
 
-    @test 'Add bed pipe'() {
+    @test 'Add bad pipe'() {
         const str = '0123456789';
         this.OBSERVABLE$.pipe();
         expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
