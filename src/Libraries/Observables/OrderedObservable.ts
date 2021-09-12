@@ -1,5 +1,5 @@
 import {ICallback, IListener, IObserver, IOrderedListener, ISubscriptionLike} from "./Types";
-import {SubscriberLike} from "./Observable";
+import {SubscribeObject} from "./Observable";
 import {deleteFromArray} from "../FunctionLibs";
 
 export class OrderedObservable<T> implements IObserver<T> {
@@ -102,6 +102,6 @@ export class OrderedObservable<T> implements IObserver<T> {
             return 0;
         });
 
-        return new SubscriberLike(this, savedListener);
+        return new SubscribeObject(this, savedListener);
     }
 }

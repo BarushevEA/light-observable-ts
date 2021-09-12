@@ -94,9 +94,9 @@ export class EventCollector implements ICollector {
             for (let i = 0; i < this.collector.length; i++) {
                 const element = this.collector[i];
                 if (isEnable) {
-                    element.pauseEnable();
+                    element.pause();
                 } else {
-                    element.pauseDisable();
+                    element.resume();
                 }
             }
         }

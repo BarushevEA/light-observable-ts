@@ -1,24 +1,44 @@
-export type ICallback = (value?: any) => void;
+export type ICallback<T> = (value?: T) => any;
 
-export type ISubscribe = {
-    subscribe(listener: IListener): ISubscriptionLike;
+export type ISubscribe<T> = {
+    subscribe(listener: IListener<T>): ISubscriptionLike<T>;
 };
 
-export type IListener = ICallback | IOrderedListener;
+export type IListener<T> = ICallback<T>;
 
 export type IDestroy = {
     destroy(): void;
+};
+
+export type IOnceMarker = {
+    isOnce: boolean;
+    isFinished: boolean;
+};
+
+export type IOrder = {
+    order: number;
+};
+
+export type IOnce<T> = {
+    setOnce(): ISubscribe<T>;
 };
 
 export type ISetObservableValue = {
     next(value: any): void;
 };
 
-export type IListeners = IListener[]
-
-export type ISubscriptionLike = {
+export type ISubscriptionLike<T> = {
     unsubscribe(): void;
 };
+
+export type ISetup<T> = ICondition<T> & IOnce<T> & ISubscribe<T>;
+
+export type ISubscribeObject<T> =
+    ISubscriptionLike<T> &
+    IPause &
+    IOrder &
+    ISend<T> &
+    ISetup<T>;
 
 export type ISubscribeCounter = {
     getNumberOfSubscribers(): number;
@@ -29,34 +49,36 @@ export type ISubscriber<T> =
         getValue(): T,
         isEnable: boolean
     } &
-    ISubscribe;
+    ISubscribe<T>;
 
 export type IObserver<T> =
     ISetObservableValue &
     ISubscriber<T> &
     IDestroy &
     ISubscribeCounter &
+    IObservablePipe<T> &
     {
+        unSubscribe(ISubscriptionLike): void,
         unsubscribeAll(): void,
         disable(): void,
         enable(): void,
     };
 
-export type IOrderedListener = {
-    callBack: ICallback;
-    order?: number;
-    isEventStop?: boolean;
-    isEventPause?: boolean;
+export type IPause = {
+    pause(): void;
+    resume(): void;
 };
 
-export type IEventPause = {
-    pauseEnable(): void;
-    pauseDisable(): void;
-};
+export type IObservablePipe<T> = {
+    pipe(): ISetup<T>
+}
 
-export type IEventStop = {
-    eventStop(): void;
-    eventRun(): void;
-};
+export type ISend<T> = {
+    send(value: T): void;
+}
 
-export type IExtendedSubscription = ISubscriptionLike & IEventPause;
+export type ICondition<T> = {
+    setPositiveCondition(condition: ICallback<any>): ISubscribe<T>;
+}
+
+export type IExtendedSubscription<T> = ISubscriptionLike<T> & IPause;
