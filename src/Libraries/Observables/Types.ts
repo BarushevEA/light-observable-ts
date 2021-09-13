@@ -101,7 +101,7 @@ export type IEmitByPositive<T> = {
 }
 
 export type IEmitMatchCondition<T> = {
-    emitMatchCondition(condition: ICallback<any>): ISubscribe<T>;
+    emitMatch(condition: ICallback<any>): ISubscribe<T>;
 }
 
 export type IExtendedSubscription<T> = ISubscriptionLike<T> & IPause;

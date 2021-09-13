@@ -19,7 +19,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
     private unsubscribeByPositiveCondition: ICallback<any> = null;
     private emitByNegativeCondition: ICallback<any> = null;
     private emitByPositiveCondition: ICallback<any> = null;
-    private emitMatchConditionCondition: ICallback<any> = null;
+    private emitMatchCondition: ICallback<any> = null;
     private _order = 0;
 
     constructor(observable?: IObserver<T>, listener?: IListener<T>) {
@@ -75,6 +75,9 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
             case !!this.emitByPositiveCondition:
                 this.emitByPositiveCondition() && this.listener(value);
                 break;
+            case !! this.emitMatchCondition:
+                (this.emitMatchCondition() === value) && this.listener(value);
+                break;
             default:
                 this.listener(value);
         }
@@ -105,8 +108,8 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
         return this;
     }
 
-    emitMatchCondition(condition: ICallback<any>): ISubscribe<T> {
-        this.emitMatchConditionCondition = condition;
+    emitMatch(condition: ICallback<any>): ISubscribe<T> {
+        this.emitMatchCondition = condition;
         return this;
     }
 

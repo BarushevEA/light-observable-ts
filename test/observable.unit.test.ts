@@ -385,4 +385,93 @@ class ObservableUnitTest {
         expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
     }
+
+    @test 'Add one by pipe and "emitMatch true"'() {
+        const str = '0123456789';
+        const condition = () => '0123456789';
+        const listener = (value: string) => expect(value).to.be.equal(str);
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .emitMatch(condition)
+            .subscribe(listener);
+        // @ts-ignore
+        expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+    }
+
+    @test 'Add one by pipe and "emitMatch false"'() {
+        const str = '0123456789';
+        const condition = () => '0123456789';
+        const listener = (value: string) => expect(value).to.be.equal(null);
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .emitMatch(condition)
+            .subscribe(listener);
+        // @ts-ignore
+        expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+    }
+
+    @test 'Add one by pipe and "emitMatch 10 elements" (on value "0")'() {
+        let counter = 0;
+        const str = '0123456789';
+        const listener = (value: string) => {
+            expect(value).to.be.equal('0');
+            expect(true).to.be.equal(counter === 0);
+        };
+        const condition = () => '0';
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .emitMatch(condition)
+            .subscribe(listener);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        for (; counter < 10; counter++) {
+            this.OBSERVABLE$.next(str[counter]);
+        }
+        // @ts-ignore
+        expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+    }
+
+    @test 'Add one by pipe and "emitMatch 10 elements" (on value "9")'() {
+        let counter = 0;
+        const str = '0123456789';
+        const listener = (value: string) => {
+            expect(value).to.be.equal('9');
+            expect(true).to.be.equal(counter === 9);
+        };
+        const condition = () => '9';
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .emitMatch(condition)
+            .subscribe(listener);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        for (; counter < 10; counter++) {
+            this.OBSERVABLE$.next(str[counter]);
+        }
+        // @ts-ignore
+        expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+    }
+
+    @test 'Add one by pipe and "emitMatch 10 elements" (on value "5")'() {
+        let counter = 0;
+        const str = '0123456789';
+        const listener = (value: string) => {
+            expect(value).to.be.equal('5');
+            expect(true).to.be.equal(counter === 5);
+        };
+        const condition = () => '5';
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .emitMatch(condition)
+            .subscribe(listener);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        for (; counter < 10; counter++) {
+            this.OBSERVABLE$.next(str[counter]);
+        }
+        // @ts-ignore
+        expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+    }
 }
