@@ -31,7 +31,14 @@ export type ISubscriptionLike<T> = {
     unsubscribe(): void;
 };
 
-export type ISetup<T> = IPositiveCondition<T> & IOnce<T> & ISubscribe<T>;
+export type ISetup<T> =
+    IUnsubscribeByNegative<T> &
+    IUnsubscribeByPositive<T> &
+    IEmitByNegative<T> &
+    IEmitByPositive<T> &
+    IEmitMatchCondition<T> &
+    IOnce<T> &
+    ISubscribe<T>;
 
 export type ISubscribeObject<T> =
     ISubscriptionLike<T> &
@@ -77,16 +84,24 @@ export type ISend<T> = {
     send(value: T): void;
 }
 
-export type IPositiveCondition<T> = {
-    setPositiveCondition(condition: ICallback<any>): ISubscribe<T>;
+export type IUnsubscribeByNegative<T> = {
+    unsubscribeByNegative(condition: ICallback<any>): ISubscribe<T>;
 }
 
-export type INegativeCondition<T> = {
-    setNegativeCondition(condition: ICallback<any>): ISubscribe<T>;
+export type IUnsubscribeByPositive<T> = {
+    unsubscribeByPositive(condition: ICallback<any>): ISubscribe<T>;
 }
 
-export type IExactMatchCondition<T> = {
-    setExactMatchCondition(condition: ICallback<any>): ISubscribe<T>;
+export type IEmitByNegative<T> = {
+    emitByNegative(condition: ICallback<any>): ISubscribe<T>;
+}
+
+export type IEmitByPositive<T> = {
+    emitByPositive(condition: ICallback<any>): ISubscribe<T>;
+}
+
+export type IEmitMatchCondition<T> = {
+    emitMatchCondition(condition: ICallback<any>): ISubscribe<T>;
 }
 
 export type IExtendedSubscription<T> = ISubscriptionLike<T> & IPause;

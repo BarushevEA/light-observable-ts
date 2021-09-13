@@ -138,41 +138,107 @@ class ObservableUnitTest {
         expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
     }
 
-    @test 'Add one by pipe and "setPositiveCondition true"'() {
-        const str = '0123456789';
-        const listener = (value: string) => expect(value).to.be.equal(str);
-        const condition = () => true;
-        const subscribeObject = this.OBSERVABLE$
-            .pipe()
-            .setPositiveCondition(condition)
-            .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
-        this.OBSERVABLE$.next(str);
-        // @ts-ignore
-        expect(subscribeObject.positiveCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
-    }
-
-    @test 'Add one by pipe and "setPositiveCondition false"'() {
-        const str = '0123456789';
-        const listener = (value: string) => expect(value).to.be.equal(null);
-        const condition = () => false;
-        const subscribeObject = this.OBSERVABLE$
-            .pipe()
-            .setPositiveCondition(condition)
-            .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
-        this.OBSERVABLE$.next(str);
-        // @ts-ignore
-        expect(subscribeObject.positiveCondition).to.be.equal(null);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
-    }
-
     @test 'Add bad pipe'() {
         const str = '0123456789';
         this.OBSERVABLE$.pipe();
         expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+    }
+
+    @test 'Add one by pipe and "unsubscribeByNegative true"'() {
+        const str = '0123456789';
+        const listener = (value: string) => expect(value).to.be.equal(str);
+        const condition = () => true;
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .unsubscribeByNegative(condition)
+            .subscribe(listener);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        this.OBSERVABLE$.next(str);
+        // @ts-ignore
+        expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(condition);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+    }
+
+    @test 'Add one by pipe and "unsubscribeByNegative false"'() {
+        const str = '0123456789';
+        const listener = (value: string) => expect(value).to.be.equal(null);
+        const condition = () => false;
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .unsubscribeByNegative(condition)
+            .subscribe(listener);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        this.OBSERVABLE$.next(str);
+        // @ts-ignore
+        expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+    }
+
+    @test 'Add one by pipe and "unsubscribeByNegative" (5 positive, 5 negative)'() {
+        let counter = 0;
+        const str = '0123456789';
+        const listener = (value: string) => expect(value).to.be.equal(str[counter]);
+        const condition = () => counter < 5;
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .unsubscribeByNegative(condition)
+            .subscribe(listener);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        for (; counter < 10; counter++) {
+            this.OBSERVABLE$.next(str[counter]);
+        }
+        // @ts-ignore
+        expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+    }
+
+    @test 'Add one by pipe and "unsubscribeByPositive true"'() {
+        const str = '0123456789';
+        const listener = (value: string) => expect(value).to.be.equal(str);
+        const condition = () => true;
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .unsubscribeByPositive(condition)
+            .subscribe(listener);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        this.OBSERVABLE$.next(str);
+        // @ts-ignore
+        expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(null);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+    }
+
+    @test 'Add one by pipe and "unsubscribeByPositive false"'() {
+        const str = '0123456789';
+        const listener = (value: string) => expect(value).to.be.equal(str);
+        const condition = () => false;
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .unsubscribeByPositive(condition)
+            .subscribe(listener);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        this.OBSERVABLE$.next(str);
+        // @ts-ignore
+        expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(condition);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+    }
+
+    @test 'Add one by pipe and "unsubscribeByPositive" (5 negative, 5 positive)'() {
+        let counter = 0;
+        const str = '0123456789';
+        const listener = (value: string) => expect(value).to.be.equal(str[counter]);
+        const condition = () => counter > 4;
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .unsubscribeByPositive(condition)
+            .subscribe(listener);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        for (; counter < 10; counter++) {
+            this.OBSERVABLE$.next(str[counter]);
+        }
+        // @ts-ignore
+        expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
     }
 }

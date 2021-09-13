@@ -15,7 +15,11 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
     private listener: IListener<T>;
     private isListenPaused = false;
     private once: IOnceMarker = {isOnce: false, isFinished: false};
-    private positiveCondition: ICallback<any> = null;
+    private unsubscribeByNegativeCondition: ICallback<any> = null;
+    private unsubscribeByPositiveCondition: ICallback<any> = null;
+    private emitByNegativeCondition: ICallback<any> = null;
+    private emitByPositiveCondition: ICallback<any> = null;
+    private emitMatchConditionCondition: ICallback<any> = null;
     private _order = 0;
 
     constructor(observable?: IObserver<T>, listener?: IListener<T>) {
@@ -49,13 +53,27 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
                 this.listener(value);
                 this.unsubscribe();
                 break;
-            case !!this.positiveCondition:
-                if (!this.positiveCondition()) {
-                    this.positiveCondition = null;
+            case !!this.unsubscribeByNegativeCondition:
+                if (!this.unsubscribeByNegativeCondition()) {
+                    this.unsubscribeByNegativeCondition = null;
                     this.unsubscribe();
-                } else {
-                    this.listener(value);
+                    return;
                 }
+                this.listener(value);
+                break;
+            case !!this.unsubscribeByPositiveCondition:
+                if (this.unsubscribeByPositiveCondition()) {
+                    this.unsubscribeByPositiveCondition = null;
+                    this.unsubscribe();
+                    return;
+                }
+                this.listener(value);
+                break;
+            case !!this.emitByNegativeCondition:
+                !this.emitByNegativeCondition() && this.listener(value);
+                break;
+            case !!this.emitByPositiveCondition:
+                this.emitByPositiveCondition() && this.listener(value);
                 break;
             default:
                 this.listener(value);
@@ -67,9 +85,29 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
         return this;
     }
 
-    setPositiveCondition(condition: ICallback<any>): ISubscribe<T> {
-        this.positiveCondition = condition;
+    unsubscribeByNegative(condition: ICallback<any>): ISubscribe<T> {
+        this.unsubscribeByNegativeCondition = condition;
         return this
+    }
+
+    unsubscribeByPositive(condition: ICallback<any>): ISubscribe<T> {
+        this.unsubscribeByPositiveCondition = condition;
+        return this;
+    }
+
+    emitByNegative(condition: ICallback<any>): ISubscribe<T> {
+        this.emitByNegativeCondition = condition;
+        return this;
+    }
+
+    emitByPositive(condition: ICallback<any>): ISubscribe<T> {
+        this.emitByPositiveCondition = condition;
+        return this;
+    }
+
+    emitMatchCondition(condition: ICallback<any>): ISubscribe<T> {
+        this.emitMatchConditionCondition = condition;
+        return this;
     }
 
     resume(): void {
