@@ -2,6 +2,7 @@ import {suite, test} from '@testdeck/mocha';
 import * as _chai from 'chai';
 import {expect} from 'chai';
 import {Observable} from "../src/Libraries/Observables/Observable";
+import {IPause} from "../src/Libraries/Observables/Types";
 
 _chai.should();
 _chai.expect;
@@ -473,5 +474,21 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+    }
+
+    @test 'pause / resume'() {
+        let counter = 0;
+        let accumulatorStr = '';
+        const str = '0123456789';
+        const listener = (value: string) => accumulatorStr += value;
+        const subscribeObject = this.OBSERVABLE$.subscribe(listener);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        for (; counter < 10; counter++) {
+            (counter === 4) && (<IPause><any>subscribeObject).pause();
+            (counter === 8) && (<IPause><any>subscribeObject).resume();
+            this.OBSERVABLE$.next(str[counter]);
+        }
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(accumulatorStr).to.be.equal('012389');
     }
 }
