@@ -79,31 +79,31 @@ export type IPause = {
 
 export type IObservablePipe<T> = {
     pipe(): ISetup<T>
-}
+};
 
 export type ISend<T> = {
     send(value: T): void;
-}
+};
 
 export type IUnsubscribeByNegative<T> = {
     unsubscribeByNegative(condition: ICallback<any>): ISubscribe<T>;
-}
+};
 
 export type IUnsubscribeByPositive<T> = {
     unsubscribeByPositive(condition: ICallback<any>): ISubscribe<T>;
-}
+};
 
 export type IEmitByNegative<T> = {
     emitByNegative(condition: ICallback<any>): ISubscribe<T>;
-}
+};
 
 export type IEmitByPositive<T> = {
     emitByPositive(condition: ICallback<any>): ISubscribe<T>;
-}
+};
 
 export type IEmitMatchCondition<T> = {
     emitMatch(condition: ICallback<any>): ISubscribe<T>;
-}
+};
 
 export type ICollector =
     IDestroy &
@@ -112,4 +112,10 @@ export type ICollector =
         collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void;
         unsubscribe(subscriptionLike: ISubscriptionLike<any>): void;
         unsubscribeAll(): void;
-    }
+    };
+
+export type IOrderedObservable = {
+    sortByOrder(): void;
+};
+
+export type IOrderedSubscriptionLike<T> = ISubscriptionLike<T> & IOrder;
