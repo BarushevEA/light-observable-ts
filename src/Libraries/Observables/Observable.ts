@@ -172,7 +172,8 @@ export class Observable<T> implements IObserver<T> {
     public unsubscribeAll(): void {
         const length = this.listeners.length;
         for (let i = 0; i < length; i++) {
-            this.unSubscribe(this.listeners.pop());
+            const listener = this.listeners.pop();
+            listener && listener.unsubscribe();
         }
     }
 

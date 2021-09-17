@@ -2,7 +2,7 @@ import {suite, test} from '@testdeck/mocha';
 import * as _chai from 'chai';
 import {expect} from 'chai';
 import {Observable} from "../src/Libraries/Observables/Observable";
-import {IPause} from "../src/Libraries/Observables/Types";
+import {IOrder, IPause} from "../src/Libraries/Observables/Types";
 
 _chai.should();
 _chai.expect;
@@ -490,5 +490,119 @@ class ObservableUnitTest {
         }
         expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
         expect(accumulatorStr).to.be.equal('012389');
+    }
+
+    @test 'order identification'() {
+        const listener = (value: string) => value;
+        const subscribeObject = <IOrder><any>this.OBSERVABLE$.subscribe(listener);
+        subscribeObject.order = 11011;
+        expect(subscribeObject.order).to.be.equal(11011);
+    }
+
+    @test 'observable disable/enable'() {
+        let counter = 0;
+        let accumulatorStr = '';
+        const str = '0123456789';
+        const listener = (value: string) => accumulatorStr += value;
+        const subscribeObject = this.OBSERVABLE$.subscribe(listener);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        for (; counter < 10; counter++) {
+            (counter === 4) && this.OBSERVABLE$.disable();
+            (counter === 8) && this.OBSERVABLE$.enable();
+            this.OBSERVABLE$.next(str[counter]);
+        }
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.isEnable).to.be.equal(true);
+        expect(accumulatorStr).to.be.equal('012389');
+    }
+
+    @test 'observable destroy'() {
+        let counter = 0;
+        let accumulatorStr = '';
+        const str = '0123456789';
+        const listener = (value: string) => accumulatorStr += value;
+        const subscribeObject = this.OBSERVABLE$.subscribe(listener);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        for (; counter < 10; counter++) {
+            (counter === 4) && this.OBSERVABLE$.disable();
+            (counter === 8) && this.OBSERVABLE$.enable();
+            this.OBSERVABLE$.next(str[counter]);
+        }
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.isEnable).to.be.equal(true);
+        expect(accumulatorStr).to.be.equal('012389');
+        this.OBSERVABLE$.destroy();
+        // @ts-ignore
+        expect(this.OBSERVABLE$.value).to.be.equal(0);
+        // @ts-ignore
+        expect(this.OBSERVABLE$.listeners).to.be.equal(0);
+        // @ts-ignore
+        expect(subscribeObject.observable).to.be.equal(0);
+        // @ts-ignore
+        expect(subscribeObject.listener).to.be.equal(0);
+    }
+
+    @test 'defect field "observable" from subscribeObject'() {
+        const listener = (value: string) => {
+            expect(value).to.be.equal('ERROR WAY');
+        };
+        const subscribeObject = this.OBSERVABLE$.subscribe(listener);
+        // @ts-ignore
+        subscribeObject.observable = 0;
+        this.OBSERVABLE$.next('some data');
+    }
+
+    @test 'defect field "listener" from subscribeObject'() {
+        const listener = (value: string) => {
+            expect(value).to.be.equal('ERROR DATA');
+        };
+        const subscribeObject = this.OBSERVABLE$.subscribe(listener);
+        // @ts-ignore
+        subscribeObject.listener = 0;
+        this.OBSERVABLE$.next('VALID DATA');
+    }
+
+    @test 'multi use'() {
+        let counter = 0;
+        const str = '0123456789';
+        const subscribeObject1 = this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal(str[counter]);
+            (<IOrder><any>subscribeObject1).order = 1;
+        });
+        const subscribeObject2 = this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal(str[counter]);
+            (<IOrder><any>subscribeObject2).order = 2;
+        });
+        const subscribeObject3 = this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal(str[counter]);
+            (<IOrder><any>subscribeObject3).order = 3;
+        });
+        const subscribeObject4 = this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal(str[counter]);
+            (<IOrder><any>subscribeObject4).order = 4;
+        });
+        const subscribeObject5 = this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal(str[counter]);
+            (<IOrder><any>subscribeObject5).order = 5;
+        });
+        for (; counter < str.length; counter++) {
+            this.OBSERVABLE$.next(str[counter]);
+        }
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(5);
+        expect((<IOrder><any>subscribeObject1).order).to.be.equal(1);
+        expect((<IOrder><any>subscribeObject2).order).to.be.equal(2);
+        expect((<IOrder><any>subscribeObject3).order).to.be.equal(3);
+        expect((<IOrder><any>subscribeObject4).order).to.be.equal(4);
+        expect((<IOrder><any>subscribeObject5).order).to.be.equal(5);
+        subscribeObject1.unsubscribe();
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(4);
+        subscribeObject2.unsubscribe();
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(3);
+        subscribeObject3.unsubscribe();
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(2);
+        subscribeObject4.unsubscribe();
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        subscribeObject5.unsubscribe();
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
     }
 }
