@@ -25,12 +25,3 @@ export type ITick = {
     clearTimeout(id: ITickListener): void;
     destroy(): void;
 } & IDestroyed;
-export type ICollector = {
-    collect(...subscribers: ISubscriptionLike[]): void;
-    unsubscribe(subscriber: ISubscriptionLike): void;
-    clear(): void;
-    destroy(): void;
-    pauseEnable(): void;
-    pauseDisable(): void;
-    isEmpty: boolean;
-};

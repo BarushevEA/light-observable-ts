@@ -8,6 +8,7 @@ export type IListener<T> = ICallback<T>;
 
 export type IDestroy = {
     destroy(): void;
+    isDestroyed: boolean;
 };
 
 export type IOnceMarker = {
@@ -104,4 +105,10 @@ export type IEmitMatchCondition<T> = {
     emitMatch(condition: ICallback<any>): ISubscribe<T>;
 }
 
-export type IExtendedSubscription<T> = ISubscriptionLike<T> & IPause;
+export type ICollector =
+    IDestroy &
+    {
+        collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void;
+        unsubscribe(subscriptionLike: ISubscriptionLike<any>): void;
+        unsubscribeAll(): void;
+    }

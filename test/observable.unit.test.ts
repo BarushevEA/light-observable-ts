@@ -532,6 +532,7 @@ class ObservableUnitTest {
         expect(this.OBSERVABLE$.isEnable).to.be.equal(true);
         expect(accumulatorStr).to.be.equal('012389');
         this.OBSERVABLE$.destroy();
+        expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
         // @ts-ignore
         expect(this.OBSERVABLE$.value).to.be.equal(0);
         // @ts-ignore
@@ -604,5 +605,77 @@ class ObservableUnitTest {
         expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
         subscribeObject5.unsubscribe();
         expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+    }
+
+    @test 'destroy and try to use next'() {
+        const subscribeObject1 = this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal('ERROR DATA');
+        });
+
+        this.OBSERVABLE$.destroy();
+        this.OBSERVABLE$.next('VALID DATA');
+    }
+
+    @test 'destroy and try to use unSubscribe'() {
+        const subscribeObject1 = this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal('ERROR DATA');
+        });
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        this.OBSERVABLE$.destroy();
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        this.OBSERVABLE$.unSubscribe(subscribeObject1);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
+    }
+
+    @test 'destroy and try to use unSubscribeAll'() {
+        const subscribeObject1 = this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal('ERROR DATA');
+        });
+        const subscribeObject2 = this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal('ERROR DATA');
+        });
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(2);
+        this.OBSERVABLE$.destroy();
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        this.OBSERVABLE$.unsubscribeAll();
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
+    }
+
+    @test 'destroy and try to use getValue'() {
+        this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal('SOME DATA');
+        });
+        this.OBSERVABLE$.next('SOME DATA');
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        this.OBSERVABLE$.destroy();
+        expect(this.OBSERVABLE$.getValue()).to.be.equal(undefined);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
+    }
+
+    @test 'destroy and try to use subscribe'() {
+        this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal('SOME DATA');
+        });
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        this.OBSERVABLE$.destroy();
+        this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal('SOME DATA');
+        });
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
+    }
+
+    @test 'destroy and try to use pipe'() {
+        this.OBSERVABLE$.subscribe((value) => {
+            expect(value).to.be.equal('SOME DATA');
+        });
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        this.OBSERVABLE$.destroy();
+        expect(this.OBSERVABLE$.pipe()).to.be.equal(undefined);
+        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
     }
 }

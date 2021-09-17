@@ -133,6 +133,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
 export class Observable<T> implements IObserver<T> {
     private listeners: ISubscribeObject<T>[] = [];
     private _isEnable: boolean = true;
+    private _isDestroyed = false;
 
     constructor(private value: T) {
     }
@@ -150,6 +151,7 @@ export class Observable<T> implements IObserver<T> {
     }
 
     public next(value: T): void {
+        if(this._isDestroyed) return;
         if (!this._isEnable) return;
 
         this.value = value;
@@ -159,6 +161,7 @@ export class Observable<T> implements IObserver<T> {
     }
 
     public unSubscribe(listener: ISubscriptionLike<T>): void {
+        if(this._isDestroyed) return;
         this.listeners &&
         !deleteFromArray(this.listeners, listener);
     }
@@ -167,9 +170,11 @@ export class Observable<T> implements IObserver<T> {
         this.value = <any>0;
         this.unsubscribeAll();
         this.listeners = <any>0;
+        this._isDestroyed = true;
     }
 
     public unsubscribeAll(): void {
+        if(this._isDestroyed) return;
         const length = this.listeners.length;
         for (let i = 0; i < length; i++) {
             const listener = this.listeners.pop();
@@ -178,22 +183,30 @@ export class Observable<T> implements IObserver<T> {
     }
 
     public getValue(): T {
+        if(this._isDestroyed) return undefined;
         return this.value;
     }
 
     public getNumberOfSubscribers(): number {
+        if(this._isDestroyed) return 0;
         return this.listeners.length;
     }
 
     public subscribe(listener: IListener<T>): ISubscriptionLike<T> {
+        if(this._isDestroyed) return undefined;
         const subscribeObject = new SubscribeObject(this, listener);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }
 
     pipe(): ISetup<T> {
+        if(this._isDestroyed) return undefined;
         const subscribeObject = new SubscribeObject(this);
         this.listeners.push(subscribeObject);
         return subscribeObject;
+    }
+
+    get isDestroyed(): boolean {
+        return this._isDestroyed;
     }
 }
