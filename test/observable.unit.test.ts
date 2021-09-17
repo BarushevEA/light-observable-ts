@@ -9,7 +9,7 @@ _chai.expect;
 
 @suite
 class ObservableUnitTest {
-    private OBSERVABLE$: Observable<string>
+    private OBSERVABLE$: Observable<string>;
 
     before() {
         this.OBSERVABLE$ = new Observable('');
@@ -24,7 +24,7 @@ class ObservableUnitTest {
 
     @test 'Add one subscriber'() {
         const subscribeObject = this.OBSERVABLE$.subscribe((value: string) => console.log(value));
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         // @ts-ignore
         const once = subscribeObject.once;
         // @ts-ignore
@@ -35,23 +35,23 @@ class ObservableUnitTest {
 
     @test 'unsubscribe one by subject'() {
         const subscribeObject = this.OBSERVABLE$.subscribe((value: string) => console.log(value));
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         subscribeObject.unsubscribe();
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
     @test 'unsubscribe one by observable'() {
         const subscribeObject = this.OBSERVABLE$.subscribe((value: string) => console.log(value));
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.unSubscribe(subscribeObject);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
     @test 'unsubscribe all by ony'() {
         this.OBSERVABLE$.subscribe((value: string) => console.log(value));
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.unsubscribeAll();
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
     @test 'Add one subscriber and listen one event'() {
@@ -112,13 +112,13 @@ class ObservableUnitTest {
             .pipe()
             .setOnce()
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.once.isOnce).to.be.equal(true);
         // @ts-ignore
         expect(subscribeObject.once.isFinished).to.be.equal(true);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
     @test 'Add one by pipe and "once" after 10 changes'() {
@@ -130,21 +130,21 @@ class ObservableUnitTest {
             .pipe()
             .setOnce()
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         // @ts-ignore
         expect(subscribeObject.once.isOnce).to.be.equal(true);
         for (; counter < 10; counter++) this.OBSERVABLE$.next(str[counter]);
         // @ts-ignore
         expect(subscribeObject.once.isFinished).to.be.equal(true);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
     @test 'Add bad pipe'() {
         const str = '0123456789';
         this.OBSERVABLE$.pipe();
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
     @test 'Add one by pipe and "unsubscribeByNegative true"'() {
@@ -155,11 +155,11 @@ class ObservableUnitTest {
             .pipe()
             .unsubscribeByNegative(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "unsubscribeByNegative false"'() {
@@ -170,11 +170,11 @@ class ObservableUnitTest {
             .pipe()
             .unsubscribeByNegative(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
     @test 'Add one by pipe and "unsubscribeByNegative" (5 positive, 5 negative)'() {
@@ -186,13 +186,13 @@ class ObservableUnitTest {
             .pipe()
             .unsubscribeByNegative(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
         // @ts-ignore
         expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
     @test 'Add one by pipe and "unsubscribeByPositive true"'() {
@@ -203,11 +203,11 @@ class ObservableUnitTest {
             .pipe()
             .unsubscribeByPositive(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(null);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
     @test 'Add one by pipe and "unsubscribeByPositive false"'() {
@@ -218,11 +218,11 @@ class ObservableUnitTest {
             .pipe()
             .unsubscribeByPositive(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "unsubscribeByPositive" (5 negative, 5 positive)'() {
@@ -234,13 +234,13 @@ class ObservableUnitTest {
             .pipe()
             .unsubscribeByPositive(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
         // @ts-ignore
         expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
     @test 'Add one by pipe and "emitByNegative true"'() {
@@ -251,11 +251,11 @@ class ObservableUnitTest {
             .pipe()
             .emitByNegative(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "emitByNegative false"'() {
@@ -266,11 +266,11 @@ class ObservableUnitTest {
             .pipe()
             .emitByNegative(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "emitByNegative" (5 negative, 5 positive)'() {
@@ -285,13 +285,13 @@ class ObservableUnitTest {
             .pipe()
             .emitByNegative(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
         // @ts-ignore
         expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "emitByNegative" (5 positive 5 negative)'() {
@@ -306,13 +306,13 @@ class ObservableUnitTest {
             .pipe()
             .emitByNegative(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
         // @ts-ignore
         expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "emitByPositive true"'() {
@@ -323,11 +323,11 @@ class ObservableUnitTest {
             .pipe()
             .emitByPositive(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "emitByPositive false"'() {
@@ -338,11 +338,11 @@ class ObservableUnitTest {
             .pipe()
             .emitByPositive(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "emitByPositive" (5 negative, 5 positive)'() {
@@ -357,13 +357,13 @@ class ObservableUnitTest {
             .pipe()
             .emitByPositive(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
         // @ts-ignore
         expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "emitByPositive" (5 positive 5 negative)'() {
@@ -378,13 +378,13 @@ class ObservableUnitTest {
             .pipe()
             .emitByPositive(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
         // @ts-ignore
         expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "emitMatch true"'() {
@@ -397,7 +397,7 @@ class ObservableUnitTest {
             .subscribe(listener);
         // @ts-ignore
         expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "emitMatch false"'() {
@@ -410,7 +410,7 @@ class ObservableUnitTest {
             .subscribe(listener);
         // @ts-ignore
         expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "emitMatch 10 elements" (on value "0")'() {
@@ -425,13 +425,13 @@ class ObservableUnitTest {
             .pipe()
             .emitMatch(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
         // @ts-ignore
         expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "emitMatch 10 elements" (on value "9")'() {
@@ -446,13 +446,13 @@ class ObservableUnitTest {
             .pipe()
             .emitMatch(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
         // @ts-ignore
         expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'Add one by pipe and "emitMatch 10 elements" (on value "5")'() {
@@ -467,13 +467,13 @@ class ObservableUnitTest {
             .pipe()
             .emitMatch(condition)
             .subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
         // @ts-ignore
         expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
     @test 'pause / resume'() {
@@ -482,13 +482,13 @@ class ObservableUnitTest {
         const str = '0123456789';
         const listener = (value: string) => accumulatorStr += value;
         const subscribeObject = this.OBSERVABLE$.subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             (counter === 4) && (<IPause><any>subscribeObject).pause();
             (counter === 8) && (<IPause><any>subscribeObject).resume();
             this.OBSERVABLE$.next(str[counter]);
         }
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(accumulatorStr).to.be.equal('012389');
     }
 
@@ -505,13 +505,13 @@ class ObservableUnitTest {
         const str = '0123456789';
         const listener = (value: string) => accumulatorStr += value;
         const subscribeObject = this.OBSERVABLE$.subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             (counter === 4) && this.OBSERVABLE$.disable();
             (counter === 8) && this.OBSERVABLE$.enable();
             this.OBSERVABLE$.next(str[counter]);
         }
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(this.OBSERVABLE$.isEnable).to.be.equal(true);
         expect(accumulatorStr).to.be.equal('012389');
     }
@@ -522,13 +522,13 @@ class ObservableUnitTest {
         const str = '0123456789';
         const listener = (value: string) => accumulatorStr += value;
         const subscribeObject = this.OBSERVABLE$.subscribe(listener);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             (counter === 4) && this.OBSERVABLE$.disable();
             (counter === 8) && this.OBSERVABLE$.enable();
             this.OBSERVABLE$.next(str[counter]);
         }
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(this.OBSERVABLE$.isEnable).to.be.equal(true);
         expect(accumulatorStr).to.be.equal('012389');
         this.OBSERVABLE$.destroy();
@@ -589,22 +589,22 @@ class ObservableUnitTest {
         for (; counter < str.length; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(5);
+        expect(this.OBSERVABLE$.size()).to.be.equal(5);
         expect((<IOrder><any>subscribeObject1).order).to.be.equal(1);
         expect((<IOrder><any>subscribeObject2).order).to.be.equal(2);
         expect((<IOrder><any>subscribeObject3).order).to.be.equal(3);
         expect((<IOrder><any>subscribeObject4).order).to.be.equal(4);
         expect((<IOrder><any>subscribeObject5).order).to.be.equal(5);
         subscribeObject1.unsubscribe();
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(4);
+        expect(this.OBSERVABLE$.size()).to.be.equal(4);
         subscribeObject2.unsubscribe();
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(3);
+        expect(this.OBSERVABLE$.size()).to.be.equal(3);
         subscribeObject3.unsubscribe();
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(2);
+        expect(this.OBSERVABLE$.size()).to.be.equal(2);
         subscribeObject4.unsubscribe();
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         subscribeObject5.unsubscribe();
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
     @test 'destroy and try to use next'() {
@@ -620,11 +620,11 @@ class ObservableUnitTest {
         const subscribeObject1 = this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('ERROR DATA');
         });
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.destroy();
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
         this.OBSERVABLE$.unSubscribe(subscribeObject1);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
     }
 
@@ -635,11 +635,11 @@ class ObservableUnitTest {
         const subscribeObject2 = this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('ERROR DATA');
         });
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(2);
+        expect(this.OBSERVABLE$.size()).to.be.equal(2);
         this.OBSERVABLE$.destroy();
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
         this.OBSERVABLE$.unsubscribeAll();
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
     }
 
@@ -648,10 +648,10 @@ class ObservableUnitTest {
             expect(value).to.be.equal('SOME DATA');
         });
         this.OBSERVABLE$.next('SOME DATA');
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.destroy();
         expect(this.OBSERVABLE$.getValue()).to.be.equal(undefined);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
     }
 
@@ -659,12 +659,12 @@ class ObservableUnitTest {
         this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('SOME DATA');
         });
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.destroy();
         this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('SOME DATA');
         });
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
     }
 
@@ -672,10 +672,10 @@ class ObservableUnitTest {
         this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('SOME DATA');
         });
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(1);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.destroy();
         expect(this.OBSERVABLE$.pipe()).to.be.equal(undefined);
-        expect(this.OBSERVABLE$.getNumberOfSubscribers()).to.be.equal(0);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
     }
 }

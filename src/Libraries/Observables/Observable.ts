@@ -187,7 +187,7 @@ export class Observable<T> implements IObserver<T> {
         return this.value;
     }
 
-    public getNumberOfSubscribers(): number {
+    public size(): number {
         if(this._isDestroyed) return 0;
         return this.listeners.length;
     }

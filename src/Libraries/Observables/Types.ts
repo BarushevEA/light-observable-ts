@@ -49,7 +49,7 @@ export type ISubscribeObject<T> =
     ISetup<T>;
 
 export type ISubscribeCounter = {
-    getNumberOfSubscribers(): number;
+    size(): number;
 };
 
 export type ISubscriber<T> =
@@ -107,6 +107,7 @@ export type IEmitMatchCondition<T> = {
 
 export type ICollector =
     IDestroy &
+    ISubscribeCounter &
     {
         collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void;
         unsubscribe(subscriptionLike: ISubscriptionLike<any>): void;
