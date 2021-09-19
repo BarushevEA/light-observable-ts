@@ -153,11 +153,8 @@ export class Observable<T> implements IObserver<T> {
     public next(value: T): void {
         if (this._isDestroyed) return;
         if (!this._isEnable) return;
-
         this.value = value;
-        for (let i = 0; i < this.listeners.length; i++) {
-            this.listeners[i] && this.listeners[i].send(value);
-        }
+        for (let i = 0; i < this.listeners.length; i++) this.listeners[i].send(value);
     }
 
     public unSubscribe(listener: ISubscriptionLike<T>): void {
@@ -176,10 +173,7 @@ export class Observable<T> implements IObserver<T> {
     public unsubscribeAll(): void {
         if (this._isDestroyed) return;
         const length = this.listeners.length;
-        for (let i = 0; i < length; i++) {
-            const listener = this.listeners.pop();
-            listener && listener.unsubscribe();
-        }
+        for (let i = 0; i < length; i++) (this.listeners.pop()).unsubscribe();
     }
 
     public getValue(): T {
