@@ -2,6 +2,10 @@ import {Observable, SubscribeObject} from "./Observable";
 import {IListener, IOrderedObservable, IOrderedSubscriptionLike, ISetup} from "./Types";
 
 export class OrderedSubscribeObject<T> extends SubscribeObject<T> {
+    get order(): number {
+        return this._order;
+    }
+
     set order(value: number) {
         this._order = value;
         (<IOrderedObservable><any>this.observable).sortByOrder();
