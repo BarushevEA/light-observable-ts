@@ -7,6 +7,11 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> {
     }
 
     set order(value: number) {
+        if (!this.observable ||
+            (this.observable && this.observable.isDestroyed)) {
+            this._order = undefined;
+            return
+        }
         this._order = value;
         (<IOrderedObservable><any>this.observable).sortByOrder();
     }

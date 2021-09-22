@@ -1,7 +1,7 @@
 import {suite, test} from '@testdeck/mocha';
 import * as _chai from 'chai';
 import {expect} from 'chai';
-import {IOrder, IPause} from "../src/Libraries/Observables/Types";
+import {IOrder, IOrderedSubscriptionLike, IPause} from "../src/Libraries/Observables/Types";
 import {OrderedObservable} from "../src/Libraries/Observables/OrderedObservable";
 
 _chai.should();
@@ -677,5 +677,150 @@ class OrderedObservableUnitTest {
         expect(this.ORDERED_OBSERVABLE$.pipe()).to.be.equal(undefined);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(0);
         expect(this.ORDERED_OBSERVABLE$.isDestroyed).to.be.equal(true);
+    }
+
+    @test 'sorted two subscribers by default'() {
+        let innerCounter = 0;
+        const listener = (value: string) => {
+            innerCounter++;
+            if (innerCounter === 1) {
+                expect(subscriber1.order).to.be.equal(innerCounter);
+            }
+            if (innerCounter === 2) {
+                expect(subscriber2.order).to.be.equal(innerCounter);
+            }
+        };
+        const subscriber1 = this.ORDERED_OBSERVABLE$.subscribe(listener);
+        subscriber1.order = 1;
+        const subscriber2 = this.ORDERED_OBSERVABLE$.subscribe(listener);
+        subscriber2.order = 2;
+        this.ORDERED_OBSERVABLE$.next('SOME DATA');
+    }
+
+    @test 'sorted two subscribers by revers'() {
+        let innerCounter = 0;
+        const listener = (value: string) => {
+            innerCounter++;
+            if (innerCounter === 1) {
+                expect(subscriber2.order).to.be.equal(innerCounter);
+            }
+            if (innerCounter === 2) {
+                expect(subscriber1.order).to.be.equal(innerCounter);
+            }
+        };
+        const subscriber1 = this.ORDERED_OBSERVABLE$.subscribe(listener);
+        subscriber1.order = 2;
+        const subscriber2 = this.ORDERED_OBSERVABLE$.subscribe(listener);
+        subscriber2.order = 1;
+        this.ORDERED_OBSERVABLE$.next('SOME DATA');
+    }
+
+    @test 'sorted ten subscribers by default'() {
+        const subscribers: IOrderedSubscriptionLike<string>[] = [];
+        let innerCounter = 0;
+        const listener = (value: string) => {
+            expect(subscribers[innerCounter].order).to.be.equal(innerCounter);
+            innerCounter++;
+        };
+        for (let i = 0; i < 10; i++) {
+            const subscriber = this.ORDERED_OBSERVABLE$.subscribe(listener);
+            subscriber.order = i;
+            subscribers.push(subscriber);
+        }
+        this.ORDERED_OBSERVABLE$.next('SOME DATA');
+    }
+
+    @test 'sorted ten subscribers by revers'() {
+        const subscribers: IOrderedSubscriptionLike<string>[] = [];
+        let innerCounter = 0;
+        const listener = (value: string) => {
+            expect(subscribers[innerCounter].order).to.be.equal(9 - innerCounter);
+            innerCounter++;
+        };
+        for (let i = 0; i < 10; i++) {
+            const subscriber = this.ORDERED_OBSERVABLE$.subscribe(listener);
+            subscriber.order = 9 - i;
+            subscribers.push(subscriber);
+        }
+        this.ORDERED_OBSERVABLE$.next('SOME DATA');
+    }
+
+    @test 'sorted ten subscribers by default but last element order to first'() {
+        let innerCounter = 0;
+        let orders: number[] = [];
+        let subscribers: IOrderedSubscriptionLike<string>[] = [];
+        const listener = (value: string) => {
+            orders.push(subscribers[innerCounter].order);
+            innerCounter++;
+        };
+        for (let i = 0; i < 10; i++) {
+            const subscriber = this.ORDERED_OBSERVABLE$.subscribe(listener);
+            subscriber.order = i;
+            subscribers.push(subscriber);
+        }
+
+        // @ts-ignore
+        subscribers = this.ORDERED_OBSERVABLE$.listeners;
+        this.ORDERED_OBSERVABLE$.next('SOME DATA');
+        expect(orders).to.be.eql([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
+        subscribers[subscribers.length - 1].order = -1;
+        innerCounter = 0;
+        orders = [];
+
+        // @ts-ignore
+        subscribers = this.ORDERED_OBSERVABLE$.listeners;
+        this.ORDERED_OBSERVABLE$.next('SOME DATA');
+        expect(orders).to.be.eql([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]);
+    }
+
+    @test 'sorted ten subscribers by default but last and previews element order to first'() {
+        let innerCounter = 0;
+        let orders: number[] = [];
+        let subscribers: IOrderedSubscriptionLike<string>[] = [];
+        const listener = (value: string) => {
+            orders.push(subscribers[innerCounter].order);
+            innerCounter++;
+        };
+        for (let i = 0; i < 10; i++) {
+            const subscriber = this.ORDERED_OBSERVABLE$.subscribe(listener);
+            subscriber.order = i;
+            subscribers.push(subscriber);
+        }
+
+        // @ts-ignore
+        subscribers = this.ORDERED_OBSERVABLE$.listeners;
+        this.ORDERED_OBSERVABLE$.next('SOME DATA');
+        expect(orders).to.be.eql([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
+        subscribers[subscribers.length - 1].order = -1;
+        subscribers[subscribers.length - 1].order = -2;
+        innerCounter = 0;
+        orders = [];
+
+        // @ts-ignore
+        subscribers = this.ORDERED_OBSERVABLE$.listeners;
+        this.ORDERED_OBSERVABLE$.next('SOME DATA');
+        expect(orders).to.be.eql([-2, -1, 0, 1, 2, 3, 4, 5, 6, 7]);
+    }
+
+    @test 'try use broken observable'() {
+        const listener = (value: string) => value;
+        const subscriber1 = this.ORDERED_OBSERVABLE$.subscribe(listener);
+        // @ts-ignore
+        this.ORDERED_OBSERVABLE$._isDestroyed = true;
+        subscriber1.order = 10;
+        expect(this.ORDERED_OBSERVABLE$.sortByOrder()).to.be.equal(undefined);
+        expect(subscriber1.order).to.be.equal(undefined);
+    }
+
+    @test 'try use destroyed observable'() {
+        const listener = (value: string) => value;
+        const subscriber1 = this.ORDERED_OBSERVABLE$.subscribe(listener);
+
+        this.ORDERED_OBSERVABLE$.destroy();
+        subscriber1.order = 10;
+        expect(this.ORDERED_OBSERVABLE$.sortByOrder()).to.be.equal(undefined);
+        expect(subscriber1.order).to.be.equal(undefined);
     }
 }
