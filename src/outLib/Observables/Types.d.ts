@@ -24,6 +24,7 @@ export declare type ISubscriptionLike<T> = {
     unsubscribe(): void;
 };
 export declare type ISetup<T> = IUnsubscribeByNegative<T> & IUnsubscribeByPositive<T> & IEmitByNegative<T> & IEmitByPositive<T> & IEmitMatchCondition<T> & IOnce<T> & ISubscribe<T>;
+export declare type IOrderedSetup<T> = IUnsubscribeByNegative<T> & IUnsubscribeByPositive<T> & IEmitByNegative<T> & IEmitByPositive<T> & IEmitMatchCondition<T> & IOnce<T> & IOrderedSubscriptionLike<T>;
 export declare type ISubscribeObject<T> = ISubscriptionLike<T> & IPause & IOrder & ISend<T> & ISetup<T>;
 export declare type ISubscribeCounter = {
     size(): number;
@@ -71,4 +72,5 @@ export declare type ICollector = IDestroy & ISubscribeCounter & {
 export declare type IOrderedObservable = {
     sortByOrder(): void;
 };
+export declare type IOrdered<T> = IObserver<T> & IOrderedObservable;
 export declare type IOrderedSubscriptionLike<T> = ISubscriptionLike<T> & IOrder;

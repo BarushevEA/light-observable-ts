@@ -127,4 +127,6 @@ export type IOrderedObservable = {
     sortByOrder(): void;
 };
 
+export type IOrdered<T> = IObserver<T> & IOrderedObservable;
+
 export type IOrderedSubscriptionLike<T> = ISubscriptionLike<T> & IOrder;

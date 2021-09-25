@@ -19,8 +19,8 @@ exports.OrderedObservable = exports.OrderedSubscribeObject = void 0;
 var Observable_1 = require("./Observable");
 var OrderedSubscribeObject = /** @class */ (function (_super) {
     __extends(OrderedSubscribeObject, _super);
-    function OrderedSubscribeObject() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function OrderedSubscribeObject(observable, listener) {
+        return _super.call(this, observable, listener) || this;
     }
     Object.defineProperty(OrderedSubscribeObject.prototype, "order", {
         get: function () {
@@ -68,6 +68,7 @@ var OrderedObservable = /** @class */ (function (_super) {
         this.listeners.push(subscribeObject);
         return subscribeObject;
     };
+    // @ts-ignore
     OrderedObservable.prototype.pipe = function () {
         if (this._isDestroyed)
             return undefined;

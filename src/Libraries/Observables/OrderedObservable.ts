@@ -1,7 +1,11 @@
 import {Observable, SubscribeObject} from "./Observable";
-import {IListener, IOrderedObservable, IOrderedSubscriptionLike, ISetup} from "./Types";
+import {IListener, IObserver, IOrdered, IOrderedObservable, IOrderedSetup, IOrderedSubscriptionLike} from "./Types";
 
 export class OrderedSubscribeObject<T> extends SubscribeObject<T> {
+    constructor(observable: OrderedObservable<T> | IOrdered<T>, listener?: IListener<T>) {
+        super(<IObserver<T>>observable, listener);
+    }
+
     get order(): number {
         return this._order;
     }
@@ -23,7 +27,7 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> {
 }
 
 export class OrderedObservable<T>
-    extends Observable<T> implements IOrderedObservable {
+    extends Observable<T> implements IOrdered<T> {
     sortByOrder(): void {
         if (this._isDestroyed) return undefined;
         this.listeners.sort((a, b) => {
@@ -40,6 +44,7 @@ export class OrderedObservable<T>
         return subscribeObject;
     }
 
+    // @ts-ignore
     pipe(): IOrderedSetup<T> {
         if (this._isDestroyed) return undefined;
         const subscribeObject = new OrderedSubscribeObject(this);
