@@ -48,7 +48,7 @@ export type IOrderedSetup<T> =
     IEmitByPositive<T> &
     IEmitMatchCondition<T> &
     IOnce<T> &
-    IOrderedSubscriptionLike<T>;
+    IOrderedSubscribe<T>;
 
 export type ISubscribeObject<T> =
     ISubscriptionLike<T> &
@@ -130,3 +130,6 @@ export type IOrderedObservable = {
 export type IOrdered<T> = IObserver<T> & IOrderedObservable;
 
 export type IOrderedSubscriptionLike<T> = ISubscriptionLike<T> & IOrder;
+export type IOrderedSubscribe<T> = {
+    subscribe(listener: IListener<T>): IOrderedSubscriptionLike<T>;
+};

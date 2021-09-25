@@ -44,7 +44,6 @@ export class OrderedObservable<T>
         return subscribeObject;
     }
 
-    // @ts-ignore
     pipe(): IOrderedSetup<T> {
         if (this._isDestroyed) return undefined;
         const subscribeObject = new OrderedSubscribeObject(this);

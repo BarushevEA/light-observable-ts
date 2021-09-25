@@ -68,7 +68,6 @@ var OrderedObservable = /** @class */ (function (_super) {
         this.listeners.push(subscribeObject);
         return subscribeObject;
     };
-    // @ts-ignore
     OrderedObservable.prototype.pipe = function () {
         if (this._isDestroyed)
             return undefined;
