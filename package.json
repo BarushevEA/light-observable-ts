@@ -1,7 +1,7 @@
 {
-  "name": "light-observable-ts",
+  "name": "evg_observable",
   "version": "1.0.0",
-  "description": "light-observable-ts",
+  "description": "light observable for ts",
   "main": "index.js",
   "directories": {
     "test": "test"
