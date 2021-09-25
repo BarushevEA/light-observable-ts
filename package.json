@@ -1,6 +1,6 @@
 {
   "name": "evg_observable",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Light observable",
   "main": "index.js",
   "directories": {
