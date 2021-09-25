@@ -24,6 +24,10 @@ export type IOnce<T> = {
     setOnce(): ISubscribe<T>;
 };
 
+export type IOrderedOnce<T> = {
+    setOnce(): IOrderedSubscribe<T>;
+};
+
 export type ISetObservableValue = {
     next(value: any): void;
 };
@@ -42,12 +46,12 @@ export type ISetup<T> =
     ISubscribe<T>;
 
 export type IOrderedSetup<T> =
-    IUnsubscribeByNegative<T> &
-    IUnsubscribeByPositive<T> &
-    IEmitByNegative<T> &
-    IEmitByPositive<T> &
-    IEmitMatchCondition<T> &
-    IOnce<T> &
+    IOrderedUnsubscribeByNegative<T> &
+    IOrderedUnsubscribeByPositive<T> &
+    IOrderedEmitByNegative<T> &
+    IOrderedEmitByPositive<T> &
+    IOrderedEmitMatchCondition<T> &
+    IOrderedOnce<T> &
     IOrderedSubscribe<T>;
 
 export type ISubscribeObject<T> =
@@ -98,20 +102,40 @@ export type IUnsubscribeByNegative<T> = {
     unsubscribeByNegative(condition: ICallback<any>): ISubscribe<T>;
 };
 
+export type IOrderedUnsubscribeByNegative<T> = {
+    unsubscribeByNegative(condition: ICallback<any>): IOrderedSubscribe<T>;
+};
+
 export type IUnsubscribeByPositive<T> = {
     unsubscribeByPositive(condition: ICallback<any>): ISubscribe<T>;
+};
+
+export type IOrderedUnsubscribeByPositive<T> = {
+    unsubscribeByPositive(condition: ICallback<any>): IOrderedSubscribe<T>;
 };
 
 export type IEmitByNegative<T> = {
     emitByNegative(condition: ICallback<any>): ISubscribe<T>;
 };
 
+export type IOrderedEmitByNegative<T> = {
+    emitByNegative(condition: ICallback<any>): IOrderedSubscribe<T>;
+};
+
 export type IEmitByPositive<T> = {
     emitByPositive(condition: ICallback<any>): ISubscribe<T>;
 };
 
+export type IOrderedEmitByPositive<T> = {
+    emitByPositive(condition: ICallback<any>): IOrderedSubscribe<T>;
+};
+
 export type IEmitMatchCondition<T> = {
     emitMatch(condition: ICallback<any>): ISubscribe<T>;
+};
+
+export type IOrderedEmitMatchCondition<T> = {
+    emitMatch(condition: ICallback<any>): IOrderedSubscribe<T>;
 };
 
 export type ICollector =

@@ -17,6 +17,9 @@ export declare type IOrder = {
 export declare type IOnce<T> = {
     setOnce(): ISubscribe<T>;
 };
+export declare type IOrderedOnce<T> = {
+    setOnce(): IOrderedSubscribe<T>;
+};
 export declare type ISetObservableValue = {
     next(value: any): void;
 };
@@ -24,7 +27,7 @@ export declare type ISubscriptionLike<T> = {
     unsubscribe(): void;
 };
 export declare type ISetup<T> = IUnsubscribeByNegative<T> & IUnsubscribeByPositive<T> & IEmitByNegative<T> & IEmitByPositive<T> & IEmitMatchCondition<T> & IOnce<T> & ISubscribe<T>;
-export declare type IOrderedSetup<T> = IUnsubscribeByNegative<T> & IUnsubscribeByPositive<T> & IEmitByNegative<T> & IEmitByPositive<T> & IEmitMatchCondition<T> & IOnce<T> & IOrderedSubscribe<T>;
+export declare type IOrderedSetup<T> = IOrderedUnsubscribeByNegative<T> & IOrderedUnsubscribeByPositive<T> & IOrderedEmitByNegative<T> & IOrderedEmitByPositive<T> & IOrderedEmitMatchCondition<T> & IOrderedOnce<T> & IOrderedSubscribe<T>;
 export declare type ISubscribeObject<T> = ISubscriptionLike<T> & IPause & IOrder & ISend<T> & ISetup<T>;
 export declare type ISubscribeCounter = {
     size(): number;
@@ -52,17 +55,32 @@ export declare type ISend<T> = {
 export declare type IUnsubscribeByNegative<T> = {
     unsubscribeByNegative(condition: ICallback<any>): ISubscribe<T>;
 };
+export declare type IOrderedUnsubscribeByNegative<T> = {
+    unsubscribeByNegative(condition: ICallback<any>): IOrderedSubscribe<T>;
+};
 export declare type IUnsubscribeByPositive<T> = {
     unsubscribeByPositive(condition: ICallback<any>): ISubscribe<T>;
+};
+export declare type IOrderedUnsubscribeByPositive<T> = {
+    unsubscribeByPositive(condition: ICallback<any>): IOrderedSubscribe<T>;
 };
 export declare type IEmitByNegative<T> = {
     emitByNegative(condition: ICallback<any>): ISubscribe<T>;
 };
+export declare type IOrderedEmitByNegative<T> = {
+    emitByNegative(condition: ICallback<any>): IOrderedSubscribe<T>;
+};
 export declare type IEmitByPositive<T> = {
     emitByPositive(condition: ICallback<any>): ISubscribe<T>;
 };
+export declare type IOrderedEmitByPositive<T> = {
+    emitByPositive(condition: ICallback<any>): IOrderedSubscribe<T>;
+};
 export declare type IEmitMatchCondition<T> = {
     emitMatch(condition: ICallback<any>): ISubscribe<T>;
+};
+export declare type IOrderedEmitMatchCondition<T> = {
+    emitMatch(condition: ICallback<any>): IOrderedSubscribe<T>;
 };
 export declare type ICollector = IDestroy & ISubscribeCounter & {
     collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void;

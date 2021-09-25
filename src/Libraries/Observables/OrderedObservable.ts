@@ -1,5 +1,14 @@
 import {Observable, SubscribeObject} from "./Observable";
-import {IListener, IObserver, IOrdered, IOrderedObservable, IOrderedSetup, IOrderedSubscriptionLike} from "./Types";
+import {
+    ICallback,
+    IListener,
+    IObserver,
+    IOrdered,
+    IOrderedObservable,
+    IOrderedSetup,
+    IOrderedSubscribe,
+    IOrderedSubscriptionLike
+} from "./Types";
 
 export class OrderedSubscribeObject<T> extends SubscribeObject<T> {
     constructor(observable: OrderedObservable<T> | IOrdered<T>, listener?: IListener<T>) {
@@ -23,6 +32,30 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> {
     subscribe(listener: IListener<T>): IOrderedSubscriptionLike<T> {
         this.listener = listener;
         return this;
+    }
+
+    setOnce(): IOrderedSubscribe<T> {
+        return <any>super.setOnce();
+    }
+
+    unsubscribeByNegative(condition: ICallback<any>): IOrderedSubscribe<T> {
+        return <any>super.unsubscribeByNegative(condition);
+    }
+
+    unsubscribeByPositive(condition: ICallback<any>): IOrderedSubscribe<T> {
+        return <any>super.unsubscribeByPositive(condition);
+    }
+
+    emitByNegative(condition: ICallback<any>): IOrderedSubscribe<T> {
+        return <any>super.emitByNegative(condition);
+    }
+
+    emitByPositive(condition: ICallback<any>): IOrderedSubscribe<T> {
+        return <any>super.emitByPositive(condition);
+    }
+
+    emitMatch(condition: ICallback<any>): IOrderedSubscribe<T> {
+        return <any>super.emitMatch(condition);
     }
 }
 

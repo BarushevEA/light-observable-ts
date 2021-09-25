@@ -42,6 +42,24 @@ var OrderedSubscribeObject = /** @class */ (function (_super) {
         this.listener = listener;
         return this;
     };
+    OrderedSubscribeObject.prototype.setOnce = function () {
+        return _super.prototype.setOnce.call(this);
+    };
+    OrderedSubscribeObject.prototype.unsubscribeByNegative = function (condition) {
+        return _super.prototype.unsubscribeByNegative.call(this, condition);
+    };
+    OrderedSubscribeObject.prototype.unsubscribeByPositive = function (condition) {
+        return _super.prototype.unsubscribeByPositive.call(this, condition);
+    };
+    OrderedSubscribeObject.prototype.emitByNegative = function (condition) {
+        return _super.prototype.emitByNegative.call(this, condition);
+    };
+    OrderedSubscribeObject.prototype.emitByPositive = function (condition) {
+        return _super.prototype.emitByPositive.call(this, condition);
+    };
+    OrderedSubscribeObject.prototype.emitMatch = function (condition) {
+        return _super.prototype.emitMatch.call(this, condition);
+    };
     return OrderedSubscribeObject;
 }(Observable_1.SubscribeObject));
 exports.OrderedSubscribeObject = OrderedSubscribeObject;
