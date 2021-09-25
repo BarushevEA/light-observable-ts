@@ -40,7 +40,7 @@ export class OrderedObservable<T>
         return subscribeObject;
     }
 
-    pipe(): ISetup<T> {
+    pipe(): IOrderedSetup<T> {
         if (this._isDestroyed) return undefined;
         const subscribeObject = new OrderedSubscribeObject(this);
         this.listeners.push(subscribeObject);

@@ -41,6 +41,15 @@ export type ISetup<T> =
     IOnce<T> &
     ISubscribe<T>;
 
+export type IOrderedSetup<T> =
+    IUnsubscribeByNegative<T> &
+    IUnsubscribeByPositive<T> &
+    IEmitByNegative<T> &
+    IEmitByPositive<T> &
+    IEmitMatchCondition<T> &
+    IOnce<T> &
+    IOrderedSubscriptionLike<T>;
+
 export type ISubscribeObject<T> =
     ISubscriptionLike<T> &
     IPause &
