@@ -1,20 +1,18 @@
-import {Observable} from "./Observables/Observable";
-import {ISubscriptionLike} from "./Observables/Types";
-
-export type IDestroyed = {
+import { Observable } from "./Observables/Observable";
+import { ISubscriptionLike } from "./Observables/Types";
+export declare type IDestroyed = {
     isDestroyed: boolean;
 };
-
-export type delay_ms = number;
-export type delay_second = number;
-export type cb_function = () => void;
-export type ITickListener = {
+export declare type delay_ms = number;
+export declare type delay_second = number;
+export declare type cb_function = () => void;
+export declare type ITickListener = {
     counter: number;
     delay: delay_ms;
     callback: cb_function;
     isDestroy: boolean;
 };
-export type ITick = {
+export declare type ITick = {
     tick10$: Observable<any>;
     tick100$: Observable<any>;
     tick1000$: Observable<any>;
