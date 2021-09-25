@@ -117,6 +117,8 @@ var Observable = /** @class */ (function () {
         this.listeners = [];
         this._isEnable = true;
         this._isDestroyed = false;
+        this.isNextProcess = false;
+        this.listenersForUnsubscribe = [];
     }
     Observable.prototype.disable = function () {
         this._isEnable = false;
@@ -137,12 +139,26 @@ var Observable = /** @class */ (function () {
         if (!this._isEnable)
             return;
         this.value = value;
+        this.isNextProcess = true;
         for (var i = 0; i < this.listeners.length; i++)
             this.listeners[i].send(value);
+        this.isNextProcess = false;
+        this.handleListenersForUnsubscribe();
+    };
+    Observable.prototype.handleListenersForUnsubscribe = function () {
+        for (var _i = 0, _a = this.listenersForUnsubscribe; _i < _a.length; _i++) {
+            var listener = _a[_i];
+            this.unSubscribe(listener);
+        }
+        this.listenersForUnsubscribe.length = 0;
     };
     Observable.prototype.unSubscribe = function (listener) {
         if (this._isDestroyed)
             return;
+        if (this.isNextProcess) {
+            this.listenersForUnsubscribe.push(listener);
+            return;
+        }
         this.listeners &&
             !(0, FunctionLibs_1.deleteFromArray)(this.listeners, listener);
     };

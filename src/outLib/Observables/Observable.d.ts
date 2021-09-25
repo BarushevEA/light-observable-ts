@@ -30,11 +30,14 @@ export declare class Observable<T> implements IObserver<T> {
     protected listeners: ISubscribeObject<T>[];
     private _isEnable;
     protected _isDestroyed: boolean;
+    private isNextProcess;
+    private listenersForUnsubscribe;
     constructor(value: T);
     disable(): void;
     enable(): void;
     get isEnable(): boolean;
     next(value: T): void;
+    private handleListenersForUnsubscribe;
     unSubscribe(listener: ISubscriptionLike<T>): void;
     destroy(): void;
     unsubscribeAll(): void;
