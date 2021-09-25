@@ -134,6 +134,8 @@ export class Observable<T> implements IObserver<T> {
     protected listeners: ISubscribeObject<T>[] = [];
     private _isEnable: boolean = true;
     protected _isDestroyed = false;
+    private isNextProcess = false;
+    private listenersForUnsubscribe: ISubscriptionLike<T>[] = [];
 
     constructor(private value: T) {
     }
@@ -154,11 +156,25 @@ export class Observable<T> implements IObserver<T> {
         if (this._isDestroyed) return;
         if (!this._isEnable) return;
         this.value = value;
+        this.isNextProcess = true;
         for (let i = 0; i < this.listeners.length; i++) this.listeners[i].send(value);
+        this.isNextProcess = false;
+        this.handleListenersForUnsubscribe();
+    }
+
+    private handleListenersForUnsubscribe(): void {
+        for (const listener of this.listenersForUnsubscribe) {
+            this.unSubscribe(listener);
+        }
+        this.listenersForUnsubscribe.length = 0;
     }
 
     public unSubscribe(listener: ISubscriptionLike<T>): void {
         if (this._isDestroyed) return;
+        if (this.isNextProcess) {
+            this.listenersForUnsubscribe.push(listener);
+            return;
+        }
         this.listeners &&
         !deleteFromArray(this.listeners, listener);
     }

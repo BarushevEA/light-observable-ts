@@ -121,6 +121,22 @@ class ObservableUnitTest {
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
+    @test 'Add one by pipe, "once" and one without pipe'() {
+        let tmpArr: string[] = [];
+        const listener1 = (value: string) => tmpArr.push('listener1:' + value);
+        const listener2 = (value: string) => tmpArr.push('listener2:' + value);
+        const subscribeObject1 = this.OBSERVABLE$
+            .pipe()
+            .setOnce()
+            .subscribe(listener1);
+        const subscribeObject2 = this.OBSERVABLE$.subscribe(listener2);
+        this.OBSERVABLE$.next('a');
+        expect(tmpArr).to.be.eql(['listener1:a', 'listener2:a']);
+        tmpArr = [];
+        this.OBSERVABLE$.next('b');
+        expect(tmpArr).to.be.eql(['listener2:b']);
+    }
+
     @test 'Add one by pipe and "once" after 10 changes'() {
         const str = '0123456789';
         let counter = 0;
