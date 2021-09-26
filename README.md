@@ -17,8 +17,8 @@ EVG Observable - is a small library for serving asynchronous events.
 
     $ npm install evg_observable
 
-# Usage 
-###tsconfig.json 
+# Usage
+### tsconfig.json
 recommended value of the "strict" field in the configuration
 ```json
 {
@@ -273,3 +273,6 @@ observable$.next('SOME DATA');
 // Also, if there is a need to use the collector further, instead of destroying it, you can use collector.unsubscribeAll().
 // To unsubscribe one subscriber, you can use: collector.unsubscribe(subscriber).
 ```
+
+## License
+MIT
