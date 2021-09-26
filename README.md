@@ -143,3 +143,45 @@ observable$.next('Next3 typed data')
 
 // subscriber1 is automatically unsubscribed when positive condition
 ```
+### pipe().emitMatch(condition)
+Observable will send a value to the subscriber only if the return value of the condition matches the data being sent. In this case, there is no automatic unsubscription.
+```ts
+import {Observable} from "evg_observable/src/outLib/Observables/Observable";
+
+const observable$ = new Observable('Some typed data (not only string)');
+const listener1 = (value: string) => console.log('listener1:', value);
+const listener2 = (value: string) => console.log('listener2:', value);
+const TARGET_DATA = 'TARGET_DATA';
+
+const subscriber1 = observable$
+    .pipe()
+    .emitMatch(() => TARGET_DATA)
+    .subscribe(listener1);
+const subscriber2 = observable$.subscribe(listener2);
+
+console.log(observable$.getValue());
+// Print to console - Some typed data (not only string)
+
+observable$.next('Next1 typed data');
+// Print to console - listener2: Next1 typed data
+
+observable$.next('Next2 typed data');
+// Print to console - listener2: Next2 typed data
+
+observable$.next(TARGET_DATA);
+// Print to console - listener1: TARGET_DATA
+// Print to console - listener2: TARGET_DATA
+
+observable$.next('Next4 typed data');
+// Print to console - listener2: Next4 typed data
+
+observable$.next(TARGET_DATA);
+// Print to console - listener1: TARGET_DATA
+// Print to console - listener2: TARGET_DATA
+```
+
+## Ordered observable
+Ordered observable - differs from Observable in that it allows you to emit messages in a given order. In general, they are the same.
+```ts
+
+```
