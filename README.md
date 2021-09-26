@@ -18,7 +18,15 @@ EVG Observable - is a small library for serving asynchronous events.
     $ npm install evg_observable
 
 # Usage 
-(tsconfig.json {"strict": false})
+###tsconfig.json 
+recommended value of the "strict" field in the configuration
+```json
+{
+  "compilerOptions":{
+    "strict": false
+  }
+}
+```
 
 ## Observable simple usage
 
