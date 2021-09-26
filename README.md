@@ -191,5 +191,41 @@ observable$.next(TARGET_DATA);
 ## Ordered observable
 Ordered observable - differs from Observable in that it allows you to emit messages in a given order. In general, they are the same.
 ```ts
+import {OrderedObservable} from "evg_observable/src/outLib/Observables/OrderedObservable";
 
+const observable$ = new OrderedObservable('Some typed data (not only string)');
+const listener1 = (value: string) => console.log('listener1:', value);
+const listener2 = (value: string) => console.log('listener2:', value);
+const listener3 = (value: string) => console.log('listener3:', value);
+const listener4 = (value: string) => console.log('listener4:', value);
+const listener5 = (value: string) => console.log('listener5:', value);
+
+const subscriber1 = observable$.subscribe(listener1);
+const subscriber2 = observable$.subscribe(listener2);
+const subscriber3 = observable$.subscribe(listener3);
+const subscriber4 = observable$.subscribe(listener4);
+const subscriber5 = observable$.subscribe(listener5);
+
+observable$.next('SOME DATA');
+// Default emission behavior with default order = 0 for all subscribers
+// Print to console - listener1: SOME DATA
+// Print to console - listener2: SOME DATA
+// Print to console - listener3: SOME DATA
+// Print to console - listener4: SOME DATA
+// Print to console - listener5: SOME DATA
+
+// We can change the default order of emission
+subscriber1.order = 50;
+subscriber2.order = 40;
+subscriber3.order = 30;
+subscriber4.order = 20;
+subscriber5.order = 10;
+observable$.next('SOME DATA');
+// Print to console - listener5: SOME DATA
+// Print to console - listener4: SOME DATA
+// Print to console - listener3: SOME DATA
+// Print to console - listener2: SOME DATA
+// Print to console - listener1: SOME DATA
+
+//Thus, we can control the order in which the data is received by the listeners.
 ```

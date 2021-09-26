@@ -31,7 +31,9 @@
   },
   "keywords": [
     "Observable",
+    "Ordered observable",
     "Light observable",
+    "Collector",
     "Type script",
     "TypeScript",
     "TS",
