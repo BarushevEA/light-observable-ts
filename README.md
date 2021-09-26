@@ -42,7 +42,7 @@ const subscriber2 = observable$.subscribe(listener2);
 console.log(observable$.getValue());
 // Print to console - Some typed data (not only string)
 
-observable$.next('Next typed data')
+observable$.next('Next typed data');
 // Print to console - listener1: Next typed data
 // Print to console - listener2: Next typed data
 
@@ -75,11 +75,11 @@ const subscriber2 = observable$.subscribe(listener2);
 console.log(observable$.getValue());
 // Print to console - Some typed data (not only string)
 
-observable$.next('Next1 typed data')
+observable$.next('Next1 typed data');
 // Print to console - listener1: Next1 typed data
 // Print to console - listener2: Next1 typed data
 
-observable$.next('Next2 typed data')
+observable$.next('Next2 typed data');
 // Print to console - listener2: Next2 typed data
 
 // subscriber1 is automatically unsubscribed after first usage
@@ -104,16 +104,16 @@ const subscriber2 = observable$.subscribe(listener2);
 console.log(observable$.getValue());
 // Print to console - Some typed data (not only string)
 
-observable$.next('Next1 typed data')
+observable$.next('Next1 typed data');
 // Print to console - listener1: Next1 typed data
 // Print to console - listener2: Next1 typed data
 
-observable$.next('Next2 typed data')
+observable$.next('Next2 typed data');
 // Print to console - listener1: Next2 typed data
 // Print to console - listener2: Next2 typed data
 
 isPositive = false;
-observable$.next('Next3 typed data')
+observable$.next('Next3 typed data');
 // Print to console - listener2: Next3 typed data
 
 // subscriber1 is automatically unsubscribed when negative condition
@@ -137,16 +137,16 @@ const subscriber2 = observable$.subscribe(listener2);
 console.log(observable$.getValue());
 // Print to console - Some typed data (not only string)
 
-observable$.next('Next1 typed data')
+observable$.next('Next1 typed data');
 // Print to console - listener1: Next1 typed data
 // Print to console - listener2: Next1 typed data
 
-observable$.next('Next2 typed data')
+observable$.next('Next2 typed data');
 // Print to console - listener1: Next2 typed data
 // Print to console - listener2: Next2 typed data
 
 isPositive = true;
-observable$.next('Next3 typed data')
+observable$.next('Next3 typed data');
 // Print to console - listener2: Next3 typed data
 
 // subscriber1 is automatically unsubscribed when positive condition
@@ -228,4 +228,48 @@ observable$.next('SOME DATA');
 // Print to console - listener1: SOME DATA
 
 //Thus, we can control the order in which the data is received by the listeners.
+```
+
+## Collector
+You can also use the subscriber collector for convenience.
+
+```ts
+import {Observable} from "evg_observable/src/outLib/Observables/Observable";
+import {Collector} from "evg_observable/src/outLib/Observables/Collector";
+
+const collector = new Collector();
+const observable$ = new Observable('Some typed data (not only string)');
+const listener1 = (value: string) => console.log('listener1:', value);
+const listener2 = (value: string) => console.log('listener2:', value);
+const listener3 = (value: string) => console.log('listener3:', value);
+const listener4 = (value: string) => console.log('listener4:', value);
+const listener5 = (value: string) => console.log('listener5:', value);
+
+collector.collect(
+    observable$.subscribe(listener1),
+    observable$.subscribe(listener2),
+    observable$.subscribe(listener3),
+    observable$.subscribe(listener4),
+    observable$.subscribe(listener5)
+);
+
+observable$.next('SOME DATA');
+// Default emission behavior with default order = 0 for all subscribers
+// Print to console - listener1: SOME DATA
+// Print to console - listener2: SOME DATA
+// Print to console - listener3: SOME DATA
+// Print to console - listener4: SOME DATA
+// Print to console - listener5: SOME DATA
+
+// ... some code ...
+// ... some code ...
+// ... some code ...
+
+collector.destroy();
+observable$.next('SOME DATA');
+// NOTHING Print to console 
+
+// All subscribers automatically unsubscribes
+// Also, if there is a need to use the collector further, instead of destroying it, you can use collector.unsubscribeAll().
+// To unsubscribe one subscriber, you can use: collector.unsubscribe(subscriber).
 ```
