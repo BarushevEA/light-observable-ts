@@ -8,7 +8,7 @@ import {
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
-import {deleteFromArray} from "../FunctionLibs";
+import {deleteFromArray} from "./FunctionLibs";
 
 export class SubscribeObject<T> implements ISubscribeObject<T> {
     protected observable: IObserver<T>;

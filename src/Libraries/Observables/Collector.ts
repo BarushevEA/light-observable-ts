@@ -1,5 +1,5 @@
 import {ICollector, ISubscriptionLike} from "./Types";
-import {deleteFromArray} from "../FunctionLibs";
+import {deleteFromArray} from "./FunctionLibs";
 
 export class Collector implements ICollector {
     private list: ISubscriptionLike<any>[] = [];
