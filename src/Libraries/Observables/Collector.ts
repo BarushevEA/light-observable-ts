@@ -2,7 +2,7 @@ import {ICollector, ISubscriptionLike} from "./Types";
 import {deleteFromArray} from "./FunctionLibs";
 
 export class Collector implements ICollector {
-    private list: ISubscriptionLike<any>[] = [];
+    protected list: ISubscriptionLike<any>[] = [];
     private _isDestroyed = false;
 
     collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void {
