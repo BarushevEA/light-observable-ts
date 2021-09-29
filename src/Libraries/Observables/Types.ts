@@ -47,7 +47,8 @@ export type ISubscribeObject<T> =
     IPause &
     IOrder &
     ISend<T> &
-    ISetup<T>;
+    ISetup<T> &
+    IPromise<T>;
 export type ISubscribeCounter = {
     size(): number;
 };
@@ -142,3 +143,9 @@ export type IGroupOptions = {
     name: string;
     subscribers?: IOrderedSubscriptionLike<any>[];
 };
+export type IPromise<T> = {
+    likePromise(): ISetup<T>;
+}
+export type IOrderedPromise<T> = {
+    likePromise(): IOrderedSetup<T>;
+}
