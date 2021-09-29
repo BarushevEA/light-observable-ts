@@ -31,7 +31,7 @@ recommended value of the "strict" field in the configuration
 ## Observable simple usage
 
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observables/Observable";
+import {Observable} from "evg_observable/src/outLib/Observable";
 
 const observable$ = new Observable('Some typed data (not only string)');
 const listener1 = (value: string) => console.log('listener1:',value);
@@ -60,7 +60,7 @@ observable$.destroy(); // all subscribers have automatically unsubscribed
 Observable will send a value to the subscriber only once, and the subscriber will unsubscribe.
 
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observables/Observable";
+import {Observable} from "evg_observable/src/outLib/Observable";
 
 const observable$ = new Observable('Some typed data (not only string)');
 const listener1 = (value: string) => console.log('listener1:',value);
@@ -88,7 +88,7 @@ observable$.next('Next2 typed data');
 
 Observable will send a value to the subscriber as long as the condition is positive, on the first negative result, the subscriber will unsubscribe.
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observables/Observable";
+import {Observable} from "evg_observable/src/outLib/Observable";
 
 const observable$ = new Observable('Some typed data (not only string)');
 const listener1 = (value: string) => console.log('listener1:', value);
@@ -121,7 +121,7 @@ observable$.next('Next3 typed data');
 ### pipe().unsubscribeByPositive(condition)
 Observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe.
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observables/Observable";
+import {Observable} from "evg_observable/src/outLib/Observable";
 
 const observable$ = new Observable('Some typed data (not only string)');
 const listener1 = (value: string) => console.log('listener1:', value);
@@ -160,7 +160,7 @@ Observable will send a value to the listener only if condition returns "true". T
 ### pipe().emitMatch(condition)
 Observable will send a value to the subscriber only if the return value of the condition matches the data being sent. In this case, there is no automatic unsubscription.
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observables/Observable";
+import {Observable} from "evg_observable/src/outLib/Observable";
 
 const observable$ = new Observable('Some typed data (not only string)');
 const listener1 = (value: string) => console.log('listener1:', value);
@@ -197,7 +197,7 @@ observable$.next(TARGET_DATA);
 ## Ordered observable
 Ordered observable - differs from Observable in that it allows you to emit messages in a given order. In general, they are the same.
 ```ts
-import {OrderedObservable} from "evg_observable/src/outLib/Observables/OrderedObservable";
+import {OrderedObservable} from "evg_observable/src/outLib/OrderedObservable";
 
 const observable$ = new OrderedObservable('Some typed data (not only string)');
 const listener1 = (value: string) => console.log('listener1:', value);
@@ -240,8 +240,8 @@ observable$.next('SOME DATA');
 You can also use the subscriber collector for convenience.
 
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observables/Observable";
-import {Collector} from "evg_observable/src/outLib/Observables/Collector";
+import {Observable} from "evg_observable/src/outLib/Observable";
+import {Collector} from "evg_observable/src/outLib/Collector";
 
 const collector = new Collector();
 const observable$ = new Observable('Some typed data (not only string)');
