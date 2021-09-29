@@ -151,6 +151,12 @@ observable$.next('Next3 typed data');
 
 // subscriber1 is automatically unsubscribed when positive condition
 ```
+### pipe().emitByNegative(condition)
+Observable will send a value to the listener only if condition returns "false". There is no automatic unsubscription.
+
+### pipe().emitByPositive(condition)
+Observable will send a value to the listener only if condition returns "true". There is no automatic unsubscription.
+
 ### pipe().emitMatch(condition)
 Observable will send a value to the subscriber only if the return value of the condition matches the data being sent. In this case, there is no automatic unsubscription.
 ```ts

@@ -145,26 +145,31 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
     }
 
     unsubscribeByNegative(condition: ICallback<any>): ISubscribe<T> {
+        if (typeof condition !== "function") condition = () => true;
         this.unsubscribeByNegativeCondition = condition;
         return this
     }
 
     unsubscribeByPositive(condition: ICallback<any>): ISubscribe<T> {
+        if (typeof condition !== "function") condition = () => false;
         this.unsubscribeByPositiveCondition = condition;
         return this;
     }
 
     emitByNegative(condition: ICallback<any>): ISubscribe<T> {
+        if (typeof condition !== "function") condition = () => false;
         this.emitByNegativeCondition = condition;
         return this;
     }
 
     emitByPositive(condition: ICallback<any>): ISubscribe<T> {
+        if (typeof condition !== "function") condition = () => true;
         this.emitByPositiveCondition = condition;
         return this;
     }
 
     emitMatch(condition: ICallback<any>): ISubscribe<T> {
+        if (typeof condition !== "function") condition = () => true;
         this.emitMatchCondition = condition;
         return this;
     }
