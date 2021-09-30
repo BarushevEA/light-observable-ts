@@ -336,6 +336,12 @@ observable$.next('SOME DATA');
 
 _*condition_ - this is a function that should return a value that will affect the behavior of the subscriber
 
+### Observable subscriber
+
+| method | will return | description |
+| :--- | :--- | :--- |
+| `.unsubscribe():` | void | unsubscribe listener from observable |
+
 ## License
 
 MIT
