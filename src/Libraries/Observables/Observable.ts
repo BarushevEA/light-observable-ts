@@ -41,7 +41,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
         }
     }
 
-    send(value: T): void {
+    private send(value: T): void {
         if (this.isPipePromise){
             this.handlePromiseExecution(value)
                 .catch(err=> console.log(`ERROR: isPipePromise = "true" SubscribeObject.send(${value})` , err));

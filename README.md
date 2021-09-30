@@ -322,6 +322,20 @@ observable$.next('SOME DATA');
 | `.isDestroyed` | boolean | read-only field that shows the kill state of the observer |
 | `.pipe()` | pipe condition object | returns an object with which you can customize the subscriber's behavior |
 
+### Observable`.pipe()`
+
+| method | will return | description |
+| :--- | :--- | :--- |
+| `.setOnce()` | pipe subscribe object | observable will send a value to the subscriber only once, and the subscriber will unsubscribe. |
+| `.unsubscribeByNegative(*condition)` | pipe subscribe object | observable will send a value to the subscriber as long as the condition is positive, on the first negative result, the subscriber will unsubscribe |
+| `.unsubscribeByPositive(*condition)` | pipe subscribe object | observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe |
+| `.emitByNegative(*condition)` | pipe subscribe object | observable will send a value to the listener only if condition returns "false", there is no automatic unsubscription |
+| `.emitByPositive(*condition)` | pipe subscribe object | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription |
+| `.emitMatch(*condition)` | pipe subscribe object | observable will send a value to the subscriber only if the return value of the condition matches the data being sent, in this case, there is no automatic unsubscription |
+| `.subscribe(listener)` | subscriber | subscribe listener to observable |
+
+_*condition_ - this is a function that should return a value that will affect the behavior of the subscriber
+
 ## License
 
 MIT
