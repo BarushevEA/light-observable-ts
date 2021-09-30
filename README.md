@@ -52,6 +52,8 @@ subscriber2.unsubscribe();
 
 // if a observable$ is not needed
 observable$.destroy(); // all subscribers have automatically unsubscribed
+
+// also if observable$ needs to be used further, but subscribers are not needed, you can use the observable$.unsubscribeAll() method
 ```
 
 ## Observable pipe usage
