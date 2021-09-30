@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es5",
+    "target": "ES2017",
     "lib": [ "es2015" , "dom"],
     "outDir": "./src/outLib/",
     "sourceMap": false
