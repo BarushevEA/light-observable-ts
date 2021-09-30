@@ -340,7 +340,19 @@ _*condition_ - this is a function that should return a value that will affect th
 
 | method | will return | description |
 | :--- | :--- | :--- |
-| `.unsubscribe():` | void | unsubscribe listener from observable |
+| `.unsubscribe()` | void | unsubscribe listener from observable |
+
+### ordered observable
+
+Has the same methods as Observable.
+
+### ordered subscriber
+
+Has the same methods as subscriber. But there is an "order" field.
+
+| field | type | description |
+| :--- | :--- | :--- |
+| `.order` | number | Determines the order in which the subscriber is called, the subscriber with the lowest ordinal number is called first, the subscriber with the highest ordinal number is called last. |
 
 ## License
 
