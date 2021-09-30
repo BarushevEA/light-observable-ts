@@ -342,17 +342,26 @@ _*condition_ - this is a function that should return a value that will affect th
 | :--- | :--- | :--- |
 | `.unsubscribe()` | void | unsubscribe listener from observable |
 
-### ordered observable
+### Ordered observable
 
 Has the same methods as Observable.
 
-### ordered subscriber
+### Ordered observable subscriber
 
 Has the same methods as subscriber. But there is an "order" field.
 
 | field | type | description |
 | :--- | :--- | :--- |
 | `.order` | number | Determines the order in which the subscriber is called, the subscriber with the lowest ordinal number is called first, the subscriber with the highest ordinal number is called last. |
+
+### Collector
+
+| method | will return | description |
+| :--- | :--- | :--- |
+| `.collect( ...subscribers)` | void | collects subscribers |
+| `.unsubscribe(subscriber)` | void | unsubscribe a subscriber from it's observable |
+| `.unsubscribeAll()` | void | unsubscribe all subscribers from their observables |
+| `.destroy()` | void | unsubscribe all subscribers and destroy collector|
 
 ## License
 
