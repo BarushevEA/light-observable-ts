@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "nyc ./node_modules/.bin/_mocha 'test/**/*.test.ts'",
-    "build": "tsc --declaration"
+    "remove": "rm -rf ./src/Libraries; rm -rf ./test; rm .mocharc.json; rm .nyrc.json; rm register.js; rm tsconfig.json",
+    "build": "tsc --declaration; npm run remove"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,8 @@
     "ts-node": "^10.2.1"
   },
   "keywords": [
+    "EVG Observable",
+    "evg_observable",
     "Observable",
     "Ordered observable",
     "Light observable",
