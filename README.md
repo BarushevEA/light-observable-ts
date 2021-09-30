@@ -18,11 +18,14 @@ EVG Observable - is a small library for serving asynchronous events.
     $ npm install evg_observable
 
 # Usage
+
 ### tsconfig.json
+
 recommended value of the "strict" field in the configuration
+
 ```json
 {
-  "compilerOptions":{
+  "compilerOptions": {
     "strict": false
   }
 }
@@ -34,8 +37,8 @@ recommended value of the "strict" field in the configuration
 import {Observable} from "evg_observable/src/outLib/Observable";
 
 const observable$ = new Observable('Some typed data (not only string)');
-const listener1 = (value: string) => console.log('listener1:',value);
-const listener2 = (value: string) => console.log('listener2:',value);
+const listener1 = (value: string) => console.log('listener1:', value);
+const listener2 = (value: string) => console.log('listener2:', value);
 const subscriber1 = observable$.subscribe(listener1);
 const subscriber2 = observable$.subscribe(listener2);
 
@@ -57,6 +60,7 @@ observable$.destroy(); // all subscribers have automatically unsubscribed
 ```
 
 ## Observable pipe usage
+
 ### pipe().setOnce()
 
 Observable will send a value to the subscriber only once, and the subscriber will unsubscribe.
@@ -65,8 +69,8 @@ Observable will send a value to the subscriber only once, and the subscriber wil
 import {Observable} from "evg_observable/src/outLib/Observable";
 
 const observable$ = new Observable('Some typed data (not only string)');
-const listener1 = (value: string) => console.log('listener1:',value);
-const listener2 = (value: string) => console.log('listener2:',value);
+const listener1 = (value: string) => console.log('listener1:', value);
+const listener2 = (value: string) => console.log('listener2:', value);
 
 const subscriber1 = observable$
     .pipe()
@@ -86,9 +90,12 @@ observable$.next('Next2 typed data');
 
 // subscriber1 is automatically unsubscribed after first usage
 ```
+
 ### pipe().unsubscribeByNegative(condition)
 
-Observable will send a value to the subscriber as long as the condition is positive, on the first negative result, the subscriber will unsubscribe.
+Observable will send a value to the subscriber as long as the condition is positive, on the first negative result, the
+subscriber will unsubscribe.
+
 ```ts
 import {Observable} from "evg_observable/src/outLib/Observable";
 
@@ -120,8 +127,12 @@ observable$.next('Next3 typed data');
 
 // subscriber1 is automatically unsubscribed when negative condition
 ```
+
 ### pipe().unsubscribeByPositive(condition)
-Observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe.
+
+Observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the
+subscriber will unsubscribe.
+
 ```ts
 import {Observable} from "evg_observable/src/outLib/Observable";
 
@@ -153,14 +164,20 @@ observable$.next('Next3 typed data');
 
 // subscriber1 is automatically unsubscribed when positive condition
 ```
+
 ### pipe().emitByNegative(condition)
+
 Observable will send a value to the listener only if condition returns "false". There is no automatic unsubscription.
 
 ### pipe().emitByPositive(condition)
+
 Observable will send a value to the listener only if condition returns "true". There is no automatic unsubscription.
 
 ### pipe().emitMatch(condition)
-Observable will send a value to the subscriber only if the return value of the condition matches the data being sent. In this case, there is no automatic unsubscription.
+
+Observable will send a value to the subscriber only if the return value of the condition matches the data being sent. In
+this case, there is no automatic unsubscription.
+
 ```ts
 import {Observable} from "evg_observable/src/outLib/Observable";
 
@@ -197,7 +214,10 @@ observable$.next(TARGET_DATA);
 ```
 
 ## Ordered observable
-Ordered observable - differs from Observable in that it allows you to emit messages in a given order. In general, they are the same.
+
+Ordered observable - differs from Observable in that it allows you to emit messages in a given order. In general, they
+are the same.
+
 ```ts
 import {OrderedObservable} from "evg_observable/src/outLib/OrderedObservable";
 
@@ -239,6 +259,7 @@ observable$.next('SOME DATA');
 ```
 
 ## Collector
+
 You can also use the subscriber collector for convenience.
 
 ```ts
@@ -283,4 +304,5 @@ observable$.next('SOME DATA');
 ```
 
 ## License
+
 MIT
