@@ -759,4 +759,19 @@ class ObservableUnitTest {
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
     }
+
+    @test 'error listener'() {
+        const dataArr: string[] = [];
+        const listener1 = (value: string) => {
+            throw new Error('LISTENER ERROR');
+        };
+        const listener2 = (value: string) => {
+            dataArr.push(value);
+        };
+        this.OBSERVABLE$.subscribe(listener1);
+        this.OBSERVABLE$.subscribe(listener2);
+        this.OBSERVABLE$.next('1');
+        expect(2).to.be.equal(this.OBSERVABLE$.size());
+        expect(['1']).to.be.eql(dataArr);
+    }
 }
