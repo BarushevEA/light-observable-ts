@@ -211,6 +211,19 @@ class ObservableUnitTest {
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
+    @test 'Try use .unsubscribeByNegative(condition) when "condition" is not function'() {
+        const str = '0123456789';
+        const dataArr: string[] = [];
+        const listener = (value: string) => dataArr.push(value);
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .unsubscribeByNegative(<any>0)
+            .subscribe(listener);
+        this.OBSERVABLE$.next(str);
+        expect([]).to.be.eql(dataArr);
+        expect(0).to.be.equal(this.OBSERVABLE$.size());
+    }
+
     @test 'Add one by pipe and "unsubscribeByPositive true"'() {
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(str);
@@ -257,6 +270,19 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
+    }
+
+    @test 'Try use .unsubscribeByPositive(condition) when "condition" is not function'() {
+        const str = '0123456789';
+        const dataArr: string[] = [];
+        const listener = (value: string) => dataArr.push(value);
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .unsubscribeByPositive(<any>0)
+            .subscribe(listener);
+        this.OBSERVABLE$.next(str);
+        expect([]).to.be.eql(dataArr);
+        expect(0).to.be.equal(this.OBSERVABLE$.size());
     }
 
     @test 'Add one by pipe and "emitByNegative true"'() {
@@ -331,6 +357,19 @@ class ObservableUnitTest {
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
     }
 
+    @test 'Try use .emitByNegative(condition) when "condition" is not function'() {
+        const str = '0123456789';
+        const dataArr: string[] = [];
+        const listener = (value: string) => dataArr.push(value);
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .emitByNegative(<any>0)
+            .subscribe(listener);
+        this.OBSERVABLE$.next(str);
+        expect([]).to.be.eql(dataArr);
+        expect(1).to.be.equal(this.OBSERVABLE$.size());
+    }
+
     @test 'Add one by pipe and "emitByPositive true"'() {
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(str);
@@ -401,6 +440,19 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+    }
+
+    @test 'Try use .emitByPositive(condition) when "condition" is not function'() {
+        const str = '0123456789';
+        const dataArr: string[] = [];
+        const listener = (value: string) => dataArr.push(value);
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .emitByPositive(<any>0)
+            .subscribe(listener);
+        this.OBSERVABLE$.next(str);
+        expect([]).to.be.eql(dataArr);
+        expect(1).to.be.equal(this.OBSERVABLE$.size());
     }
 
     @test 'Add one by pipe and "emitMatch true"'() {
@@ -490,6 +542,19 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+    }
+
+    @test 'Try use .emitMatch(condition) when "condition" is not function'() {
+        const str = '0123456789';
+        const dataArr: string[] = [];
+        const listener = (value: string) => dataArr.push(value);
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .emitMatch(<any>0)
+            .subscribe(listener);
+        this.OBSERVABLE$.next(str);
+        expect([]).to.be.eql(dataArr);
+        expect(1).to.be.equal(this.OBSERVABLE$.size());
     }
 
     @test 'pause / resume'() {

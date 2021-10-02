@@ -20,7 +20,6 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
     private emitByNegativeCondition: ICallback<any> = null;
     private emitByPositiveCondition: ICallback<any> = null;
     private emitMatchCondition: ICallback<any> = null;
-    private isPipePromise = false;
     protected _order = 0;
 
     constructor(observable?: IObserver<T>, listener?: IListener<T>) {
@@ -42,61 +41,6 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
     }
 
     send(value: T): void {
-        if (this.isPipePromise){
-            this.handlePromiseExecution(value)
-                .catch(err=> console.log(`ERROR: isPipePromise = "true" SubscribeObject.send(${value})` , err));
-        }
-        this.handleNoPromiseExecution(value);
-    }
-
-    private async handlePromiseExecution(value: T): Promise<void> {
-        try {
-            switch (true) {
-                case !this.observable:
-                case !this.listener:
-                    this.unsubscribe();
-                    return;
-                case this.isListenPaused:
-                    return;
-                case this.once.isOnce:
-                    this.once.isFinished = true;
-                    this.listener(value);
-                    this.unsubscribe();
-                    break;
-                case !!this.unsubscribeByNegativeCondition:
-                    if (!await this.unsubscribeByNegativeCondition()) {
-                        this.unsubscribeByNegativeCondition = null;
-                        this.unsubscribe();
-                        return;
-                    }
-                    this.listener(value);
-                    break;
-                case !!this.unsubscribeByPositiveCondition:
-                    if (await (this.unsubscribeByPositiveCondition())) {
-                        this.unsubscribeByPositiveCondition = null;
-                        this.unsubscribe();
-                        return;
-                    }
-                    this.listener(value);
-                    break;
-                case !!this.emitByNegativeCondition:
-                    !await this.emitByNegativeCondition() && this.listener(value);
-                    break;
-                case !!this.emitByPositiveCondition:
-                    await this.emitByPositiveCondition() && this.listener(value);
-                    break;
-                case !!this.emitMatchCondition:
-                    (await this.emitMatchCondition() === value) && this.listener(value);
-                    break;
-                default:
-                    this.listener(value);
-            }
-        } catch (err) {
-            console.log(`ERROR: handlePromiseExecution, SubscribeObject.send(${value})`, err);
-        }
-    }
-
-    private handleNoPromiseExecution(value: T): void {
         switch (true) {
             case !this.observable:
             case !this.listener:
@@ -145,31 +89,31 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
     }
 
     unsubscribeByNegative(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => true;
+        if (typeof condition !== "function") condition = () => false;
         this.unsubscribeByNegativeCondition = condition;
         return this
     }
 
     unsubscribeByPositive(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => false;
+        if (typeof condition !== "function") condition = () => true;
         this.unsubscribeByPositiveCondition = condition;
         return this;
     }
 
     emitByNegative(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => false;
+        if (typeof condition !== "function") condition = () => true;
         this.emitByNegativeCondition = condition;
         return this;
     }
 
     emitByPositive(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => true;
+        if (typeof condition !== "function") condition = () => false;
         this.emitByPositiveCondition = condition;
         return this;
     }
 
     emitMatch(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => true;
+        if (typeof condition !== "function") condition = () => `ERROR CONDITION TYPE ${typeof condition},  CONTROL STATE ${!this.observable.getValue()}`;
         this.emitMatchCondition = condition;
         return this;
     }
@@ -188,11 +132,6 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
 
     set order(value: number) {
         this._order = value;
-    }
-
-    likePromise(): ISetup<T> {
-        this.isPipePromise = true;
-        return this;
     }
 }
 
