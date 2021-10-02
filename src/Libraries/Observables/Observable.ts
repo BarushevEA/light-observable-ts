@@ -50,7 +50,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
                 return;
             case this.once.isOnce:
                 this.once.isFinished = true;
-                this.listener(value);
+                this.sendValueToListener(value);
                 this.unsubscribe();
                 break;
             case !!this.unsubscribeByNegativeCondition:
@@ -59,7 +59,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
                     this.unsubscribe();
                     return;
                 }
-                this.listener(value);
+                this.sendValueToListener(value);
                 break;
             case !!this.unsubscribeByPositiveCondition:
                 if (this.unsubscribeByPositiveCondition()) {
@@ -67,7 +67,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
                     this.unsubscribe();
                     return;
                 }
-                this.listener(value);
+                this.sendValueToListener(value);
                 break;
             case !!this.emitByNegativeCondition:
                 !this.emitByNegativeCondition() && this.listener(value);
@@ -79,8 +79,23 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
                 (this.emitMatchCondition() === value) && this.listener(value);
                 break;
             default:
-                this.listener(value);
+                this.sendValueToListener(value);
         }
+    }
+
+    private sendValueToListener(value: T): void {
+        const asyncSend = (): Promise<boolean> => {
+            const listener = this.listener;
+            return new Promise<boolean>((resolve => {
+                listener((value));
+                resolve(true)
+            }))
+        }
+
+        asyncSend()
+            .catch(err => {
+                console.log('(Unit of SubscribeObject).send(value: T) call .sendValueToListener(value: T) ERROR:', err);
+            });
     }
 
     setOnce(): ISubscribe<T> {
