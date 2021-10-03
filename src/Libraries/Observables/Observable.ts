@@ -41,53 +41,53 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
     }
 
     send(value: T): void {
-        switch (true) {
-            case !this.observable:
-            case !this.listener:
-                this.unsubscribe();
-                return;
-            case this.isListenPaused:
-                return;
-            case this.once.isOnce:
-                this.once.isFinished = true;
-                this.sendValueToListener(value);
-                this.unsubscribe();
-                break;
-            case !!this.unsubscribeByNegativeCondition:
-                if (!this.unsubscribeByNegativeCondition()) {
-                    this.unsubscribeByNegativeCondition = null;
-                    this.unsubscribe();
-                    return;
-                }
-                this.sendValueToListener(value);
-                break;
-            case !!this.unsubscribeByPositiveCondition:
-                if (this.unsubscribeByPositiveCondition()) {
-                    this.unsubscribeByPositiveCondition = null;
-                    this.unsubscribe();
-                    return;
-                }
-                this.sendValueToListener(value);
-                break;
-            case !!this.emitByNegativeCondition:
-                !this.emitByNegativeCondition() && this.listener(value);
-                break;
-            case !!this.emitByPositiveCondition:
-                this.emitByPositiveCondition() && this.listener(value);
-                break;
-            case !!this.emitMatchCondition:
-                (this.emitMatchCondition() === value) && this.listener(value);
-                break;
-            default:
-                this.sendValueToListener(value);
-        }
+        this.sendValueToListener(value);
     }
 
     private sendValueToListener(value: T): void {
         const asyncSend = (): Promise<boolean> => {
             const listener = this.listener;
             return new Promise<boolean>((resolve => {
-                listener((value));
+                switch (true) {
+                    case !this.observable:
+                    case !this.listener:
+                        this.unsubscribe();
+                        return;
+                    case this.isListenPaused:
+                        return;
+                    case this.once.isOnce:
+                        this.once.isFinished = true;
+                        listener((value));
+                        this.unsubscribe();
+                        break;
+                    case !!this.unsubscribeByNegativeCondition:
+                        if (!this.unsubscribeByNegativeCondition()) {
+                            this.unsubscribeByNegativeCondition = null;
+                            this.unsubscribe();
+                            return;
+                        }
+                        listener((value));
+                        break;
+                    case !!this.unsubscribeByPositiveCondition:
+                        if (this.unsubscribeByPositiveCondition()) {
+                            this.unsubscribeByPositiveCondition = null;
+                            this.unsubscribe();
+                            return;
+                        }
+                        listener((value));
+                        break;
+                    case !!this.emitByNegativeCondition:
+                        !this.emitByNegativeCondition() && this.listener(value);
+                        break;
+                    case !!this.emitByPositiveCondition:
+                        this.emitByPositiveCondition() && this.listener(value);
+                        break;
+                    case !!this.emitMatchCondition:
+                        (this.emitMatchCondition() === value) && this.listener(value);
+                        break;
+                    default:
+                        listener((value));
+                }
                 resolve(true)
             }))
         }
