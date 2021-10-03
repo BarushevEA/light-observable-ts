@@ -774,4 +774,20 @@ class ObservableUnitTest {
         expect(2).to.be.equal(this.OBSERVABLE$.size());
         expect(['1']).to.be.eql(dataArr);
     }
+
+    @test 'error condition'() {
+        const dataArr: string[] = [];
+        const listener1 = (value: string) => dataArr.push(value);
+        const listener2 = (value: string) => dataArr.push(value);
+        this.OBSERVABLE$
+            .pipe()
+            .emitByPositive(() => {
+                throw new Error('CONDITION ERROR');
+            })
+            .subscribe(listener1);
+        this.OBSERVABLE$.subscribe(listener2);
+        this.OBSERVABLE$.next('1');
+        expect(2).to.be.equal(this.OBSERVABLE$.size());
+        expect(['1']).to.be.eql(dataArr);
+    }
 }
