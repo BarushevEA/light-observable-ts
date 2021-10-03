@@ -50,7 +50,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
             return new Promise<boolean>((resolve => {
                 switch (true) {
                     case !this.observable:
-                    case !this.listener:
+                    case !listener:
                         this.unsubscribe();
                         return;
                     case this.isListenPaused:
@@ -77,13 +77,13 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
                         listener((value));
                         break;
                     case !!this.emitByNegativeCondition:
-                        !this.emitByNegativeCondition() && this.listener(value);
+                        !this.emitByNegativeCondition() && listener(value);
                         break;
                     case !!this.emitByPositiveCondition:
-                        this.emitByPositiveCondition() && this.listener(value);
+                        this.emitByPositiveCondition() && listener(value);
                         break;
                     case !!this.emitMatchCondition:
-                        (this.emitMatchCondition() === value) && this.listener(value);
+                        (this.emitMatchCondition() === value) && listener(value);
                         break;
                     default:
                         listener((value));
