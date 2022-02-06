@@ -88,7 +88,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
                     default:
                         listener((value));
                 }
-                resolve(true)
+                resolve(true);
             }))
         }
 
