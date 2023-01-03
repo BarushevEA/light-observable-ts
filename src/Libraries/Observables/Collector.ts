@@ -5,21 +5,21 @@ export class Collector implements ICollector {
     protected list: ISubscriptionLike<any>[] = [];
     private _isDestroyed = false;
 
-    collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void {
-        if(this._isDestroyed) return null;
+    collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void | null {
+        if (this._isDestroyed) return null;
         for (let i = 0; i < subscriptionLikeList.length; i++) {
             this.list.push(subscriptionLikeList[i]);
         }
     }
 
-    unsubscribe(subscriptionLike: ISubscriptionLike<any>): void {
-        if(this._isDestroyed) return null;
+    unsubscribe(subscriptionLike: ISubscriptionLike<any> | undefined): void | null {
+        if (this._isDestroyed) return null;
         subscriptionLike && subscriptionLike.unsubscribe();
         deleteFromArray(this.list, subscriptionLike);
     }
 
-    unsubscribeAll(): void {
-        if(this._isDestroyed) return null;
+    unsubscribeAll(): void | null {
+        if (this._isDestroyed) return null;
         const length = this.list.length;
         for (let i = 0; i < length; i++) {
             this.unsubscribe(this.list.pop());
@@ -27,7 +27,7 @@ export class Collector implements ICollector {
     }
 
     size(): number {
-        if(this._isDestroyed) return 0;
+        if (this._isDestroyed) return 0;
         return this.list.length;
     }
 

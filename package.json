@@ -1,6 +1,6 @@
 {
   "name": "evg_observable",
-  "version": "1.1.24",
+  "version": "1.1.25",
   "description": "Light observable",
   "main": "index.js",
   "directories": {
@@ -22,13 +22,13 @@
   },
   "homepage": "https://github.com/BarushevEA/light-observable-ts#readme",
   "devDependencies": {
-    "typescript": "^4.5.5",
-    "@testdeck/mocha": "^0.2.0",
-    "@types/chai": "^4.3.0",
-    "chai": "^4.3.6",
-    "mocha": "^9.2.0",
+    "typescript": "^4.9.4",
+    "@testdeck/mocha": "^0.3.3",
+    "@types/chai": "^4.3.4",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
     "nyc": "^15.1.0",
-    "ts-node": "^10.4.0"
+    "ts-node": "^10.9.1"
   },
   "keywords": [
     "EVG Observable",

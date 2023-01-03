@@ -11,15 +11,15 @@ import {
 import {deleteFromArray} from "./FunctionLibs";
 
 export class SubscribeObject<T> implements ISubscribeObject<T> {
-    protected observable: IObserver<T>;
-    protected listener: IListener<T>;
+    protected observable: IObserver<T> | undefined;
+    protected listener: IListener<T> | undefined;
     private isListenPaused = false;
     private once: IOnceMarker = {isOnce: false, isFinished: false};
-    private unsubscribeByNegativeCondition: ICallback<any> = null;
-    private unsubscribeByPositiveCondition: ICallback<any> = null;
-    private emitByNegativeCondition: ICallback<any> = null;
-    private emitByPositiveCondition: ICallback<any> = null;
-    private emitMatchCondition: ICallback<any> = null;
+    private unsubscribeByNegativeCondition: ICallback<T> = <any>null;
+    private unsubscribeByPositiveCondition: ICallback<T> = <any>null;
+    private emitByNegativeCondition: ICallback<T> = <any>null;
+    private emitByPositiveCondition: ICallback<T> = <any>null;
+    private emitMatchCondition: ICallback<T> = <any>null;
     protected _order = 0;
 
     constructor(observable?: IObserver<T>, listener?: IListener<T>) {
@@ -57,36 +57,36 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
                         return;
                     case this.once.isOnce:
                         this.once.isFinished = true;
-                        listener((value));
+                        listener && listener((value));
                         this.unsubscribe();
                         break;
                     case !!this.unsubscribeByNegativeCondition:
                         if (!this.unsubscribeByNegativeCondition()) {
-                            this.unsubscribeByNegativeCondition = null;
+                            this.unsubscribeByNegativeCondition = <any>null;
                             this.unsubscribe();
                             return;
                         }
-                        listener((value));
+                        listener && listener((value));
                         break;
                     case !!this.unsubscribeByPositiveCondition:
                         if (this.unsubscribeByPositiveCondition()) {
-                            this.unsubscribeByPositiveCondition = null;
+                            this.unsubscribeByPositiveCondition = <any>null;
                             this.unsubscribe();
                             return;
                         }
-                        listener((value));
+                        listener && listener((value));
                         break;
                     case !!this.emitByNegativeCondition:
-                        !this.emitByNegativeCondition() && listener(value);
+                        !this.emitByNegativeCondition() && listener && listener(value);
                         break;
                     case !!this.emitByPositiveCondition:
-                        this.emitByPositiveCondition() && listener(value);
+                        this.emitByPositiveCondition() && listener && listener(value);
                         break;
                     case !!this.emitMatchCondition:
-                        (this.emitMatchCondition() === value) && listener(value);
+                        (this.emitMatchCondition() === value) && listener && listener(value);
                         break;
                     default:
-                        listener((value));
+                        listener && listener((value));
                 }
                 resolve(true);
             }))
@@ -128,7 +128,8 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
     }
 
     emitMatch(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => `ERROR CONDITION TYPE ${typeof condition},  CONTROL STATE ${!this.observable.getValue()}`;
+        if (typeof condition !== "function") condition =
+            () => `ERROR CONDITION TYPE ${typeof condition},  CONTROL STATE ${this.observable && !this.observable.getValue()}`;
         this.emitMatchCondition = condition;
         return this;
     }
@@ -208,11 +209,15 @@ export class Observable<T> implements IObserver<T> {
 
     public unsubscribeAll(): void {
         if (this._isDestroyed) return;
-        const length = this.listeners.length;
-        for (let i = 0; i < length; i++) (this.listeners.pop()).unsubscribe();
+        const listeners = this.listeners;
+        const length = listeners.length;
+        for (let i = 0; i < length; i++) {
+            const subscriber = listeners.pop();
+            subscriber && subscriber.unsubscribe();
+        }
     }
 
-    public getValue(): T {
+    public getValue(): T | undefined {
         if (this._isDestroyed) return undefined;
         return this.value;
     }
@@ -222,14 +227,14 @@ export class Observable<T> implements IObserver<T> {
         return this.listeners.length;
     }
 
-    public subscribe(listener: IListener<T>): ISubscriptionLike<T> {
+    public subscribe(listener: IListener<T>): ISubscriptionLike<T> | undefined {
         if (this._isDestroyed) return undefined;
         const subscribeObject = new SubscribeObject(this, listener);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }
 
-    pipe(): ISetup<T> {
+    pipe(): ISetup<T> | undefined {
         if (this._isDestroyed) return undefined;
         const subscribeObject = new SubscribeObject(this);
         this.listeners.push(subscribeObject);

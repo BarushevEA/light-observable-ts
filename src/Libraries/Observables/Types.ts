@@ -1,6 +1,6 @@
 export type ICallback<T> = (value?: T) => any;
 export type ISubscribe<T> = {
-    subscribe(listener: IListener<T>): ISubscriptionLike<T>;
+    subscribe(listener: IListener<T>): ISubscriptionLike<T> | undefined;
 };
 export type IListener<T> = ICallback<T>;
 export type IDestroy = {
@@ -53,7 +53,7 @@ export type ISubscribeCounter = {
 };
 export type ISubscriber<T> =
     {
-        getValue(): T,
+        getValue(): T | undefined,
         isEnable: boolean
     } &
     ISubscribe<T>;
@@ -64,7 +64,7 @@ export type IObserver<T> =
     ISubscribeCounter &
     IObservablePipe<T> &
     {
-        unSubscribe(ISubscriptionLike): void,
+        unSubscribe(subscriber: ISubscriptionLike<T>): void,
         unsubscribeAll(): void,
         disable(): void,
         enable(): void,
@@ -74,7 +74,7 @@ export type IPause = {
     resume(): void;
 };
 export type IObservablePipe<T> = {
-    pipe(): ISetup<T>
+    pipe(): ISetup<T> | undefined
 };
 export type ISend<T> = {
     send(value: T): void;
