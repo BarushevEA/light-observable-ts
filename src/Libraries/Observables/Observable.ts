@@ -45,7 +45,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
     }
 
     private sendValueToListener(value: T): void {
-        const asyncSend = (): Promise<boolean> => {
+        const asyncSend = (value: T): Promise<boolean> => {
             const listener = this.listener;
             return new Promise<boolean>((resolve => {
                 switch (true) {
@@ -92,7 +92,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T> {
             }))
         }
 
-        asyncSend()
+        asyncSend(value)
             .catch(err => {
                 console.log('(Unit of SubscribeObject).send(value: T) call .sendValueToListener(value: T) ERROR:', err);
             });
