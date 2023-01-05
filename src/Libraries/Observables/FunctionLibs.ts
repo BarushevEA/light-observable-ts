@@ -3,7 +3,7 @@ export function deleteFromArray<T>(arr: T[], component: T): boolean {
     if (index === -1) return false;
     const length = arr.length - 1;
     for (let i = index; i < length;) arr[i++] = arr[i];
-    arr.length--;
+    arr.length = length;
     return true;
 }
 
