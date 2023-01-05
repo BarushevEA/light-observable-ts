@@ -29,55 +29,28 @@ export type ISetObservableValue = {
 export type ISubscriptionLike<T> = {
     unsubscribe(): void;
 };
-export type ISetup<T> =
-    IUnsubscribeByNegative<T> &
-    IUnsubscribeByPositive<T> &
-    IEmitByNegative<T> &
-    IEmitByPositive<T> &
-    IEmitMatchCondition<T> &
-    IOnce<T> &
-    ISubscribe<T>;
-export type IOrderedSetup<T> =
-    IOrderedUnsubscribeByNegative<T> &
-    IOrderedUnsubscribeByPositive<T> &
-    IOrderedEmitByNegative<T> &
-    IOrderedEmitByPositive<T> &
-    IOrderedEmitMatchCondition<T> &
-    IOrderedOnce<T> &
-    IOrderedSubscribe<T>;
-export type ISubscribeObject<T> =
-    ISubscriptionLike<T> &
-    IPause &
-    IOrder &
-    ISend<T> &
-    ISetup<T>;
+export type ISetup<T> = IUnsubscribeByNegative<T> & IUnsubscribeByPositive<T> & IEmitByNegative<T> & IEmitByPositive<T> & IEmitMatchCondition<T> & IOnce<T> & ISubscribe<T>;
+export type IOrderedSetup<T> = IOrderedUnsubscribeByNegative<T> & IOrderedUnsubscribeByPositive<T> & IOrderedEmitByNegative<T> & IOrderedEmitByPositive<T> & IOrderedEmitMatchCondition<T> & IOrderedOnce<T> & IOrderedSubscribe<T>;
+export type ISubscribeObject<T> = ISubscriptionLike<T> & IPause & IOrder & ISend<T> & ISetup<T>;
 export type ISubscribeCounter = {
     size(): number;
 };
-export type ISubscriber<T> =
-    {
-        getValue(): T | undefined,
-        isEnable: boolean
-    } &
-    ISubscribe<T>;
-export type IObserver<T> =
-    ISetObservableValue &
-    ISubscriber<T> &
-    IDestroy &
-    ISubscribeCounter &
-    IObservablePipe<T> &
-    {
-        unSubscribe(subscriber: ISubscriptionLike<T>): void,
-        unsubscribeAll(): void,
-        disable(): void,
-        enable(): void,
-    };
+export type ISubscriber<T> = {
+    getValue(): T | undefined;
+    isEnable: boolean;
+} & ISubscribe<T>;
+export type IObserver<T> = ISetObservableValue & ISubscriber<T> & IDestroy & ISubscribeCounter & IObservablePipe<T> & {
+    unSubscribe(subscriber: ISubscriptionLike<T>): void;
+    unsubscribeAll(): void;
+    disable(): void;
+    enable(): void;
+};
 export type IPause = {
     pause(): void;
     resume(): void;
 };
 export type IObservablePipe<T> = {
-    pipe(): ISetup<T> | undefined
+    pipe(): ISetup<T> | undefined;
 };
 export type ISend<T> = {
     send(value: T): void;
@@ -112,14 +85,11 @@ export type IEmitMatchCondition<T> = {
 export type IOrderedEmitMatchCondition<T> = {
     emitMatch(condition: ICallback<any>): IOrderedSubscribe<T>;
 };
-export type ICollector =
-    IDestroy &
-    ISubscribeCounter &
-    {
-        collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void;
-        unsubscribe(subscriptionLike: ISubscriptionLike<any>): void;
-        unsubscribeAll(): void;
-    };
+export type ICollector = IDestroy & ISubscribeCounter & {
+    collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void;
+    unsubscribe(subscriptionLike: ISubscriptionLike<any>): void;
+    unsubscribeAll(): void;
+};
 export type IOrderedObservable = {
     sortByOrder(): void;
 };
