@@ -1,6 +1,7 @@
 import {
     ICallback,
     IListener,
+    IMarkedForUnsubscribe,
     IObserver,
     IOnceMarker,
     ISetup,
@@ -10,7 +11,8 @@ import {
 } from "./Types";
 import {deleteFromArray} from "./FunctionLibs";
 
-export class SubscribeObject<T> implements ISubscribeObject<T> {
+export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
+    isMarkedForUnsubscribe: boolean = false;
     protected observable: IObserver<T> | undefined;
     protected listener: IListener<T> | undefined;
     private isListenPaused = false;
@@ -193,7 +195,9 @@ export class Observable<T> implements IObserver<T> {
     public unSubscribe(listener: ISubscriptionLike<T>): void {
         if (this._isDestroyed) return;
         if (this.isNextProcess) {
-            this.listenersForUnsubscribe.push(listener);
+            const marker: IMarkedForUnsubscribe = <any>listener;
+            !marker.isMarkedForUnsubscribe && this.listenersForUnsubscribe.push(listener);
+            marker.isMarkedForUnsubscribe = true;
             return;
         }
         this.listeners &&

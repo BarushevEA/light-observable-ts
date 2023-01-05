@@ -1,4 +1,7 @@
 export type ICallback<T> = (value?: T) => any;
+export type IMarkedForUnsubscribe = {
+    isMarkedForUnsubscribe: boolean;
+};
 export type ISubscribe<T> = {
     subscribe(listener: IListener<T>): ISubscriptionLike<T> | undefined;
 };
