@@ -16,7 +16,7 @@
     "url": "git+https://github.com/BarushevEA/light-observable-ts.git"
   },
   "author": "Barushev E.A.",
-  "license": "MIT",
+  "license": "LICENSE.md",
   "bugs": {
     "url": "https://github.com/BarushevEA/light-observable-ts/issues"
   },
