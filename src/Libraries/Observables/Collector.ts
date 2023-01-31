@@ -8,7 +8,8 @@ export class Collector implements ICollector {
     collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void | null {
         if (this._isDestroyed) return null;
         for (let i = 0; i < subscriptionLikeList.length; i++) {
-            this.list.push(subscriptionLikeList[i]);
+            const subscription = subscriptionLikeList[i];
+            subscription && this.list.push(subscription);
         }
     }
 
