@@ -29,6 +29,55 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
         this.listener = listener;
     }
 
+    private static asyncSend<T>(value: T, subsObj: SubscribeObject<T>): Promise<boolean> {
+        const listener = subsObj.listener;
+        return new Promise<boolean>((resolve => {
+            switch (true) {
+                case !subsObj.observable:
+                case !listener:
+                    subsObj.unsubscribe();
+                    resolve(false);
+                    return;
+                case subsObj.isListenPaused:
+                    resolve(false);
+                    return;
+                case subsObj.once.isOnce:
+                    subsObj.once.isFinished = true;
+                    listener && listener((value));
+                    subsObj.unsubscribe();
+                    break;
+                case !!subsObj.unsubscribeByNegativeCondition:
+                    if (!subsObj.unsubscribeByNegativeCondition()) {
+                        subsObj.unsubscribeByNegativeCondition = <any>null;
+                        subsObj.unsubscribe();
+                        return;
+                    }
+                    listener && listener((value));
+                    break;
+                case !!subsObj.unsubscribeByPositiveCondition:
+                    if (subsObj.unsubscribeByPositiveCondition()) {
+                        subsObj.unsubscribeByPositiveCondition = <any>null;
+                        subsObj.unsubscribe();
+                        return;
+                    }
+                    listener && listener((value));
+                    break;
+                case !!subsObj.emitByNegativeCondition:
+                    !subsObj.emitByNegativeCondition() && listener && listener(value);
+                    break;
+                case !!subsObj.emitByPositiveCondition:
+                    subsObj.emitByPositiveCondition() && listener && listener(value);
+                    break;
+                case !!subsObj.emitMatchCondition:
+                    (subsObj.emitMatchCondition() === value) && listener && listener(value);
+                    break;
+                default:
+                    listener && listener((value));
+            }
+            resolve(true);
+        }))
+    }
+
     subscribe(listener: IListener<T>): ISubscriptionLike<T> {
         this.listener = listener;
         return this;
@@ -47,54 +96,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     }
 
     private sendValueToListener(value: T): void {
-        const asyncSend = (value: T): Promise<boolean> => {
-            const listener = this.listener;
-            return new Promise<boolean>((resolve => {
-                switch (true) {
-                    case !this.observable:
-                    case !listener:
-                        this.unsubscribe();
-                        return;
-                    case this.isListenPaused:
-                        return;
-                    case this.once.isOnce:
-                        this.once.isFinished = true;
-                        listener && listener((value));
-                        this.unsubscribe();
-                        break;
-                    case !!this.unsubscribeByNegativeCondition:
-                        if (!this.unsubscribeByNegativeCondition()) {
-                            this.unsubscribeByNegativeCondition = <any>null;
-                            this.unsubscribe();
-                            return;
-                        }
-                        listener && listener((value));
-                        break;
-                    case !!this.unsubscribeByPositiveCondition:
-                        if (this.unsubscribeByPositiveCondition()) {
-                            this.unsubscribeByPositiveCondition = <any>null;
-                            this.unsubscribe();
-                            return;
-                        }
-                        listener && listener((value));
-                        break;
-                    case !!this.emitByNegativeCondition:
-                        !this.emitByNegativeCondition() && listener && listener(value);
-                        break;
-                    case !!this.emitByPositiveCondition:
-                        this.emitByPositiveCondition() && listener && listener(value);
-                        break;
-                    case !!this.emitMatchCondition:
-                        (this.emitMatchCondition() === value) && listener && listener(value);
-                        break;
-                    default:
-                        listener && listener((value));
-                }
-                resolve(true);
-            }))
-        }
-
-        asyncSend(value)
+        SubscribeObject.asyncSend(value, this)
             .catch(err => {
                 console.log('(Unit of SubscribeObject).send(value: T) call .sendValueToListener(value: T) ERROR:', err);
             });
