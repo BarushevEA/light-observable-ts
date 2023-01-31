@@ -84,7 +84,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     }
 
     public unsubscribe(): void {
-        if (!!this.observable) {
+        if (this.observable) {
             this.observable.unSubscribe(this);
             this.observable = <any>0;
             this.listener = <any>0;
@@ -178,7 +178,7 @@ export class Observable<T> implements IObserver<T> {
         if (!this._isEnable) return;
         this.value = value;
         this.isNextProcess = true;
-        for (let i = 0; i < this.listeners.length; i++) this.listeners[i].send(value);
+        for (const listener of this.listeners) listener && listener.send(value);
         this.isNextProcess = false;
         this.handleListenersForUnsubscribe();
     }
@@ -231,6 +231,7 @@ export class Observable<T> implements IObserver<T> {
 
     public subscribe(listener: IListener<T>): ISubscriptionLike<T> | undefined {
         if (this._isDestroyed) return undefined;
+        if (!listener) return undefined;
         const subscribeObject = new SubscribeObject(this, listener);
         this.listeners.push(subscribeObject);
         return subscribeObject;

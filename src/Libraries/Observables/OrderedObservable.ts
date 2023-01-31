@@ -73,6 +73,7 @@ export class OrderedObservable<T>
 
     subscribe(listener: IListener<T>): ISubscriptionLike<T> | undefined {
         if (this._isDestroyed) return undefined;
+        if (!listener) return undefined;
         const subscribeObject = new OrderedSubscribeObject(this, listener);
         this.listeners.push(subscribeObject);
         return subscribeObject;
