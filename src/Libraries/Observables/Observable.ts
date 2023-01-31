@@ -92,10 +92,6 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     }
 
     send(value: T): void {
-        this.sendValueToListener(value);
-    }
-
-    private sendValueToListener(value: T): void {
         SubscribeObject.asyncSend(value, this)
             .catch(err => {
                 console.log('(Unit of SubscribeObject).send(value: T) call .sendValueToListener(value: T) ERROR:', err);
