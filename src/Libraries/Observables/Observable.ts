@@ -15,6 +15,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     isMarkedForUnsubscribe: boolean = false;
     protected observable: IObserver<T> | undefined;
     protected listener: IListener<T> | undefined;
+    protected _order = 0;
     private isListenPaused = false;
     private once: IOnceMarker = {isOnce: false, isFinished: false};
     private unsubscribeByNegativeCondition: ICallback<T> = <any>null;
@@ -22,60 +23,56 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     private emitByNegativeCondition: ICallback<T> = <any>null;
     private emitByPositiveCondition: ICallback<T> = <any>null;
     private emitMatchCondition: ICallback<T> = <any>null;
-    protected _order = 0;
 
     constructor(observable?: IObserver<T>, listener?: IListener<T>) {
         this.observable = observable;
         this.listener = listener;
     }
 
-    private static asyncSend<T>(value: T, subsObj: SubscribeObject<T>): Promise<boolean> {
+    private static callbackSend<T>(value: T, subsObj: SubscribeObject<T>): void {
         const listener = subsObj.listener;
-        return new Promise<boolean>((resolve => {
-            switch (true) {
-                case !subsObj.observable:
-                case !listener:
+
+        switch (true) {
+            case !subsObj.observable:
+            case !listener:
+                subsObj.unsubscribe();
+                return;
+            case subsObj.isListenPaused:
+                ;
+                return;
+            case subsObj.once.isOnce:
+                subsObj.once.isFinished = true;
+                listener && listener((value));
+                subsObj.unsubscribe();
+                break;
+            case !!subsObj.unsubscribeByNegativeCondition:
+                if (!subsObj.unsubscribeByNegativeCondition()) {
+                    subsObj.unsubscribeByNegativeCondition = <any>null;
                     subsObj.unsubscribe();
-                    resolve(false);
                     return;
-                case subsObj.isListenPaused:
-                    resolve(false);
-                    return;
-                case subsObj.once.isOnce:
-                    subsObj.once.isFinished = true;
-                    listener && listener((value));
+                }
+                listener && listener((value));
+                break;
+            case !!subsObj.unsubscribeByPositiveCondition:
+                if (subsObj.unsubscribeByPositiveCondition()) {
+                    subsObj.unsubscribeByPositiveCondition = <any>null;
                     subsObj.unsubscribe();
-                    break;
-                case !!subsObj.unsubscribeByNegativeCondition:
-                    if (!subsObj.unsubscribeByNegativeCondition()) {
-                        subsObj.unsubscribeByNegativeCondition = <any>null;
-                        subsObj.unsubscribe();
-                        return;
-                    }
-                    listener && listener((value));
-                    break;
-                case !!subsObj.unsubscribeByPositiveCondition:
-                    if (subsObj.unsubscribeByPositiveCondition()) {
-                        subsObj.unsubscribeByPositiveCondition = <any>null;
-                        subsObj.unsubscribe();
-                        return;
-                    }
-                    listener && listener((value));
-                    break;
-                case !!subsObj.emitByNegativeCondition:
-                    !subsObj.emitByNegativeCondition() && listener && listener(value);
-                    break;
-                case !!subsObj.emitByPositiveCondition:
-                    subsObj.emitByPositiveCondition() && listener && listener(value);
-                    break;
-                case !!subsObj.emitMatchCondition:
-                    (subsObj.emitMatchCondition() === value) && listener && listener(value);
-                    break;
-                default:
-                    listener && listener((value));
-            }
-            resolve(true);
-        }))
+                    return;
+                }
+                listener && listener((value));
+                break;
+            case !!subsObj.emitByNegativeCondition:
+                !subsObj.emitByNegativeCondition() && listener && listener(value);
+                break;
+            case !!subsObj.emitByPositiveCondition:
+                subsObj.emitByPositiveCondition() && listener && listener(value);
+                break;
+            case !!subsObj.emitMatchCondition:
+                (subsObj.emitMatchCondition() === value) && listener && listener(value);
+                break;
+            default:
+                listener && listener((value));
+        }
     }
 
     subscribe(listener: IListener<T>): ISubscriptionLike<T> {
@@ -92,10 +89,11 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     }
 
     send(value: T): void {
-        SubscribeObject.asyncSend(value, this)
-            .catch(err => {
-                console.log('(Unit of SubscribeObject).send(value: T) call .sendValueToListener(value: T) ERROR:', err);
-            });
+        try {
+            SubscribeObject.callbackSend(value, this);
+        } catch (err) {
+            console.log('(Unit of SubscribeObject).send(value: T) ERROR:', err);
+        }
     }
 
     setOnce(): ISubscribe<T> {
