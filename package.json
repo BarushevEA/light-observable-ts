@@ -1,6 +1,6 @@
 {
   "name": "evg_observable",
-  "version": "1.1.29",
+  "version": "1.1.30",
   "description": "Light observable",
   "main": "index.js",
   "directories": {
@@ -16,7 +16,7 @@
     "url": "git+https://github.com/BarushevEA/light-observable-ts.git"
   },
   "author": "Barushev E.A.",
-  "license": "LICENSE.md",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/BarushevEA/light-observable-ts/issues"
   },
