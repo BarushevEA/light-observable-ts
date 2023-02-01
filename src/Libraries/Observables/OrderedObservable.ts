@@ -71,7 +71,7 @@ export class OrderedObservable<T>
         });
     }
 
-    subscribe(listener: IListener<T>): ISubscriptionLike<T> | undefined {
+    subscribe(listener: IListener<T>): IOrderedSubscriptionLike<T> | undefined {
         if (this._isDestroyed) return undefined;
         if (!listener) return undefined;
         const subscribeObject = new OrderedSubscribeObject(this, listener);

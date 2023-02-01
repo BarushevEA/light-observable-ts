@@ -790,4 +790,11 @@ class ObservableUnitTest {
         expect(2).to.be.equal(this.OBSERVABLE$.size());
         expect(['1']).to.be.eql(dataArr);
     }
+
+    @test 'subscribe undefined listener'(){
+        const listener1 = undefined;
+        const subscribe = this.OBSERVABLE$.subscribe(listener1);
+        expect(undefined).to.be.equal(subscribe);
+        expect(0).to.be.equal(this.OBSERVABLE$.size());
+    }
 }

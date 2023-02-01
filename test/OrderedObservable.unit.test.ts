@@ -823,4 +823,11 @@ class OrderedObservableUnitTest {
         expect(this.ORDERED_OBSERVABLE$.sortByOrder()).to.be.equal(undefined);
         expect(subscriber1.order).to.be.equal(undefined);
     }
+
+    @test 'subscribe undefined listener'(){
+        const listener1 = undefined;
+        const subscribe = this.ORDERED_OBSERVABLE$.subscribe(listener1);
+        expect(undefined).to.be.equal(subscribe);
+        expect(0).to.be.equal(this.ORDERED_OBSERVABLE$.size());
+    }
 }
