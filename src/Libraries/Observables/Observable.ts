@@ -23,26 +23,30 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     private emitByNegativeCondition: ICallback<T> = <any>null;
     private emitByPositiveCondition: ICallback<T> = <any>null;
     private emitMatchCondition: ICallback<T> = <any>null;
+    protected isPipe = false;
 
-    constructor(observable?: IObserver<T>, listener?: IListener<T>) {
+    constructor(observable?: IObserver<T>, listener?: IListener<T>, isPipe?: boolean) {
         this.observable = observable;
         this.listener = listener;
+        this.isPipe = !!isPipe;
     }
 
     private static callbackSend<T>(value: T, subsObj: SubscribeObject<T>): void {
         const listener = subsObj.listener;
+        if (!listener || !subsObj.observable) {
+            subsObj.unsubscribe();
+            return;
+        }
 
         switch (true) {
-            case !subsObj.observable:
-            case !listener:
-                subsObj.unsubscribe();
-                return;
             case subsObj.isListenPaused:
-                ;
+                return;
+            case !subsObj.isPipe:
+                listener(value);
                 return;
             case subsObj.once.isOnce:
                 subsObj.once.isFinished = true;
-                listener && listener((value));
+                listener(value);
                 subsObj.unsubscribe();
                 break;
             case !!subsObj.unsubscribeByNegativeCondition:
@@ -51,7 +55,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
                     subsObj.unsubscribe();
                     return;
                 }
-                listener && listener((value));
+                listener(value);
                 break;
             case !!subsObj.unsubscribeByPositiveCondition:
                 if (subsObj.unsubscribeByPositiveCondition()) {
@@ -59,19 +63,17 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
                     subsObj.unsubscribe();
                     return;
                 }
-                listener && listener((value));
+                listener(value);
                 break;
             case !!subsObj.emitByNegativeCondition:
-                !subsObj.emitByNegativeCondition() && listener && listener(value);
+                !subsObj.emitByNegativeCondition() && listener(value);
                 break;
             case !!subsObj.emitByPositiveCondition:
-                subsObj.emitByPositiveCondition() && listener && listener(value);
+                subsObj.emitByPositiveCondition() && listener(value);
                 break;
             case !!subsObj.emitMatchCondition:
-                (subsObj.emitMatchCondition() === value) && listener && listener(value);
+                (subsObj.emitMatchCondition() === value) && listener(value);
                 break;
-            default:
-                listener && listener((value));
         }
     }
 
@@ -179,7 +181,7 @@ export class Observable<T> implements IObserver<T> {
         const length = this.listeners.length;
         for (let i = 0; i < length; i++) {
             const listener = this.listeners[i];
-            listener && listener.send(value);
+            listener.send(value);
         }
         this.isNextProcess = false;
         this.listenersForUnsubscribe.length && this.handleListenersForUnsubscribe();
@@ -236,14 +238,14 @@ export class Observable<T> implements IObserver<T> {
     public subscribe(listener: IListener<T>): ISubscriptionLike<T> | undefined {
         if (this._isDestroyed) return undefined;
         if (!listener) return undefined;
-        const subscribeObject = new SubscribeObject(this, listener);
+        const subscribeObject = new SubscribeObject(this, listener, false);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }
 
     pipe(): ISetup<T> | undefined {
         if (this._isDestroyed) return undefined;
-        const subscribeObject = new SubscribeObject(this);
+        const subscribeObject = new SubscribeObject(this, <any>undefined, true);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }

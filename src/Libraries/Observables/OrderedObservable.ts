@@ -7,13 +7,12 @@ import {
     IOrderedObservable,
     IOrderedSetup,
     IOrderedSubscribe,
-    IOrderedSubscriptionLike,
-    ISubscriptionLike
+    IOrderedSubscriptionLike
 } from "./Types";
 
 export class OrderedSubscribeObject<T> extends SubscribeObject<T> {
-    constructor(observable: OrderedObservable<T> | IOrdered<T>, listener?: IListener<T>) {
-        super(<IObserver<T>>observable, listener);
+    constructor(observable: OrderedObservable<T> | IOrdered<T>, listener?: IListener<T>, isPipe?: boolean) {
+        super(<IObserver<T>>observable, listener, isPipe);
     }
 
     get order(): number {
@@ -74,14 +73,14 @@ export class OrderedObservable<T>
     subscribe(listener: IListener<T>): IOrderedSubscriptionLike<T> | undefined {
         if (this._isDestroyed) return undefined;
         if (!listener) return undefined;
-        const subscribeObject = new OrderedSubscribeObject(this, listener);
+        const subscribeObject = new OrderedSubscribeObject(this, listener, false);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }
 
     pipe(): IOrderedSetup<T> | undefined {
         if (this._isDestroyed) return undefined;
-        const subscribeObject = new OrderedSubscribeObject(this);
+        const subscribeObject = new OrderedSubscribeObject(this, undefined, true);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }
