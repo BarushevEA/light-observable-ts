@@ -176,13 +176,19 @@ export class Observable<T> implements IObserver<T> {
         if (!this._isEnable) return;
         this.value = value;
         this.isNextProcess = true;
-        for (const listener of this.listeners) listener && listener.send(value);
+        const length = this.listeners.length;
+        for (let i = 0; i < length; i++) {
+            const listener = this.listeners[i];
+            listener && listener.send(value);
+        }
         this.isNextProcess = false;
-        this.handleListenersForUnsubscribe();
+        this.listenersForUnsubscribe.length && this.handleListenersForUnsubscribe();
     }
 
     private handleListenersForUnsubscribe(): void {
-        for (const listener of this.listenersForUnsubscribe) {
+        const length = this.listenersForUnsubscribe.length;
+        for (let i = 0; i < length; i++) {
+            const listener = this.listenersForUnsubscribe[i];
             this.unSubscribe(listener);
         }
         this.listenersForUnsubscribe.length = 0;
