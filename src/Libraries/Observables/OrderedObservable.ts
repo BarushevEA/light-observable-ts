@@ -61,13 +61,14 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> {
 
 export class OrderedObservable<T>
     extends Observable<T> implements IOrdered<T> {
-    sortByOrder(): void {
-        if (this._isDestroyed) return undefined;
+    sortByOrder(): boolean {
+        if (this._isDestroyed) return false;
         this.listeners.sort((a, b) => {
             if (a.order > b.order) return 1;
             if (a.order < b.order) return -1;
             return 0;
         });
+        return true
     }
 
     subscribe(listener: IListener<T>): IOrderedSubscriptionLike<T> | undefined {

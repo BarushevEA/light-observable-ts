@@ -826,8 +826,9 @@ class OrderedObservableUnitTest {
 
         this.ORDERED_OBSERVABLE$.destroy();
         subscriber1.order = 10;
-        expect(this.ORDERED_OBSERVABLE$.pipe()).to.be.equal(undefined);
-        expect(subscriber1.order).to.be.equal(undefined);
+        expect(false).to.be.equal(this.ORDERED_OBSERVABLE$.sortByOrder());
+        expect(undefined).to.be.equal(this.ORDERED_OBSERVABLE$.pipe());
+        expect(undefined).to.be.equal(subscriber1.order);
     }
 
     @test 'subscribe undefined listener'() {

@@ -121,7 +121,7 @@ export type ICollector =
         unsubscribeAll(): void;
     };
 export type IOrderedObservable = {
-    sortByOrder(): void;
+    sortByOrder(): boolean;
 };
 export type IOrdered<T> = IObserver<T> & IOrderedObservable;
 export type IOrderedSubscriptionLike<T> = (ISubscriptionLike<T> & IOrder);
