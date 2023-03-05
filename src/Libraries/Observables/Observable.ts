@@ -198,14 +198,13 @@ export class Observable<T> implements IObserver<T> {
 
     public unSubscribe(listener: ISubscriptionLike<T>): void {
         if (this._isDestroyed) return;
-        if (this.isNextProcess) {
+        if (this.isNextProcess && listener) {
             const marker: IMarkedForUnsubscribe = <any>listener;
             !marker.isMarkedForUnsubscribe && this.listenersForUnsubscribe.push(listener);
             marker.isMarkedForUnsubscribe = true;
             return;
         }
-        this.listeners &&
-        !deleteFromArray(this.listeners, listener);
+        this.listeners && !deleteFromArray(this.listeners, listener);
     }
 
     public destroy(): void {
@@ -217,12 +216,7 @@ export class Observable<T> implements IObserver<T> {
 
     public unsubscribeAll(): void {
         if (this._isDestroyed) return;
-        const listeners = this.listeners;
-        const length = listeners.length;
-        for (let i = 0; i < length; i++) {
-            const subscriber = listeners.pop();
-            subscriber && subscriber.unsubscribe();
-        }
+        this.listeners.length = 0;
     }
 
     public getValue(): T | undefined {

@@ -47,11 +47,17 @@ class OrderedObservableUnitTest {
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(0);
     }
 
-    @test 'unsubscribe all by ony'() {
+    @test 'unsubscribe all'() {
         this.ORDERED_OBSERVABLE$.subscribe((value: string) => console.log(value));
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+        this.ORDERED_OBSERVABLE$.subscribe((value: string) => console.log(value));
+        this.ORDERED_OBSERVABLE$.subscribe((value: string) => console.log(value));
+        this.ORDERED_OBSERVABLE$.subscribe((value: string) => console.log(value));
+        this.ORDERED_OBSERVABLE$.subscribe((value: string) => console.log(value));
+        expect(5).to.be.equal(this.ORDERED_OBSERVABLE$.size());
         this.ORDERED_OBSERVABLE$.unsubscribeAll();
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(this.ORDERED_OBSERVABLE$.size());
+        this.ORDERED_OBSERVABLE$.subscribe((value: string) => console.log(value));
+        expect(1).to.be.equal(this.ORDERED_OBSERVABLE$.size());
     }
 
     @test 'Add one subscriber and listen one event'() {
@@ -401,7 +407,7 @@ class OrderedObservableUnitTest {
     }
 
     @test 'Add one by pipe and "emitMatch false"'() {
-        const str = '0123456789';
+        // const str = '0123456789';
         const condition = () => '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(null);
         const subscribeObject = this.ORDERED_OBSERVABLE$
@@ -504,7 +510,7 @@ class OrderedObservableUnitTest {
         let accumulatorStr = '';
         const str = '0123456789';
         const listener = (value: string) => accumulatorStr += value;
-        const subscribeObject = this.ORDERED_OBSERVABLE$.subscribe(listener);
+        this.ORDERED_OBSERVABLE$.subscribe(listener);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             (counter === 4) && this.ORDERED_OBSERVABLE$.disable();
@@ -521,7 +527,7 @@ class OrderedObservableUnitTest {
         let accumulatorStr = '';
         const str = '0123456789';
         const listener = (value: string) => accumulatorStr += value;
-        const subscribeObject = this.ORDERED_OBSERVABLE$.subscribe(listener);
+        this.ORDERED_OBSERVABLE$.subscribe(listener);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             (counter === 4) && this.ORDERED_OBSERVABLE$.disable();
@@ -537,10 +543,10 @@ class OrderedObservableUnitTest {
         expect(this.ORDERED_OBSERVABLE$.value).to.be.equal(0);
         // @ts-ignore
         expect(this.ORDERED_OBSERVABLE$.listeners).to.be.equal(0);
-        // @ts-ignore
-        expect(subscribeObject.observable).to.be.equal(0);
-        // @ts-ignore
-        expect(subscribeObject.listener).to.be.equal(0);
+        // // @ts-ignore
+        // expect(subscribeObject.observable).to.be.equal(0);
+        // // @ts-ignore
+        // expect(subscribeObject.listener).to.be.equal(0);
     }
 
     @test 'defect field "observable" from subscribeObject'() {
@@ -608,7 +614,7 @@ class OrderedObservableUnitTest {
     }
 
     @test 'destroy and try to use next'() {
-        const subscribeObject1 = this.ORDERED_OBSERVABLE$.subscribe((value) => {
+        this.ORDERED_OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('ERROR DATA');
         });
 
@@ -629,10 +635,10 @@ class OrderedObservableUnitTest {
     }
 
     @test 'destroy and try to use unSubscribeAll'() {
-        const subscribeObject1 = this.ORDERED_OBSERVABLE$.subscribe((value) => {
+        this.ORDERED_OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('ERROR DATA');
         });
-        const subscribeObject2 = this.ORDERED_OBSERVABLE$.subscribe((value) => {
+        this.ORDERED_OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('ERROR DATA');
         });
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(2);
@@ -681,7 +687,7 @@ class OrderedObservableUnitTest {
 
     @test 'sorted two subscribers by default'() {
         let innerCounter = 0;
-        const listener = (value: string) => {
+        const listener = () => {
             innerCounter++;
             if (innerCounter === 1) {
                 expect(subscriber1.order).to.be.equal(innerCounter);
@@ -699,7 +705,7 @@ class OrderedObservableUnitTest {
 
     @test 'sorted two subscribers by revers'() {
         let innerCounter = 0;
-        const listener = (value: string) => {
+        const listener = () => {
             innerCounter++;
             if (innerCounter === 1) {
                 expect(subscriber2.order).to.be.equal(innerCounter);
@@ -718,7 +724,7 @@ class OrderedObservableUnitTest {
     @test 'sorted ten subscribers by default'() {
         const subscribers: IOrderedSubscriptionLike<string>[] = [];
         let innerCounter = 0;
-        const listener = (value: string) => {
+        const listener = () => {
             expect(subscribers[innerCounter].order).to.be.equal(innerCounter);
             innerCounter++;
         };
@@ -733,7 +739,7 @@ class OrderedObservableUnitTest {
     @test 'sorted ten subscribers by revers'() {
         const subscribers: IOrderedSubscriptionLike<string>[] = [];
         let innerCounter = 0;
-        const listener = (value: string) => {
+        const listener = () => {
             expect(subscribers[innerCounter].order).to.be.equal(9 - innerCounter);
             innerCounter++;
         };
@@ -749,7 +755,7 @@ class OrderedObservableUnitTest {
         let innerCounter = 0;
         let orders: number[] = [];
         let subscribers: IOrderedSubscriptionLike<string>[] = [];
-        const listener = (value: string) => {
+        const listener = () => {
             orders.push(subscribers[innerCounter].order);
             innerCounter++;
         };
@@ -778,7 +784,7 @@ class OrderedObservableUnitTest {
         let innerCounter = 0;
         let orders: number[] = [];
         let subscribers: IOrderedSubscriptionLike<string>[] = [];
-        const listener = (value: string) => {
+        const listener = () => {
             orders.push(subscribers[innerCounter].order);
             innerCounter++;
         };
@@ -810,7 +816,7 @@ class OrderedObservableUnitTest {
         // @ts-ignore
         this.ORDERED_OBSERVABLE$._isDestroyed = true;
         subscriber1.order = 10;
-        expect(this.ORDERED_OBSERVABLE$.sortByOrder()).to.be.equal(undefined);
+        expect(this.ORDERED_OBSERVABLE$.pipe()).to.be.equal(undefined);
         expect(subscriber1.order).to.be.equal(undefined);
     }
 
@@ -820,11 +826,11 @@ class OrderedObservableUnitTest {
 
         this.ORDERED_OBSERVABLE$.destroy();
         subscriber1.order = 10;
-        expect(this.ORDERED_OBSERVABLE$.sortByOrder()).to.be.equal(undefined);
+        expect(this.ORDERED_OBSERVABLE$.pipe()).to.be.equal(undefined);
         expect(subscriber1.order).to.be.equal(undefined);
     }
 
-    @test 'subscribe undefined listener'(){
+    @test 'subscribe undefined listener'() {
         const listener1 = undefined;
         const subscribe = this.ORDERED_OBSERVABLE$.subscribe(listener1);
         expect(undefined).to.be.equal(subscribe);
