@@ -1,5 +1,6 @@
 import {
     ICallback,
+    IErrorCallback,
     IListener,
     IMarkedForUnsubscribe,
     IObserver,
@@ -15,6 +16,9 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     isMarkedForUnsubscribe: boolean = false;
     protected observable: IObserver<T> | undefined;
     protected listener: IListener<T> | undefined;
+    protected errorHandler: IErrorCallback = (errorData: any, errorMessage: any) => {
+        console.log(`(Unit of SubscribeObject).send(${errorData}) ERROR:`, errorMessage);
+    };
     protected _order = 0;
     private isListenPaused = false;
     private once: IOnceMarker = {isOnce: false, isFinished: false};
@@ -25,9 +29,8 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     private emitMatchCondition: ICallback<T> = <any>null;
     protected isPipe = false;
 
-    constructor(observable?: IObserver<T>, listener?: IListener<T>, isPipe?: boolean) {
+    constructor(observable?: IObserver<T>, isPipe?: boolean) {
         this.observable = observable;
-        this.listener = listener;
         this.isPipe = !!isPipe;
     }
 
@@ -77,8 +80,9 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
         }
     }
 
-    subscribe(listener: IListener<T>): ISubscriptionLike<T> {
+    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike<T> {
         this.listener = listener;
+        errorHandler && (this.errorHandler = errorHandler);
         return this;
     }
 
@@ -94,7 +98,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
         try {
             SubscribeObject.callbackSend(value, this);
         } catch (err) {
-            console.log('(Unit of SubscribeObject).send(value: T) ERROR:', err);
+            this.errorHandler(value, err);
         }
     }
 
@@ -128,8 +132,9 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     }
 
     emitMatch(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition =
-            () => `ERROR CONDITION TYPE ${typeof condition},  CONTROL STATE ${this.observable && !this.observable.getValue()}`;
+        if (typeof condition !== "function") {
+            condition = () => `ERROR CONDITION TYPE ${typeof condition},  CONTROL STATE ${this.observable && !this.observable.getValue()}`;
+        }
         this.emitMatchCondition = condition;
         return this;
     }
@@ -180,8 +185,7 @@ export class Observable<T> implements IObserver<T> {
         this.isNextProcess = true;
         const length = this.listeners.length;
         for (let i = 0; i < length; i++) {
-            const listener = this.listeners[i];
-            listener.send(value);
+            this.listeners[i].send(value);
         }
         this.isNextProcess = false;
         this.listenersForUnsubscribe.length && this.handleListenersForUnsubscribe();
@@ -229,17 +233,18 @@ export class Observable<T> implements IObserver<T> {
         return this.listeners.length;
     }
 
-    public subscribe(listener: IListener<T>): ISubscriptionLike<T> | undefined {
+    public subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike<T> | undefined {
         if (this._isDestroyed) return undefined;
         if (!listener) return undefined;
-        const subscribeObject = new SubscribeObject(this, listener, false);
+        const subscribeObject = new SubscribeObject(this, false);
+        subscribeObject.subscribe(listener, errorHandler);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }
 
     pipe(): ISetup<T> | undefined {
         if (this._isDestroyed) return undefined;
-        const subscribeObject = new SubscribeObject(this, <any>undefined, true);
+        const subscribeObject = new SubscribeObject(this, true);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }

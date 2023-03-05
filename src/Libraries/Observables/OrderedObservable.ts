@@ -1,6 +1,7 @@
 import {Observable, SubscribeObject} from "./Observable";
 import {
     ICallback,
+    IErrorCallback,
     IListener,
     IObserver,
     IOrdered,
@@ -11,8 +12,8 @@ import {
 } from "./Types";
 
 export class OrderedSubscribeObject<T> extends SubscribeObject<T> {
-    constructor(observable: OrderedObservable<T> | IOrdered<T>, listener?: IListener<T>, isPipe?: boolean) {
-        super(<IObserver<T>>observable, listener, isPipe);
+    constructor(observable: OrderedObservable<T> | IOrdered<T>, isPipe?: boolean) {
+        super(<IObserver<T>>observable, isPipe);
     }
 
     get order(): number {
@@ -29,8 +30,9 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> {
         (<IOrderedObservable><any>this.observable).sortByOrder();
     }
 
-    subscribe(listener: IListener<T>): IOrderedSubscriptionLike<T> {
+    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike<T> {
         this.listener = listener;
+        errorHandler && (this.errorHandler = errorHandler);
         return this;
     }
 
@@ -71,17 +73,18 @@ export class OrderedObservable<T>
         return true
     }
 
-    subscribe(listener: IListener<T>): IOrderedSubscriptionLike<T> | undefined {
+    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike<T> | undefined {
         if (this._isDestroyed) return undefined;
         if (!listener) return undefined;
-        const subscribeObject = new OrderedSubscribeObject(this, listener, false);
+        const subscribeObject = new OrderedSubscribeObject(this, false);
+        subscribeObject.subscribe(listener, errorHandler);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }
 
     pipe(): IOrderedSetup<T> | undefined {
         if (this._isDestroyed) return undefined;
-        const subscribeObject = new OrderedSubscribeObject(this, undefined, true);
+        const subscribeObject = new OrderedSubscribeObject(this, true);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }

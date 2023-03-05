@@ -2,8 +2,9 @@ export type ICallback<T> = (value?: T) => any;
 export type IMarkedForUnsubscribe = {
     isMarkedForUnsubscribe: boolean;
 };
+export type IErrorCallback = (errorData: any, errorMessage: any) => void;
 export type ISubscribe<T> = {
-    subscribe(listener: IListener<T>): ISubscriptionLike<T> | undefined;
+    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike<T> | undefined;
 };
 export type IListener<T> = ICallback<T>;
 export type IDestroy = {
@@ -126,7 +127,7 @@ export type IOrderedObservable = {
 export type IOrdered<T> = IObserver<T> & IOrderedObservable;
 export type IOrderedSubscriptionLike<T> = (ISubscriptionLike<T> & IOrder);
 export type IOrderedSubscribe<T> = {
-    subscribe(listener: IListener<T>): IOrderedSubscriptionLike<T>;
+    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike<T>;
 };
 export type IGroup = ICollector & {
     name: string;

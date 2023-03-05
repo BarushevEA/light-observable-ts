@@ -23,7 +23,12 @@ class ObservableUnitTest {
     }
 
     @test 'Add one subscriber'() {
-        const subscribeObject = this.OBSERVABLE$.subscribe((value: string) => console.log(value));
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const subscribeObject = this.OBSERVABLE$.subscribe((value: string) => console.log(value), errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         // @ts-ignore
         const once = subscribeObject.once;
@@ -31,27 +36,45 @@ class ObservableUnitTest {
         expect(once.isOnce).to.be.equal(false);
         // @ts-ignore
         expect(once.isFinished).to.be.equal(false);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'unsubscribe one by subject'() {
-        const subscribeObject = this.OBSERVABLE$.subscribe((value: string) => console.log(value));
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const subscribeObject = this.OBSERVABLE$.subscribe((value: string) => console.log(value), errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         subscribeObject.unsubscribe();
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'unsubscribe one by observable'() {
-        const subscribeObject = this.OBSERVABLE$.subscribe((value: string) => console.log(value));
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const subscribeObject = this.OBSERVABLE$.subscribe((value: string) => console.log(value), errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.unSubscribe(subscribeObject);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'unsubscribe all'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const subs1 = this.OBSERVABLE$.subscribe((value: string) => console.log(value));
-        this.OBSERVABLE$.subscribe((value: string) => console.log(value));
-        this.OBSERVABLE$.subscribe((value: string) => console.log(value));
-        this.OBSERVABLE$.subscribe((value: string) => console.log(value));
+        this.OBSERVABLE$.subscribe((value: string) => console.log(value), errorHandler);
+        this.OBSERVABLE$.subscribe((value: string) => console.log(value), errorHandler);
+        this.OBSERVABLE$.subscribe((value: string) => console.log(value), errorHandler);
         expect(4).to.be.equal(this.OBSERVABLE$.size());
         this.OBSERVABLE$.unsubscribeAll();
         expect(0).to.be.equal(this.OBSERVABLE$.size());
@@ -65,66 +88,102 @@ class ObservableUnitTest {
         });
         expect(1).to.be.equal(this.OBSERVABLE$.size());
         this.OBSERVABLE$.next("test");
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one subscriber and listen one event'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '1';
         const listener = (value: string) => {
             expect(value).to.be.equal(str);
         };
-        this.OBSERVABLE$.subscribe(listener);
+        this.OBSERVABLE$.subscribe(listener, errorHandler);
         this.OBSERVABLE$.next(str);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one subscriber and listen ten events'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         let counter = 0;
         const listener = (value: string) => expect(value).to.be.equal(str[counter]);
 
-        this.OBSERVABLE$.subscribe(listener);
+        this.OBSERVABLE$.subscribe(listener, errorHandler);
         for (; counter < 10; counter++) this.OBSERVABLE$.next(str[counter]);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one subscriber and get value after one change'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         let counter = 0;
         const listener = (value: string) => value;
 
-        this.OBSERVABLE$.subscribe(listener);
+        this.OBSERVABLE$.subscribe(listener, errorHandler);
         for (; counter < 1; counter++) this.OBSERVABLE$.next(str[counter]);
 
         expect(this.OBSERVABLE$.getValue()).to.be.equal('0');
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one subscriber and get value after five changes'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         let counter = 0;
         const listener = (value: string) => value;
 
-        this.OBSERVABLE$.subscribe(listener);
+        this.OBSERVABLE$.subscribe(listener, errorHandler);
         for (; counter < 5; counter++) this.OBSERVABLE$.next(str[counter]);
 
         expect(this.OBSERVABLE$.getValue()).to.be.equal('4');
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one subscriber and get value after ten changes'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         let counter = 0;
         const listener = (value: string) => value;
 
-        this.OBSERVABLE$.subscribe(listener);
+        this.OBSERVABLE$.subscribe(listener, errorHandler);
         for (; counter < 10; counter++) this.OBSERVABLE$.next(str[counter]);
 
         expect(this.OBSERVABLE$.getValue()).to.be.equal('9');
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "once"'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(str);
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .setOnce()
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
@@ -132,25 +191,37 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.once.isFinished).to.be.equal(true);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe, "once" and one without pipe'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let tmpArr: string[] = [];
         const listener1 = (value: string) => tmpArr.push('listener1:' + value);
         const listener2 = (value: string) => tmpArr.push('listener2:' + value);
         this.OBSERVABLE$
             .pipe()
             .setOnce()
-            .subscribe(listener1);
-        this.OBSERVABLE$.subscribe(listener2);
+            .subscribe(listener1, errorHandler);
+        this.OBSERVABLE$.subscribe(listener2, errorHandler);
         this.OBSERVABLE$.next('a');
         expect(tmpArr).to.be.eql(['listener1:a', 'listener2:a']);
         tmpArr = [];
         this.OBSERVABLE$.next('b');
         expect(tmpArr).to.be.eql(['listener2:b']);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "once" after 10 changes'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         let counter = 0;
         const listener = (value: string) => expect(value).to.be.equal(str[0]);
@@ -158,7 +229,7 @@ class ObservableUnitTest {
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .setOnce()
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         // @ts-ignore
         expect(subscribeObject.once.isOnce).to.be.equal(true);
@@ -166,6 +237,7 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.once.isFinished).to.be.equal(true);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add bad pipe'() {
@@ -177,36 +249,53 @@ class ObservableUnitTest {
     }
 
     @test 'Add one by pipe and "unsubscribeByNegative true"'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(str);
         const condition = () => true;
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .unsubscribeByNegative(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "unsubscribeByNegative false"'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(null);
         const condition = () => false;
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .unsubscribeByNegative(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "unsubscribeByNegative" (5 positive, 5 negative)'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        }
         let counter = 0;
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(str[counter]);
@@ -214,7 +303,7 @@ class ObservableUnitTest {
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .unsubscribeByNegative(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
@@ -222,52 +311,76 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Try use .unsubscribeByNegative(condition) when "condition" is not function'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        }
         const str = '0123456789';
         const dataArr: string[] = [];
         const listener = (value: string) => dataArr.push(value);
         this.OBSERVABLE$
             .pipe()
             .unsubscribeByNegative(<any>0)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         this.OBSERVABLE$.next(str);
         expect([]).to.be.eql(dataArr);
         expect(0).to.be.equal(this.OBSERVABLE$.size());
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "unsubscribeByPositive true"'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(str);
         const condition = () => true;
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .unsubscribeByPositive(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "unsubscribeByPositive false"'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(str);
         const condition = () => false;
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .unsubscribeByPositive(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "unsubscribeByPositive" (5 negative, 5 positive)'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let counter = 0;
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(str[counter]);
@@ -275,7 +388,7 @@ class ObservableUnitTest {
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .unsubscribeByPositive(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
@@ -283,52 +396,76 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Try use .unsubscribeByPositive(condition) when "condition" is not function'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const dataArr: string[] = [];
         const listener = (value: string) => dataArr.push(value);
         this.OBSERVABLE$
             .pipe()
             .unsubscribeByPositive(<any>0)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         this.OBSERVABLE$.next(str);
         expect([]).to.be.eql(dataArr);
         expect(0).to.be.equal(this.OBSERVABLE$.size());
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitByNegative true"'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(null);
         const condition = () => true;
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitByNegative(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitByNegative false"'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(str);
         const condition = () => false;
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitByNegative(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitByNegative" (5 negative, 5 positive)'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let counter = 0;
         const str = '0123456789';
         const listener = (value: string) => {
@@ -339,7 +476,7 @@ class ObservableUnitTest {
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitByNegative(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
@@ -347,9 +484,15 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitByNegative" (5 positive 5 negative)'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let counter = 0;
         const str = '0123456789';
         const listener = (value: string) => {
@@ -360,7 +503,7 @@ class ObservableUnitTest {
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitByNegative(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
@@ -368,52 +511,76 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Try use .emitByNegative(condition) when "condition" is not function'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const dataArr: string[] = [];
         const listener = (value: string) => dataArr.push(value);
         this.OBSERVABLE$
             .pipe()
             .emitByNegative(<any>0)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         this.OBSERVABLE$.next(str);
         expect([]).to.be.eql(dataArr);
         expect(1).to.be.equal(this.OBSERVABLE$.size());
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitByPositive true"'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(str);
         const condition = () => true;
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitByPositive(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitByPositive false"'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(null);
         const condition = () => false;
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitByPositive(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
         // @ts-ignore
         expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitByPositive" (5 negative, 5 positive)'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let counter = 0;
         const str = '0123456789';
         const listener = (value: string) => {
@@ -424,7 +591,7 @@ class ObservableUnitTest {
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitByPositive(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
@@ -432,9 +599,15 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitByPositive" (5 positive 5 negative)'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let counter = 0;
         const str = '0123456789';
         const listener = (value: string) => {
@@ -445,7 +618,7 @@ class ObservableUnitTest {
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitByPositive(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
@@ -453,48 +626,72 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Try use .emitByPositive(condition) when "condition" is not function'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const dataArr: string[] = [];
         const listener = (value: string) => dataArr.push(value);
         this.OBSERVABLE$
             .pipe()
             .emitByPositive(<any>0)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         this.OBSERVABLE$.next(str);
         expect([]).to.be.eql(dataArr);
         expect(1).to.be.equal(this.OBSERVABLE$.size());
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitMatch true"'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const condition = () => '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(str);
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitMatch(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         // @ts-ignore
         expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitMatch false"'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         // const str = '0123456789';
         const condition = () => '0123456789';
         const listener = (value: string) => expect(value).to.be.equal(null);
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitMatch(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         // @ts-ignore
         expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitMatch 10 elements" (on value "0")'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let counter = 0;
         const str = '0123456789';
         const listener = (value: string) => {
@@ -505,7 +702,7 @@ class ObservableUnitTest {
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitMatch(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
@@ -513,9 +710,15 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitMatch 10 elements" (on value "9")'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let counter = 0;
         const str = '0123456789';
         const listener = (value: string) => {
@@ -526,7 +729,7 @@ class ObservableUnitTest {
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitMatch(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
@@ -534,9 +737,15 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Add one by pipe and "emitMatch 10 elements" (on value "5")'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let counter = 0;
         const str = '0123456789';
         const listener = (value: string) => {
@@ -547,7 +756,7 @@ class ObservableUnitTest {
         const subscribeObject = this.OBSERVABLE$
             .pipe()
             .emitMatch(condition)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
@@ -555,27 +764,39 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'Try use .emitMatch(condition) when "condition" is not function'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const str = '0123456789';
         const dataArr: string[] = [];
         const listener = (value: string) => dataArr.push(value);
         this.OBSERVABLE$
             .pipe()
             .emitMatch(<any>0)
-            .subscribe(listener);
+            .subscribe(listener, errorHandler);
         this.OBSERVABLE$.next(str);
         expect([]).to.be.eql(dataArr);
         expect(1).to.be.equal(this.OBSERVABLE$.size());
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'pause / resume'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let counter = 0;
         let accumulatorStr = '';
         const str = '0123456789';
         const listener = (value: string) => accumulatorStr += value;
-        const subscribeObject = this.OBSERVABLE$.subscribe(listener);
+        const subscribeObject = this.OBSERVABLE$.subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             (counter === 4) && (<IPause><any>subscribeObject).pause();
@@ -584,21 +805,33 @@ class ObservableUnitTest {
         }
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(accumulatorStr).to.be.equal('012389');
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'order identification'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const listener = (value: string) => value;
-        const subscribeObject = <IOrder><any>this.OBSERVABLE$.subscribe(listener);
+        const subscribeObject = <IOrder><any>this.OBSERVABLE$.subscribe(listener, errorHandler);
         subscribeObject.order = 11011;
         expect(subscribeObject.order).to.be.equal(11011);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'observable disable/enable'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let counter = 0;
         let accumulatorStr = '';
         const str = '0123456789';
         const listener = (value: string) => accumulatorStr += value;
-        this.OBSERVABLE$.subscribe(listener);
+        this.OBSERVABLE$.subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             (counter === 4) && this.OBSERVABLE$.disable();
@@ -608,14 +841,20 @@ class ObservableUnitTest {
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(this.OBSERVABLE$.isEnable).to.be.equal(true);
         expect(accumulatorStr).to.be.equal('012389');
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'observable destroy'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let counter = 0;
         let accumulatorStr = '';
         const str = '0123456789';
         const listener = (value: string) => accumulatorStr += value;
-        this.OBSERVABLE$.subscribe(listener);
+        this.OBSERVABLE$.subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
             (counter === 4) && this.OBSERVABLE$.disable();
@@ -631,55 +870,69 @@ class ObservableUnitTest {
         expect(this.OBSERVABLE$.value).to.be.equal(0);
         // @ts-ignore
         expect(this.OBSERVABLE$.listeners).to.be.equal(0);
-        // // @ts-ignore
-        // expect(subscribeObject.observable).to.be.equal(0);
-        // // @ts-ignore
-        // expect(subscribeObject.listener).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'defect field "observable" from subscribeObject'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const listener = (value: string) => {
             expect(value).to.be.equal('ERROR WAY');
         };
-        const subscribeObject = this.OBSERVABLE$.subscribe(listener);
+        const subscribeObject = this.OBSERVABLE$.subscribe(listener, errorHandler);
         // @ts-ignore
         subscribeObject.observable = 0;
         this.OBSERVABLE$.next('some data');
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'defect field "listener" from subscribeObject'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const listener = (value: string) => {
             expect(value).to.be.equal('ERROR DATA');
         };
-        const subscribeObject = this.OBSERVABLE$.subscribe(listener);
+        const subscribeObject = this.OBSERVABLE$.subscribe(listener, errorHandler);
         // @ts-ignore
         subscribeObject.listener = 0;
         this.OBSERVABLE$.next('VALID DATA');
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'multi use'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         let counter = 0;
         const str = '0123456789';
         const subscribeObject1 = this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal(str[counter]);
             (<IOrder><any>subscribeObject1).order = 1;
-        });
+        }, errorHandler);
         const subscribeObject2 = this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal(str[counter]);
             (<IOrder><any>subscribeObject2).order = 2;
-        });
+        }, errorHandler);
         const subscribeObject3 = this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal(str[counter]);
             (<IOrder><any>subscribeObject3).order = 3;
-        });
+        }, errorHandler);
         const subscribeObject4 = this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal(str[counter]);
             (<IOrder><any>subscribeObject4).order = 4;
-        });
+        }, errorHandler);
         const subscribeObject5 = this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal(str[counter]);
             (<IOrder><any>subscribeObject5).order = 5;
-        });
+        }, errorHandler);
         for (; counter < str.length; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
@@ -699,81 +952,123 @@ class ObservableUnitTest {
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         subscribeObject5.unsubscribe();
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'destroy and try to use next'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('ERROR DATA');
-        });
+        }, errorHandler);
 
         this.OBSERVABLE$.destroy();
         this.OBSERVABLE$.next('VALID DATA');
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'destroy and try to use unSubscribe'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const subscribeObject1 = this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('ERROR DATA');
-        });
+        }, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.destroy();
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         this.OBSERVABLE$.unSubscribe(subscribeObject1);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'destroy and try to use unSubscribeAll'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('ERROR DATA');
-        });
+        }, errorHandler);
         this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('ERROR DATA');
-        });
+        }, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(2);
         this.OBSERVABLE$.destroy();
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         this.OBSERVABLE$.unsubscribeAll();
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'destroy and try to use getValue'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('SOME DATA');
-        });
+        }, errorHandler);
         this.OBSERVABLE$.next('SOME DATA');
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.destroy();
         expect(this.OBSERVABLE$.getValue()).to.be.equal(undefined);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'destroy and try to use subscribe'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('SOME DATA');
-        });
+        }, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.destroy();
         this.OBSERVABLE$.subscribe((value) => {
             expect(value).to.be.equal('SOME DATA');
-        });
+        }, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'destroy and try to use pipe'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         this.OBSERVABLE$.subscribe((value) => {
             expect('SOME DATA').to.be.equal(value);
-        });
+        }, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.destroy();
         expect(this.OBSERVABLE$.pipe()).to.be.equal(undefined);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
+        expect(0).to.be.equal(errorCounter);
     }
 
     @test 'error listener'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(true).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const dataArr: string[] = [];
         const listener1 = () => {
             throw new Error('LISTENER ERROR');
@@ -781,14 +1076,21 @@ class ObservableUnitTest {
         const listener2 = (value: string) => {
             dataArr.push(value);
         };
+        this.OBSERVABLE$.subscribe(listener1, errorHandler);
+        this.OBSERVABLE$.subscribe(listener2, errorHandler);
         this.OBSERVABLE$.subscribe(listener1);
-        this.OBSERVABLE$.subscribe(listener2);
         this.OBSERVABLE$.next('1');
-        expect(2).to.be.equal(this.OBSERVABLE$.size());
+        expect(3).to.be.equal(this.OBSERVABLE$.size());
         expect(['1']).to.be.eql(dataArr);
+        expect(1).to.be.equal(errorCounter);
     }
 
     @test 'error condition'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(true).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const dataArr: string[] = [];
         const listener1 = (value: string) => dataArr.push(value);
         const listener2 = (value: string) => dataArr.push(value);
@@ -797,17 +1099,41 @@ class ObservableUnitTest {
             .emitByPositive(() => {
                 throw new Error('CONDITION ERROR');
             })
-            .subscribe(listener1);
-        this.OBSERVABLE$.subscribe(listener2);
+            .subscribe(listener1, errorHandler);
+        this.OBSERVABLE$.subscribe(listener2, errorHandler);
         this.OBSERVABLE$.next('1');
         expect(2).to.be.equal(this.OBSERVABLE$.size());
         expect(['1']).to.be.eql(dataArr);
+        expect(1).to.be.equal(errorCounter);
     }
 
     @test 'subscribe undefined listener'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
         const listener1 = undefined;
-        const subscribe = this.OBSERVABLE$.subscribe(listener1);
+        const subscribe = this.OBSERVABLE$.subscribe(listener1, errorHandler);
         expect(undefined).to.be.equal(subscribe);
         expect(0).to.be.equal(this.OBSERVABLE$.size());
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'subscribe custom error handler'() {
+        let counter = 0;
+        const data = "test";
+        const listener1 = (value: string) => {
+            console.log(value);
+            throw new Error('TEST ERROR HANDLER');
+        };
+        const errorHandler = (errorData: any) => {
+            expect(data).to.be.equal(errorData);
+            counter++;
+        };
+        this.OBSERVABLE$.subscribe(listener1, errorHandler);
+        expect(1).to.be.equal(this.OBSERVABLE$.size());
+        this.OBSERVABLE$.next(data);
+        expect(1).to.be.equal(counter);
     }
 }
