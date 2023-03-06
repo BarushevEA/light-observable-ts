@@ -25,9 +25,14 @@ EVG Observable - is a small library for serving asynchronous events.
 import {Observable} from "evg_observable/src/outLib/Observable";
 
 const observable$ = new Observable('Some typed data (not only string)');
+
 const listener1 = (value: string) => console.log('listener1:', value);
+const errorHandler1 = (errorData: any, errorMessage: any) => {
+    console.log(`listener1 catch ERROR: data ${errorData}`, errorMessage);
+};
+const subscriber1 = observable$.subscribe(listener1, errorHandler1);
+
 const listener2 = (value: string) => console.log('listener2:', value);
-const subscriber1 = observable$.subscribe(listener1);
 const subscriber2 = observable$.subscribe(listener2);
 
 console.log(observable$.getValue());

@@ -36,12 +36,15 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
 
     private static callbackSend<T>(value: T, subsObj: SubscribeObject<T>): void {
         const listener = subsObj.listener;
-        if (!listener || !subsObj.observable) {
+        if (!listener) {
             subsObj.unsubscribe();
             return;
         }
 
         switch (true) {
+            case !subsObj.observable:
+                subsObj.unsubscribe();
+                return;
             case subsObj.isListenPaused:
                 return;
             case !subsObj.isPipe:
@@ -181,8 +184,8 @@ export class Observable<T> implements IObserver<T> {
     public next(value: T): void {
         if (this._isDestroyed) return;
         if (!this._isEnable) return;
-        this.value = value;
         this.isNextProcess = true;
+        this.value = value;
         const length = this.listeners.length;
         for (let i = 0; i < length; i++) {
             this.listeners[i].send(value);
