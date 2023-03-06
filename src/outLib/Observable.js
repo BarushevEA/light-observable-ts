@@ -1,46 +1,31 @@
-import {
-    ICallback,
-    IErrorCallback,
-    IListener,
-    IMarkedForUnsubscribe,
-    IObserver,
-    IOnceMarker,
-    ISetup,
-    ISubscribe,
-    ISubscribeObject,
-    ISubscriptionLike
-} from "./Types";
-import {deleteFromArray} from "./FunctionLibs";
-
-export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
-    isMarkedForUnsubscribe: boolean = false;
-    protected observable: IObserver<T> | undefined;
-    protected listener: IListener<T> | undefined;
-    protected errorHandler: IErrorCallback = (errorData: any, errorMessage: any) => {
-        console.log(`(Unit of SubscribeObject).send(${errorData}) ERROR:`, errorMessage);
-    };
-    protected _order = 0;
-    private isListenPaused = false;
-    private once: IOnceMarker = {isOnce: false, isFinished: false};
-    private unsubscribeByNegativeCondition: ICallback<T> = <any>null;
-    private unsubscribeByPositiveCondition: ICallback<T> = <any>null;
-    private emitByNegativeCondition: ICallback<T> = <any>null;
-    private emitByPositiveCondition: ICallback<T> = <any>null;
-    private emitMatchCondition: ICallback<T> = <any>null;
-    protected isPipe = false;
-
-    constructor(observable?: IObserver<T>, isPipe?: boolean) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Observable = exports.SubscribeObject = void 0;
+const FunctionLibs_1 = require("./FunctionLibs");
+class SubscribeObject {
+    constructor(observable, isPipe) {
+        this.isMarkedForUnsubscribe = false;
+        this.errorHandler = (errorData, errorMessage) => {
+            console.log(`(Unit of SubscribeObject).send(${errorData}) ERROR:`, errorMessage);
+        };
+        this._order = 0;
+        this.isListenPaused = false;
+        this.once = { isOnce: false, isFinished: false };
+        this.unsubscribeByNegativeCondition = null;
+        this.unsubscribeByPositiveCondition = null;
+        this.emitByNegativeCondition = null;
+        this.emitByPositiveCondition = null;
+        this.emitMatchCondition = null;
+        this.isPipe = false;
         this.observable = observable;
         this.isPipe = !!isPipe;
     }
-
-    private static callbackSend<T>(value: T, subsObj: SubscribeObject<T>): void {
+    static callbackSend(value, subsObj) {
         const listener = subsObj.listener;
         if (!listener) {
             subsObj.unsubscribe();
             return;
         }
-
         switch (true) {
             case !subsObj.observable:
                 subsObj.unsubscribe();
@@ -57,7 +42,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
                 break;
             case !!subsObj.unsubscribeByNegativeCondition:
                 if (!subsObj.unsubscribeByNegativeCondition()) {
-                    subsObj.unsubscribeByNegativeCondition = <any>null;
+                    subsObj.unsubscribeByNegativeCondition = null;
                     subsObj.unsubscribe();
                     return;
                 }
@@ -65,7 +50,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
                 break;
             case !!subsObj.unsubscribeByPositiveCondition:
                 if (subsObj.unsubscribeByPositiveCondition()) {
-                    subsObj.unsubscribeByPositiveCondition = <any>null;
+                    subsObj.unsubscribeByPositiveCondition = null;
                     subsObj.unsubscribe();
                     return;
                 }
@@ -82,108 +67,98 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
                 break;
         }
     }
-
-    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike<T> {
+    subscribe(listener, errorHandler) {
         this.listener = listener;
         errorHandler && (this.errorHandler = errorHandler);
         return this;
     }
-
-    public unsubscribe(): void {
+    unsubscribe() {
         if (this.observable) {
             this.observable.unSubscribe(this);
-            this.observable = <any>0;
-            this.listener = <any>0;
+            this.observable = 0;
+            this.listener = 0;
         }
     }
-
-    send(value: T): void {
+    send(value) {
         try {
             SubscribeObject.callbackSend(value, this);
-        } catch (err) {
+        }
+        catch (err) {
             this.errorHandler(value, err);
         }
     }
-
-    setOnce(): ISubscribe<T> {
+    setOnce() {
         this.once.isOnce = true;
         return this;
     }
-
-    unsubscribeByNegative(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => false;
+    unsubscribeByNegative(condition) {
+        if (typeof condition !== "function")
+            condition = () => false;
         this.unsubscribeByNegativeCondition = condition;
-        return this
+        return this;
     }
-
-    unsubscribeByPositive(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => true;
+    unsubscribeByPositive(condition) {
+        if (typeof condition !== "function")
+            condition = () => true;
         this.unsubscribeByPositiveCondition = condition;
         return this;
     }
-
-    emitByNegative(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => true;
+    emitByNegative(condition) {
+        if (typeof condition !== "function")
+            condition = () => true;
         this.emitByNegativeCondition = condition;
         return this;
     }
-
-    emitByPositive(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => false;
+    emitByPositive(condition) {
+        if (typeof condition !== "function")
+            condition = () => false;
         this.emitByPositiveCondition = condition;
         return this;
     }
-
-    emitMatch(condition: ICallback<any>): ISubscribe<T> {
+    emitMatch(condition) {
         if (typeof condition !== "function") {
             condition = () => `ERROR CONDITION TYPE ${typeof condition},  CONTROL STATE ${this.observable && !this.observable.getValue()}`;
         }
         this.emitMatchCondition = condition;
         return this;
     }
-
-    resume(): void {
+    resume() {
         this.isListenPaused = false;
     }
-
-    pause(): void {
+    pause() {
         this.isListenPaused = true;
     }
-
-    get order(): number {
+    get order() {
         return this._order;
     }
-
-    set order(value: number) {
+    set order(value) {
         this._order = value;
     }
 }
-
-export class Observable<T> implements IObserver<T> {
-    protected listeners: ISubscribeObject<T>[] = [];
-    private _isEnable: boolean = true;
-    protected _isDestroyed = false;
-    private isNextProcess = false;
-    private listenersForUnsubscribe: ISubscriptionLike<T>[] = [];
-
-    constructor(private value: T) {
+exports.SubscribeObject = SubscribeObject;
+class Observable {
+    constructor(value) {
+        this.value = value;
+        this.listeners = [];
+        this._isEnable = true;
+        this._isDestroyed = false;
+        this.isNextProcess = false;
+        this.listenersForUnsubscribe = [];
     }
-
-    disable(): void {
+    disable() {
         this._isEnable = false;
     }
-
-    enable(): void {
+    enable() {
         this._isEnable = true;
     }
-
-    get isEnable(): boolean {
+    get isEnable() {
         return this._isEnable;
     }
-
-    public next(value: T): void {
-        if (this._isDestroyed) return;
-        if (!this._isEnable) return;
+    next(value) {
+        if (this._isDestroyed)
+            return;
+        if (!this._isEnable)
+            return;
         this.isNextProcess = true;
         this.value = value;
         const length = this.listeners.length;
@@ -193,8 +168,7 @@ export class Observable<T> implements IObserver<T> {
         this.isNextProcess = false;
         this.listenersForUnsubscribe.length && this.handleListenersForUnsubscribe();
     }
-
-    private handleListenersForUnsubscribe(): void {
+    handleListenersForUnsubscribe() {
         const length = this.listenersForUnsubscribe.length;
         for (let i = 0; i < length; i++) {
             const listener = this.listenersForUnsubscribe[i];
@@ -202,57 +176,57 @@ export class Observable<T> implements IObserver<T> {
         }
         this.listenersForUnsubscribe.length = 0;
     }
-
-    public unSubscribe(listener: ISubscriptionLike<T>): void {
-        if (this._isDestroyed) return;
+    unSubscribe(listener) {
+        if (this._isDestroyed)
+            return;
         if (this.isNextProcess && listener) {
-            const marker: IMarkedForUnsubscribe = <any>listener;
+            const marker = listener;
             !marker.isMarkedForUnsubscribe && this.listenersForUnsubscribe.push(listener);
             marker.isMarkedForUnsubscribe = true;
             return;
         }
-        this.listeners && !deleteFromArray(this.listeners, listener);
+        this.listeners && FunctionLibs_1.deleteFromArray(this.listeners, listener);
     }
-
-    public destroy(): void {
-        this.value = <any>0;
+    destroy() {
+        this.value = 0;
         this.unsubscribeAll();
-        this.listeners = <any>0;
+        this.listeners = 0;
         this._isDestroyed = true;
     }
-
-    public unsubscribeAll(): void {
-        if (this._isDestroyed) return;
+    unsubscribeAll() {
+        if (this._isDestroyed)
+            return;
         this.listeners.length = 0;
     }
-
-    public getValue(): T | undefined {
-        if (this._isDestroyed) return undefined;
+    getValue() {
+        if (this._isDestroyed)
+            return undefined;
         return this.value;
     }
-
-    public size(): number {
-        if (this._isDestroyed) return 0;
+    size() {
+        if (this._isDestroyed)
+            return 0;
         return this.listeners.length;
     }
-
-    public subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike<T> | undefined {
-        if (this._isDestroyed) return undefined;
-        if (!listener) return undefined;
+    subscribe(listener, errorHandler) {
+        if (this._isDestroyed)
+            return undefined;
+        if (!listener)
+            return undefined;
         const subscribeObject = new SubscribeObject(this, false);
         subscribeObject.subscribe(listener, errorHandler);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }
-
-    pipe(): ISetup<T> | undefined {
-        if (this._isDestroyed) return undefined;
+    pipe() {
+        if (this._isDestroyed)
+            return undefined;
         const subscribeObject = new SubscribeObject(this, true);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }
-
-    get isDestroyed(): boolean {
+    get isDestroyed() {
         return this._isDestroyed;
     }
 }
+exports.Observable = Observable;
