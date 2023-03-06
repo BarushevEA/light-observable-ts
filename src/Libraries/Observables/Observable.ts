@@ -6,6 +6,7 @@ import {
     IObserver,
     IOnceMarker,
     ISetup,
+    IStream,
     ISubscribe,
     ISubscribeObject,
     ISubscriptionLike
@@ -159,7 +160,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     }
 }
 
-export class Observable<T> implements IObserver<T> {
+export class Observable<T> implements IObserver<T>, IStream<T> {
     protected listeners: ISubscribeObject<T>[] = [];
     private _isEnable: boolean = true;
     protected _isDestroyed = false;
@@ -192,6 +193,15 @@ export class Observable<T> implements IObserver<T> {
         }
         this.isNextProcess = false;
         this.listenersForUnsubscribe.length && this.handleListenersForUnsubscribe();
+    }
+
+    stream(values: T[]): void {
+        if (this._isDestroyed) return;
+        if (!this._isEnable) return;
+
+        for (let i = 0; i < values.length; i++) {
+            this.next(values[i]);
+        }
     }
 
     private handleListenersForUnsubscribe(): void {

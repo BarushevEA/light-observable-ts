@@ -1136,4 +1136,130 @@ class ObservableUnitTest {
         this.OBSERVABLE$.next(data);
         expect(1).to.be.equal(counter);
     }
+
+    @test 'stream array by 10 elements'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const accum: string[] = [];
+        const streamArr = ["1", "2", "3", "1", "2", "3", "1", "2", "3", "4"];
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            accum.push(data);
+        };
+        this.OBSERVABLE$.subscribe(listener1, errorHandler);
+        this.OBSERVABLE$.stream(streamArr);
+        expect(streamArr).to.be.deep.equal(accum);
+        expect(10).to.be.equal(counter);
+    }
+
+    @test 'stream array by 5 elements'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const accum: string[] = [];
+        const streamArr = ["1", "2", "3", "4", "5"];
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            accum.push(data);
+        };
+        this.OBSERVABLE$.subscribe(listener1, errorHandler);
+        this.OBSERVABLE$.stream(streamArr);
+        expect(streamArr).to.be.deep.equal(accum);
+        expect(5).to.be.equal(counter);
+    }
+
+    @test 'stream array by 1 element'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const accum: string[] = [];
+        const streamArr = ["1"];
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            accum.push(data);
+        };
+        this.OBSERVABLE$.subscribe(listener1, errorHandler);
+        this.OBSERVABLE$.stream(streamArr);
+        expect(streamArr).to.be.deep.equal(accum);
+        expect(1).to.be.equal(counter);
+    }
+
+    @test 'stream array by 0 elements'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const accum: string[] = [];
+        const streamArr = [];
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            accum.push(data);
+        };
+        this.OBSERVABLE$.subscribe(listener1, errorHandler);
+        this.OBSERVABLE$.stream(streamArr);
+        expect(streamArr).to.be.deep.equal(accum);
+        expect(0).to.be.equal(counter);
+    }
+
+    @test 'stream array when destroy'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const accum: string[] = [];
+        const streamArr = ["1", "2", "3"];
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            accum.push(data);
+        };
+        this.OBSERVABLE$.subscribe(listener1, errorHandler);
+        this.OBSERVABLE$.destroy();
+        this.OBSERVABLE$.stream(streamArr);
+        expect([]).to.be.deep.equal(accum);
+        expect(0).to.be.equal(counter);
+        expect(true).to.be.equal(this.OBSERVABLE$.isDestroyed);
+        expect(0).to.be.equal(this.OBSERVABLE$.size());
+    }
+
+    @test 'stream array when disable/enable'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const accum: string[] = [];
+        const streamArr = ["1", "2", "3"];
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            accum.push(data);
+        };
+        this.OBSERVABLE$.subscribe(listener1, errorHandler);
+        this.OBSERVABLE$.disable();
+        this.OBSERVABLE$.stream(streamArr);
+        expect([]).to.be.deep.equal(accum);
+        expect(0).to.be.equal(counter);
+        expect(false).to.be.equal(this.OBSERVABLE$.isEnable);
+        expect(1).to.be.equal(this.OBSERVABLE$.size());
+        this.OBSERVABLE$.enable();
+        this.OBSERVABLE$.stream(streamArr);
+        expect(streamArr).to.be.deep.equal(accum);
+        expect(3).to.be.equal(counter);
+        expect(true).to.be.equal(this.OBSERVABLE$.isEnable);
+        expect(1).to.be.equal(this.OBSERVABLE$.size());
+    }
 }

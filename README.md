@@ -1,3 +1,4 @@
+[![Socket Badge](https://socket.dev/api/badge/npm/package/evg_observable)](https://socket.dev/npm/package/evg_observable)
 <h1 align=center style="color: saddlebrown">
 EVG Observable
 </h1>
@@ -300,20 +301,21 @@ observable$.next('SOME DATA');
 
 ### Observable
 
-| method | will return | description |
-| :--- | :--- | :--- |
-| `.subscribe(listener)` | subscriber | subscribe listener to observable |
+| method                     | will return | description |
+|:---------------------------| :--- | :--- |
+| `.subscribe(listener)`     | subscriber | subscribe listener to observable |
 | `.unSubscribe(subscriber)` | void | unsubscribe listener from observable |
-| `.unsubscribeAll()` | void | unsubscribe all listeners from the current observable |
-| `.next(value)` | void | emit data to listeners |
-| `.getValue()` | value | will return the last value sent, or the value that was set during initialization |
-| `.size()` | number | will return the current number of subscribers |
-| `.disable()`| void | disable emission |
-| `.enable()`| void | enable emission |
-| `.isEnable` | boolean | read-only field that shows the state of the observer |
-| `.destroy()` | void | unsubscribe all listeners from the current observable and destroy it |
-| `.isDestroyed` | boolean | read-only field that shows the kill state of the observer |
-| `.pipe()` | pipe condition object | returns an object with which you can customize the subscriber's behavior |
+| `.unsubscribeAll()`        | void | unsubscribe all listeners from the current observable |
+| `.next(value)`             | void | emit data to listeners |
+| `.stream(value[])`         | void | pass data to listeners in parts of the array |
+| `.getValue()`              | value | will return the last value sent, or the value that was set during initialization |
+| `.size()`                  | number | will return the current number of subscribers |
+| `.disable()`               | void | disable emission |
+| `.enable()`                | void | enable emission |
+| `.isEnable`                | boolean | read-only field that shows the state of the observer |
+| `.destroy()`               | void | unsubscribe all listeners from the current observable and destroy it |
+| `.isDestroyed`             | boolean | read-only field that shows the kill state of the observer |
+| `.pipe()`                  | pipe condition object | returns an object with which you can customize the subscriber's behavior |
 
 ### Observable`.pipe()`
 

@@ -73,6 +73,9 @@ export type IObserver<T> =
         disable(): void,
         enable(): void,
     };
+export type IStream<T> = {
+    stream(value: T[]): void;
+}
 export type IPause = {
     pause(): void;
     resume(): void;
