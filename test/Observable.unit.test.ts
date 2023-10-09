@@ -1156,6 +1156,28 @@ class ObservableUnitTest {
         expect(10).to.be.equal(counter);
     }
 
+    @test 'stream and pipe array by 10 elements'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const accum: string[] = [];
+        const streamArr = ["1", "2", "3", "1", "2", "3", "1", "2", "3", "4"];
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            accum.push(data);
+        };
+        this.OBSERVABLE$
+            .pipe()
+            .emitByPositive((data) => +data < 2)
+            .subscribe(listener1, errorHandler);
+        this.OBSERVABLE$.stream(streamArr);
+        expect(['1', '1', '1']).to.be.deep.equal(accum);
+        expect(3).to.be.equal(counter);
+    }
+
     @test 'stream array by 5 elements'() {
         let errorCounter = 0;
         let counter = 0;

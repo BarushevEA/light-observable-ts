@@ -57,7 +57,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
                 subsObj.unsubscribe();
                 break;
             case !!subsObj.unsubscribeByNegativeCondition:
-                if (!subsObj.unsubscribeByNegativeCondition()) {
+                if (!subsObj.unsubscribeByNegativeCondition(value)) {
                     subsObj.unsubscribeByNegativeCondition = <any>null;
                     subsObj.unsubscribe();
                     return;
@@ -65,7 +65,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
                 listener(value);
                 break;
             case !!subsObj.unsubscribeByPositiveCondition:
-                if (subsObj.unsubscribeByPositiveCondition()) {
+                if (subsObj.unsubscribeByPositiveCondition(value)) {
                     subsObj.unsubscribeByPositiveCondition = <any>null;
                     subsObj.unsubscribe();
                     return;
@@ -73,13 +73,13 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
                 listener(value);
                 break;
             case !!subsObj.emitByNegativeCondition:
-                !subsObj.emitByNegativeCondition() && listener(value);
+                !subsObj.emitByNegativeCondition(value) && listener(value);
                 break;
             case !!subsObj.emitByPositiveCondition:
-                subsObj.emitByPositiveCondition() && listener(value);
+                subsObj.emitByPositiveCondition(value) && listener(value);
                 break;
             case !!subsObj.emitMatchCondition:
-                (subsObj.emitMatchCondition() === value) && listener(value);
+                (subsObj.emitMatchCondition(value) === value) && listener(value);
                 break;
         }
     }
