@@ -21,13 +21,13 @@
   },
   "homepage": "https://github.com/BarushevEA/light-observable-ts#readme",
   "devDependencies": {
-    "typescript": "^4.9.5",
+    "typescript": "^5.3.3",
     "@testdeck/mocha": "^0.3.3",
-    "@types/chai": "^4.3.4",
-    "chai": "^4.3.7",
+    "@types/chai": "^4.3.11",
+    "chai": "^4.3.10",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.2"
   },
   "keywords": [
     "EVG Observable",
