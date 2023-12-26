@@ -6,3 +6,6 @@ export function deleteFromArray<T>(arr: T[], component: T): boolean {
     arr.length = length;
     return true;
 }
+
+export const negativeCallback = () => false;
+export const positiveCallback = () => true;

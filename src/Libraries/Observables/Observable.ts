@@ -11,7 +11,7 @@ import {
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
-import {deleteFromArray} from "./FunctionLibs";
+import {deleteFromArray, negativeCallback, positiveCallback} from "./FunctionLibs";
 
 export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
     isMarkedForUnsubscribe: boolean = false;
@@ -112,32 +112,29 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     }
 
     unsubscribeByNegative(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => false;
-        this.unsubscribeByNegativeCondition = condition;
+        this.unsubscribeByNegativeCondition = !!condition ? condition : negativeCallback;
         return this
     }
 
     unsubscribeByPositive(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => true;
-        this.unsubscribeByPositiveCondition = condition;
+        this.unsubscribeByPositiveCondition = !!condition ? condition : positiveCallback;
         return this;
     }
 
     emitByNegative(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => true;
-        this.emitByNegativeCondition = condition;
+        this.emitByNegativeCondition = !!condition ? condition : positiveCallback;
         return this;
     }
 
     emitByPositive(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") condition = () => false;
-        this.emitByPositiveCondition = condition;
+        this.emitByPositiveCondition = !!condition ? condition : negativeCallback;
         return this;
     }
 
     emitMatch(condition: ICallback<any>): ISubscribe<T> {
-        if (typeof condition !== "function") {
-            condition = () => `ERROR CONDITION TYPE ${typeof condition},  CONTROL STATE ${this.observable && !this.observable.getValue()}`;
+        const type = typeof condition;
+        if (type !== "function") {
+            condition = () => `ERROR CONDITION TYPE ${type},  CONTROL STATE ${this.observable && !this.observable.getValue()}`;
         }
         this.emitMatchCondition = condition;
         return this;
