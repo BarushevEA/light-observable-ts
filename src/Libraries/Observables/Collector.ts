@@ -1,28 +1,25 @@
 import {ICollector, ISubscriptionLike} from "./Types";
-import {deleteFromArray} from "./FunctionLibs";
+import {quickDeleteFromArray} from "./FunctionLibs";
 
 export class Collector implements ICollector {
     protected list: ISubscriptionLike<any>[] = [];
     private _isDestroyed = false;
 
-    collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void | null {
-        if (this._isDestroyed) return null;
-        for (let i = 0; i < subscriptionLikeList.length; i++) {
-            const subscription = subscriptionLikeList[i];
-            subscription && this.list.push(subscription);
+    collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void {
+        if (!this._isDestroyed) {
+            this.list.push(...subscriptionLikeList);
         }
     }
 
-    unsubscribe(subscriptionLike: ISubscriptionLike<any> | undefined): void | null {
-        if (this._isDestroyed) return null;
-        subscriptionLike && subscriptionLike.unsubscribe();
-        deleteFromArray(this.list, subscriptionLike);
+    unsubscribe(subscriptionLike: ISubscriptionLike<any> | undefined): void {
+        if (this._isDestroyed) return;
+        subscriptionLike?.unsubscribe();
+        quickDeleteFromArray(this.list, subscriptionLike);
     }
 
     unsubscribeAll(): void | null {
-        if (this._isDestroyed) return null;
-        const length = this.list.length;
-        for (let i = 0; i < length; i++) {
+        if (this._isDestroyed) return;
+        while (this.list.length > 0) {
             this.unsubscribe(this.list.pop());
         }
     }

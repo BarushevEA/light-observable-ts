@@ -211,7 +211,7 @@ class CollectorUnitTest {
         this.COLLECTOR.destroy();
         expect(this.COLLECTOR.size()).to.be.equal(0);
         expect(this.COLLECTOR.isDestroyed).to.be.equal(true);
-        expect(this.COLLECTOR.collect()).to.be.equal(null);
+        expect(this.COLLECTOR.collect()).to.be.equal(undefined);
     }
 
     @test 'collector collect ten subscribers, destroy and unsubscribe '() {
@@ -225,20 +225,36 @@ class CollectorUnitTest {
         this.COLLECTOR.destroy();
         expect(this.COLLECTOR.size()).to.be.equal(0);
         expect(this.COLLECTOR.isDestroyed).to.be.equal(true);
-        expect(this.COLLECTOR.unsubscribe(subscriptionLike1)).to.be.equal(null);
+        expect(this.COLLECTOR.unsubscribe(subscriptionLike1)).to.be.equal(undefined);
     }
 
     @test 'collector collect ten subscribers, destroy and unsubscribeAll '() {
         const observable$ = new Observable(0);
         const subscriptionLike1 = observable$.subscribe(value => value);
         this.COLLECTOR.collect(subscriptionLike1);
+
         for (let i = 0; i < 9; i++) {
             this.COLLECTOR.collect(observable$.subscribe(value => value));
         }
+
         expect(this.COLLECTOR.size()).to.be.equal(10);
         this.COLLECTOR.destroy();
         expect(this.COLLECTOR.size()).to.be.equal(0);
         expect(this.COLLECTOR.isDestroyed).to.be.equal(true);
-        expect(this.COLLECTOR.unsubscribeAll()).to.be.equal(null);
+        expect(this.COLLECTOR.unsubscribeAll()).to.be.equal(undefined);
+    }
+
+    @test 'collector collect ten subscribers, unsubscribe undefined subs'() {
+        const observable$ = new Observable(0);
+        const subscriptionLike1 = observable$.subscribe(value => value);
+        this.COLLECTOR.collect(subscriptionLike1);
+
+        for (let i = 0; i < 9; i++) {
+            this.COLLECTOR.collect(observable$.subscribe(value => value));
+        }
+
+        expect(this.COLLECTOR.size()).to.be.equal(10);
+        this.COLLECTOR.unsubscribe(undefined);
+        expect(this.COLLECTOR.size()).to.be.equal(10);
     }
 }
