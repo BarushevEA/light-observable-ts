@@ -3,13 +3,16 @@ import {
     ICallback,
     IErrorCallback,
     IListener,
+    IMarkedForUnsubscribe,
     IObserver,
     IOrdered,
     IOrderedObservable,
     IOrderedSetup,
     IOrderedSubscribe,
-    IOrderedSubscriptionLike
+    IOrderedSubscriptionLike,
+    ISubscriptionLike
 } from "./Types";
+import {deleteFromArray} from "./FunctionLibs";
 
 export class OrderedSubscribeObject<T> extends SubscribeObject<T> {
     constructor(observable: OrderedObservable<T> | IOrdered<T>, isPipe?: boolean) {
@@ -87,5 +90,16 @@ export class OrderedObservable<T>
         const subscribeObject = new OrderedSubscribeObject(this, true);
         this.listeners.push(subscribeObject);
         return subscribeObject;
+    }
+
+    public unSubscribe(listener: ISubscriptionLike<T>): void {
+        if (this._isDestroyed) return;
+        if (this.isNextProcess && listener) {
+            const marker: IMarkedForUnsubscribe = <any>listener;
+            !marker.isMarkedForUnsubscribe && this.listenersForUnsubscribe.push(listener);
+            marker.isMarkedForUnsubscribe = true;
+            return;
+        }
+        this.listeners && !deleteFromArray(this.listeners, listener);
     }
 }

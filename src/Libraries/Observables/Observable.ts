@@ -11,7 +11,7 @@ import {
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
-import {deleteFromArray, negativeCallback, positiveCallback} from "./FunctionLibs";
+import {negativeCallback, positiveCallback, quickDeleteFromArray} from "./FunctionLibs";
 
 export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
     isMarkedForUnsubscribe: boolean = false;
@@ -161,8 +161,8 @@ export class Observable<T> implements IObserver<T>, IStream<T> {
     protected listeners: ISubscribeObject<T>[] = [];
     private _isEnable: boolean = true;
     protected _isDestroyed = false;
-    private isNextProcess = false;
-    private listenersForUnsubscribe: ISubscriptionLike<T>[] = [];
+    protected isNextProcess = false;
+    protected listenersForUnsubscribe: ISubscriptionLike<T>[] = [];
 
     constructor(private value: T) {
     }
@@ -218,7 +218,7 @@ export class Observable<T> implements IObserver<T>, IStream<T> {
             marker.isMarkedForUnsubscribe = true;
             return;
         }
-        this.listeners && !deleteFromArray(this.listeners, listener);
+        this.listeners && !quickDeleteFromArray(this.listeners, listener);
     }
 
     public destroy(): void {
