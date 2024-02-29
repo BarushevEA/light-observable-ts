@@ -18,6 +18,11 @@ EVG Observable - is a small library for serving asynchronous events.
 
     $ npm install evg_observable
 
+### Browser
+```html
+<script src="https://unpkg.com/evg_observable/repo/evg_observable.js"></script>
+```
+
 # Usage
 
 ## Observable simple usage
@@ -51,6 +56,46 @@ subscriber2.unsubscribe();
 observable$.destroy(); // all subscribers have automatically unsubscribed
 
 // also if observable$ needs to be used further, but subscribers are not needed, you can use the observable$.unsubscribeAll() method
+```
+
+### Browser simple usage
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/evg_observable/repo/evg_observable.js"></script>
+</head>
+<body>
+<script>
+    const observable$ = new Observable('Some typed data (not only string)');
+
+    const listener1 = (value) => console.log('listener1:', value);
+    const subscriber1 = observable$.subscribe(listener1);
+
+    const listener2 = (value) => console.log('listener2:', value);
+    const subscriber2 = observable$.subscribe(listener2);
+
+    console.log(observable$.getValue());
+    // Print to console - Some typed data (not only string)
+
+    observable$.next('Next typed data');
+    // Print to console - listener1: Next typed data
+    // Print to console - listener2: Next typed data
+
+    // if subscribers are not needed
+    subscriber1.unsubscribe();
+    subscriber2.unsubscribe();
+
+    // if a observable$ is not needed
+    observable$.destroy(); // all subscribers have automatically unsubscribed
+
+    // also if observable$ needs to be used further, but subscribers are not needed, you can use the observable$.unsubscribeAll() method
+</script>
+</body>
+</html>
 ```
 
 ## Observable pipe usage
