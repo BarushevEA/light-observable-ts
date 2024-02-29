@@ -8,7 +8,7 @@ EVG Observable - is a light library for simple use.
 
 ## What is EVG Observable?
 
-EVG Observable is a compact, lightweight library designed for handling asynchronous events. Despite its small size, it offers over 20 powerful techniques for event management. Despite this, it provides over 20 different ways of event handling.
+EVG Observable is a compact, lightweight library designed for handling asynchronous events. Despite its small size, it offers over 20 powerful techniques for event management.
 
 ## Installation
 
