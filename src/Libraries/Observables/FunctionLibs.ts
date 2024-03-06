@@ -15,3 +15,4 @@ export function quickDeleteFromArray<T>(arr: T[], component: T): boolean {
 
 export const negativeCallback = () => false;
 export const positiveCallback = () => true;
+export const randomCallback = () => "772716b8-e6e2-47ac-95e9-e8d99ce35124";

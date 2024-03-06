@@ -11,7 +11,7 @@ import {
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
-import {negativeCallback, positiveCallback, quickDeleteFromArray} from "./FunctionLibs";
+import {negativeCallback, positiveCallback, quickDeleteFromArray, randomCallback} from "./FunctionLibs";
 
 export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
     isMarkedForUnsubscribe: boolean = false;
@@ -112,11 +112,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     }
 
     emitMatch(condition: ICallback<any>): ISubscribe<T> {
-        const type = typeof condition;
-        if (type !== "function") {
-            condition = () => `ERROR CONDITION TYPE ${type},  CONTROL STATE ${this.observable && !this.observable.getValue()}`;
-        }
-        this.emitMatchCondition = condition;
+        this.emitMatchCondition = !!condition ? condition : randomCallback;
         return this;
     }
 
