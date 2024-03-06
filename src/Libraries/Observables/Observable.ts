@@ -41,6 +41,8 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
         if (!subsObj.observable) return subsObj.unsubscribe();
         if (subsObj.isListenPaused) return;
         if (!subsObj.isPipe) return listener(value);
+        if (subsObj.emitByPositiveCondition && subsObj.emitByPositiveCondition(value)) return listener(value);
+        if (subsObj.emitByNegativeCondition && !subsObj.emitByNegativeCondition(value)) return listener(value);
         if (subsObj.once.isOnce) {
             subsObj.once.isFinished = true;
             listener(value);
@@ -60,8 +62,6 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
             }
             return listener(value);
         }
-        if (subsObj.emitByNegativeCondition && !subsObj.emitByNegativeCondition(value)) return listener(value);
-        if (subsObj.emitByPositiveCondition && subsObj.emitByPositiveCondition(value)) return listener(value);
         if (subsObj.emitMatchCondition && (subsObj.emitMatchCondition(value) === value)) return listener(value);
     }
 
