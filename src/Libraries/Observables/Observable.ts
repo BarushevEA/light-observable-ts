@@ -160,10 +160,9 @@ export class Observable<T> implements IObserver<T>, IStream<T> {
         if (!this._isEnable) return;
         this.isNextProcess = true;
         this.value = value;
-        const length = this.listeners.length;
-        for (let i = 0; i < length; i++) {
-            this.listeners[i].send(value);
-        }
+
+        for (let i = 0; i < this.listeners.length; i++) this.listeners[i].send(value);
+
         this.isNextProcess = false;
         this.listenersForUnsubscribe.length && this.handleListenersForUnsubscribe();
     }
@@ -172,17 +171,14 @@ export class Observable<T> implements IObserver<T>, IStream<T> {
         if (this._isDestroyed) return;
         if (!this._isEnable) return;
 
-        for (let i = 0; i < values.length; i++) {
-            this.next(values[i]);
-        }
+        for (let i = 0; i < values.length; i++) this.next(values[i]);
     }
 
     private handleListenersForUnsubscribe(): void {
         const length = this.listenersForUnsubscribe.length;
-        for (let i = 0; i < length; i++) {
-            const listener = this.listenersForUnsubscribe[i];
-            this.unSubscribe(listener);
-        }
+
+        for (let i = 0; i < length; i++) this.unSubscribe(this.listenersForUnsubscribe[i]);
+
         this.listenersForUnsubscribe.length = 0;
     }
 
