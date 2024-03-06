@@ -6,9 +6,7 @@ export class Collector implements ICollector {
     private _isDestroyed = false;
 
     collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void {
-        if (!this._isDestroyed) {
-            this.list.push(...subscriptionLikeList);
-        }
+        if (!this._isDestroyed) this.list.push(...subscriptionLikeList);
     }
 
     unsubscribe(subscriptionLike: ISubscriptionLike<any> | undefined): void {
@@ -19,9 +17,7 @@ export class Collector implements ICollector {
 
     unsubscribeAll(): void | null {
         if (this._isDestroyed) return;
-        while (this.list.length > 0) {
-            this.unsubscribe(this.list.pop());
-        }
+        while (this.list.length > 0) this.unsubscribe(this.list.pop());
     }
 
     size(): number {
