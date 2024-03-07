@@ -74,8 +74,8 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     public unsubscribe(): void {
         if (!this.observable) return;
         this.observable.unSubscribe(this);
-        this.observable = <any>0;
-        this.listener = <any>0;
+        this.observable = <any>null;
+        this.listener = <any>null;
     }
 
     send(value: T): void {
@@ -194,9 +194,9 @@ export class Observable<T> implements IObserver<T>, IStream<T> {
     }
 
     public destroy(): void {
-        this.value = <any>0;
+        this.value = <any>null;
         this.unsubscribeAll();
-        this.listeners = <any>0;
+        this.listeners = <any>null;
         this._isDestroyed = true;
     }
 

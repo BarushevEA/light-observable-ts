@@ -81,7 +81,7 @@ class CollectorUnitTest {
         expect(this.COLLECTOR.size()).to.be.equal(0);
         this.COLLECTOR.unsubscribe(subscriptionLike);
         expect(this.COLLECTOR.size()).to.be.equal(0);
-        expect((<any>subscriptionLike).observable).to.be.equal(0);
+        expect((<any>subscriptionLike).observable).to.be.equal(null);
     }
 
     @test 'collector collect zero subscribers and unsubscribeAll'() {

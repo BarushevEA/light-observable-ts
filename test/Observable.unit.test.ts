@@ -867,9 +867,9 @@ class ObservableUnitTest {
         this.OBSERVABLE$.destroy();
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
         // @ts-ignore
-        expect(this.OBSERVABLE$.value).to.be.equal(0);
+        expect(this.OBSERVABLE$.value).to.be.equal(null);
         // @ts-ignore
-        expect(this.OBSERVABLE$.listeners).to.be.equal(0);
+        expect(this.OBSERVABLE$.listeners).to.be.equal(null);
         expect(0).to.be.equal(errorCounter);
     }
 
