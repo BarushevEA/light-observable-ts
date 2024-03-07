@@ -1,0 +1,54 @@
+import { ICallback, IErrorCallback, IListener, IMarkedForUnsubscribe, IObserver, ISetup, IStream, ISubscribe, ISubscribeObject, ISubscriptionLike } from "./Types";
+export declare class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
+    isMarkedForUnsubscribe: boolean;
+    protected observable: IObserver<T> | undefined;
+    protected listener: IListener<T> | undefined;
+    protected errorHandler: IErrorCallback;
+    protected _order: number;
+    private isListenPaused;
+    private once;
+    private unsubscribeByNegativeCondition;
+    private unsubscribeByPositiveCondition;
+    private emitByNegativeCondition;
+    private emitByPositiveCondition;
+    private emitMatchCondition;
+    protected isPipe: boolean;
+    constructor(observable?: IObserver<T>, isPipe?: boolean);
+    private static callbackSend;
+    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike;
+    unsubscribe(): void;
+    send(value: T): void;
+    setOnce(): ISubscribe<T>;
+    unsubscribeByNegative(condition: ICallback<T>): ISubscribe<T>;
+    unsubscribeByPositive(condition: ICallback<T>): ISubscribe<T>;
+    emitByNegative(condition: ICallback<T>): ISubscribe<T>;
+    emitByPositive(condition: ICallback<T>): ISubscribe<T>;
+    emitMatch(condition: ICallback<T>): ISubscribe<T>;
+    resume(): void;
+    pause(): void;
+    get order(): number;
+    set order(value: number);
+}
+export declare class Observable<T> implements IObserver<T>, IStream<T> {
+    private value;
+    protected listeners: ISubscribeObject<T>[];
+    private _isEnable;
+    protected _isDestroyed: boolean;
+    protected isNextProcess: boolean;
+    protected listenersForUnsubscribe: ISubscriptionLike[];
+    constructor(value: T);
+    disable(): void;
+    enable(): void;
+    get isEnable(): boolean;
+    next(value: T): void;
+    stream(values: T[]): void;
+    private handleListenersForUnsubscribe;
+    unSubscribe(listener: ISubscriptionLike): void;
+    destroy(): void;
+    unsubscribeAll(): void;
+    getValue(): T | undefined;
+    size(): number;
+    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
+    pipe(): ISetup<T> | undefined;
+    get isDestroyed(): boolean;
+}
