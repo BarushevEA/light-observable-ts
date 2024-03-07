@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "ES2017",
-    "lib": [ "es2015" , "dom"],
+    "target": "ESNext",
+    "lib": [ "dom", "dom.iterable", "esnext"],
     "outDir": "./src/outLib/",
     "strict": true,
-    "sourceMap": false
+    "sourceMap": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules",

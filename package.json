@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/BarushevEA/light-observable-ts#readme",
   "devDependencies": {
-    "typescript": "^4.9.5",
+    "typescript": "^5.4.2",
     "@testdeck/mocha": "^0.3.3",
     "@types/chai": "^4.3.4",
     "chai": "^4.3.7",
