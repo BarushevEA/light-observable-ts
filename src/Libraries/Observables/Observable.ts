@@ -92,27 +92,27 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     }
 
     unsubscribeByNegative(condition: ICallback<any>): ISubscribe<T> {
-        this.unsubscribeByNegativeCondition = !!condition ? condition : negativeCallback;
+        this.unsubscribeByNegativeCondition = condition ?? negativeCallback;
         return this
     }
 
     unsubscribeByPositive(condition: ICallback<any>): ISubscribe<T> {
-        this.unsubscribeByPositiveCondition = !!condition ? condition : positiveCallback;
+        this.unsubscribeByPositiveCondition = condition ?? positiveCallback;
         return this;
     }
 
     emitByNegative(condition: ICallback<any>): ISubscribe<T> {
-        this.emitByNegativeCondition = !!condition ? condition : positiveCallback;
+        this.emitByNegativeCondition = condition ?? positiveCallback;
         return this;
     }
 
     emitByPositive(condition: ICallback<any>): ISubscribe<T> {
-        this.emitByPositiveCondition = !!condition ? condition : negativeCallback;
+        this.emitByPositiveCondition = condition ?? negativeCallback;
         return this;
     }
 
     emitMatch(condition: ICallback<any>): ISubscribe<T> {
-        this.emitMatchCondition = !!condition ? condition : randomCallback;
+        this.emitMatchCondition = condition ?? randomCallback;
         return this;
     }
 

@@ -314,7 +314,7 @@ class ObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
-    @test 'Try use .unsubscribeByNegative(condition) when "condition" is not function'() {
+    @test 'Try use .unsubscribeByNegative(condition) when "condition" is undefined'() {
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
             expect(false).to.be.equal(!!errorMessage);
@@ -325,7 +325,7 @@ class ObservableUnitTest {
         const listener = (value: string) => dataArr.push(value);
         this.OBSERVABLE$
             .pipe()
-            .unsubscribeByNegative(<any>0)
+            .unsubscribeByNegative(undefined)
             .subscribe(listener, errorHandler);
         this.OBSERVABLE$.next(str);
         expect([]).to.be.eql(dataArr);
@@ -399,7 +399,7 @@ class ObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
-    @test 'Try use .unsubscribeByPositive(condition) when "condition" is not function'() {
+    @test 'Try use .unsubscribeByPositive(condition) when "condition" is undefined'() {
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
             expect(false).to.be.equal(!!errorMessage);
@@ -410,7 +410,7 @@ class ObservableUnitTest {
         const listener = (value: string) => dataArr.push(value);
         this.OBSERVABLE$
             .pipe()
-            .unsubscribeByPositive(<any>0)
+            .unsubscribeByPositive(undefined)
             .subscribe(listener, errorHandler);
         this.OBSERVABLE$.next(str);
         expect([]).to.be.eql(dataArr);
@@ -514,7 +514,7 @@ class ObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
-    @test 'Try use .emitByNegative(condition) when "condition" is not function'() {
+    @test 'Try use .emitByNegative(condition) when "condition" is undefined'() {
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
             expect(false).to.be.equal(!!errorMessage);
@@ -525,7 +525,7 @@ class ObservableUnitTest {
         const listener = (value: string) => dataArr.push(value);
         this.OBSERVABLE$
             .pipe()
-            .emitByNegative(<any>0)
+            .emitByNegative(undefined)
             .subscribe(listener, errorHandler);
         this.OBSERVABLE$.next(str);
         expect([]).to.be.eql(dataArr);
@@ -629,7 +629,7 @@ class ObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
-    @test 'Try use .emitByPositive(condition) when "condition" is not function'() {
+    @test 'Try use .emitByPositive(condition) when "condition" is undefined'() {
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
             expect(false).to.be.equal(!!errorMessage);
@@ -640,7 +640,7 @@ class ObservableUnitTest {
         const listener = (value: string) => dataArr.push(value);
         this.OBSERVABLE$
             .pipe()
-            .emitByPositive(<any>0)
+            .emitByPositive(undefined)
             .subscribe(listener, errorHandler);
         this.OBSERVABLE$.next(str);
         expect([]).to.be.eql(dataArr);
@@ -767,7 +767,7 @@ class ObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
-    @test 'Try use .emitMatch(condition) when "condition" is not function'() {
+    @test 'Try use .emitMatch(condition) when "condition" is undefined'() {
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
             expect(false).to.be.equal(!!errorMessage);
@@ -778,7 +778,7 @@ class ObservableUnitTest {
         const listener = (value: string) => dataArr.push(value);
         this.OBSERVABLE$
             .pipe()
-            .emitMatch(<any>0)
+            .emitMatch(undefined)
             .subscribe(listener, errorHandler);
         this.OBSERVABLE$.next(str);
         expect([]).to.be.eql(dataArr);
