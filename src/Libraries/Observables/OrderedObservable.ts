@@ -33,7 +33,7 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> {
         (<IOrderedObservable><any>this.observable).sortByOrder();
     }
 
-    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike<T> {
+    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike {
         this.listener = listener;
         errorHandler && (this.errorHandler = errorHandler);
         return this;
@@ -76,7 +76,7 @@ export class OrderedObservable<T>
         return true
     }
 
-    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike<T> | undefined {
+    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike | undefined {
         if (this._isDestroyed) return undefined;
         if (!listener) return undefined;
         const subscribeObject = new OrderedSubscribeObject(this, false);
@@ -92,7 +92,7 @@ export class OrderedObservable<T>
         return subscribeObject;
     }
 
-    public unSubscribe(listener: ISubscriptionLike<T>): void {
+    public unSubscribe(listener: ISubscriptionLike): void {
         if (this._isDestroyed) return;
         if (this.isNextProcess && listener) {
             const marker: IMarkedForUnsubscribe = <any>listener;

@@ -65,7 +65,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
         if (subsObj.emitMatchCondition && (subsObj.emitMatchCondition(value) === value)) return listener(value);
     }
 
-    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike<T> {
+    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike {
         this.listener = listener;
         errorHandler && (this.errorHandler = errorHandler);
         return this;
@@ -138,7 +138,7 @@ export class Observable<T> implements IObserver<T>, IStream<T> {
     private _isEnable: boolean = true;
     protected _isDestroyed = false;
     protected isNextProcess = false;
-    protected listenersForUnsubscribe: ISubscriptionLike<T>[] = [];
+    protected listenersForUnsubscribe: ISubscriptionLike[] = [];
 
     constructor(private value: T) {
     }
@@ -182,7 +182,7 @@ export class Observable<T> implements IObserver<T>, IStream<T> {
         this.listenersForUnsubscribe.length = 0;
     }
 
-    public unSubscribe(listener: ISubscriptionLike<T>): void {
+    public unSubscribe(listener: ISubscriptionLike): void {
         if (this._isDestroyed) return;
         if (this.isNextProcess && listener) {
             const marker: IMarkedForUnsubscribe = <any>listener;
@@ -215,7 +215,7 @@ export class Observable<T> implements IObserver<T>, IStream<T> {
         return this.listeners.length;
     }
 
-    public subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike<T> | undefined {
+    public subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
         if (this._isDestroyed) return undefined;
         if (!listener) return undefined;
         const subscribeObject = new SubscribeObject(this, false);

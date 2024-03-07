@@ -4,7 +4,7 @@ export type IMarkedForUnsubscribe = {
 };
 export type IErrorCallback = (errorData: any, errorMessage: any) => void;
 export type ISubscribe<T> = {
-    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike<T> | undefined;
+    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
 };
 export type IListener<T> = ICallback<T>;
 export type IDestroy = {
@@ -27,7 +27,7 @@ export type IOrderedOnce<T> = {
 export type ISetObservableValue = {
     next(value: any): void;
 };
-export type ISubscriptionLike<T> = {
+export type ISubscriptionLike = {
     unsubscribe(): void;
 };
 export type ISetup<T> =
@@ -47,7 +47,7 @@ export type IOrderedSetup<T> =
     IOrderedOnce<T> &
     IOrderedSubscribe<T>;
 export type ISubscribeObject<T> =
-    ISubscriptionLike<T> &
+    ISubscriptionLike &
     IPause &
     IOrder &
     ISend<T> &
@@ -68,7 +68,7 @@ export type IObserver<T> =
     ISubscribeCounter &
     IObservablePipe<T> &
     {
-        unSubscribe(subscriber: ISubscriptionLike<T>): void,
+        unSubscribe(subscriber: ISubscriptionLike): void,
         unsubscribeAll(): void,
         disable(): void,
         enable(): void,
@@ -120,17 +120,17 @@ export type ICollector =
     IDestroy &
     ISubscribeCounter &
     {
-        collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void;
-        unsubscribe(subscriptionLike: ISubscriptionLike<any>): void;
+        collect(...subscriptionLikeList: ISubscriptionLike[]): void;
+        unsubscribe(subscriptionLike: ISubscriptionLike): void;
         unsubscribeAll(): void;
     };
 export type IOrderedObservable = {
     sortByOrder(): boolean;
 };
 export type IOrdered<T> = IObserver<T> & IOrderedObservable;
-export type IOrderedSubscriptionLike<T> = (ISubscriptionLike<T> & IOrder);
+export type IOrderedSubscriptionLike = (ISubscriptionLike & IOrder);
 export type IOrderedSubscribe<T> = {
-    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike<T>;
+    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike;
 };
 export type IGroup = ICollector & {
     name: string;
