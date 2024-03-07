@@ -2,14 +2,14 @@ import {ICollector, ISubscriptionLike} from "./Types";
 import {quickDeleteFromArray} from "./FunctionLibs";
 
 export class Collector implements ICollector {
-    protected list: ISubscriptionLike<any>[] = [];
+    protected list: ISubscriptionLike[] = [];
     private _isDestroyed = false;
 
-    collect(...subscriptionLikeList: ISubscriptionLike<any>[]): void {
+    collect(...subscriptionLikeList: ISubscriptionLike[]): void {
         if (!this._isDestroyed) this.list.push(...subscriptionLikeList);
     }
 
-    unsubscribe(subscriptionLike: ISubscriptionLike<any> | undefined): void {
+    unsubscribe(subscriptionLike: ISubscriptionLike | undefined): void {
         if (this._isDestroyed) return;
         subscriptionLike?.unsubscribe();
         quickDeleteFromArray(this.list, subscriptionLike);
