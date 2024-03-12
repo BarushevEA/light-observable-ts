@@ -1,6 +1,6 @@
 {
   "name": "evg_observable",
-  "version": "1.5.43",
+  "version": "1.5.44",
   "description": "Alternative fast and light library version - observable.",
   "directories": {
     "test": "test"
