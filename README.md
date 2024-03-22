@@ -294,6 +294,8 @@ observable$.next('SOME DATA');
 // Print to console - listener2: SOME DATA
 // Print to console - listener1: SOME DATA
 
+// Also we can use observable$.setDescendingSort() or observable$.setAscendingSort()
+
 //Thus, we can control the order in which the data is received by the listeners.
 ```
 
@@ -388,11 +390,17 @@ Has the same methods as Observable.
 
 ### Ordered observable subscriber
 
-Has the same methods as subscriber. But there is an "order" field.
+Has the same methods as subscriber. But there is an "order" field and two new methods.
 
 | field | type | description |
 | :--- | :--- | :--- |
 | `.order` | number | Determines the order in which the subscriber is called, the subscriber with the lowest ordinal number is called first, the subscriber with the highest ordinal number is called last. |
+
+
+| method | will return | description                  |
+| :--- | :--- |:-----------------------------|
+| `.setAscendingSort()` | boolean | set order by ascending sort  |
+| `.setDescendingSort()` | boolean | set order by descending sort |
 
 ### Collector
 

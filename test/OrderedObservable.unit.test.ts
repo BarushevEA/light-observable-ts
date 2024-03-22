@@ -963,6 +963,8 @@ class OrderedObservableUnitTest {
     }
 
     @test 'order three subscribers by setAscendingSort'() {
+        this.ORDERED_OBSERVABLE$.setAscendingSort();
+
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
             expect(false).to.be.equal(!!errorMessage);
@@ -991,7 +993,6 @@ class OrderedObservableUnitTest {
         subscriber2.order = 2;
         subscriber3.order = 3;
 
-        this.ORDERED_OBSERVABLE$.setAscendingSort();
         this.ORDERED_OBSERVABLE$.next('SOME DATA');
 
         expect(0).to.be.equal(errorCounter);
