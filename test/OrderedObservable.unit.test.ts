@@ -992,7 +992,7 @@ class OrderedObservableUnitTest {
             expect(false).to.be.equal(!!errorMessage);
             errorCounter++;
         };
-        const subscribers: IOrderedSubscriptionLike<string>[] = [];
+        const subscribers: IOrderedSubscriptionLike[] = [];
         let innerCounter = 0;
         const listener = () => {
             expect(subscribers[innerCounter].order).to.be.equal(innerCounter);
@@ -1013,7 +1013,7 @@ class OrderedObservableUnitTest {
             expect(false).to.be.equal(!!errorMessage);
             errorCounter++;
         };
-        const subscribers: IOrderedSubscriptionLike<string>[] = [];
+        const subscribers: IOrderedSubscriptionLike[] = [];
         let innerCounter = 0;
         const listener = () => {
             expect(subscribers[innerCounter].order).to.be.equal(9 - innerCounter);
@@ -1031,7 +1031,7 @@ class OrderedObservableUnitTest {
     @test 'sorted ten subscribers by default but last element order to first'() {
         let innerCounter = 0;
         let orders: number[] = [];
-        let subscribers: IOrderedSubscriptionLike<string>[] = [];
+        let subscribers: IOrderedSubscriptionLike[] = [];
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
             expect(false).to.be.equal(!!errorMessage);
@@ -1066,7 +1066,7 @@ class OrderedObservableUnitTest {
     @test 'sorted ten subscribers by default but last and previews element order to first'() {
         let innerCounter = 0;
         let orders: number[] = [];
-        let subscribers: IOrderedSubscriptionLike<string>[] = [];
+        let subscribers: IOrderedSubscriptionLike[] = [];
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
             expect(false).to.be.equal(!!errorMessage);
