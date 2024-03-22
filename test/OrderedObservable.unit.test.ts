@@ -962,6 +962,93 @@ class OrderedObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
+    @test 'order three subscribers by setAscendingSort'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+
+        let innerCounter = 0;
+
+        const listener1 = () => {
+            innerCounter++;
+            expect(innerCounter).to.be.equal(1);
+        };
+        const listener2 = () => {
+            innerCounter++;
+            expect(innerCounter).to.be.equal(2);
+        };
+        const listener3 = () => {
+            innerCounter++;
+            expect(innerCounter).to.be.equal(3);
+        };
+
+        const subscriber1 = this.ORDERED_OBSERVABLE$.subscribe(listener1, errorHandler);
+        const subscriber2 = this.ORDERED_OBSERVABLE$.subscribe(listener2, errorHandler);
+        const subscriber3 = this.ORDERED_OBSERVABLE$.subscribe(listener3, errorHandler);
+        subscriber1.order = 1;
+        subscriber2.order = 2;
+        subscriber3.order = 3;
+
+        this.ORDERED_OBSERVABLE$.setAscendingSort();
+        this.ORDERED_OBSERVABLE$.next('SOME DATA');
+
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'order three subscribers by setDescendingSort'() {
+        this.ORDERED_OBSERVABLE$.setDescendingSort();
+
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+
+        let innerCounter = 0;
+
+        const listener1 = () => {
+            innerCounter++;
+            expect(innerCounter).to.be.equal(4);
+        };
+        const listener2 = () => {
+            innerCounter++;
+            expect(innerCounter).to.be.equal(3);
+        };
+        const listener3 = () => {
+            innerCounter++;
+            expect(innerCounter).to.be.equal(2);
+        };
+        const listener4 = () => {
+            expect(subscriber4.order).to.be.equal(5);
+        };
+        const listener5 = () => {
+            expect(subscriber5.order).to.be.equal(5);
+        };
+        const listener6 = () => {
+            innerCounter++;
+            expect(innerCounter).to.be.equal(1);
+        };
+
+        const subscriber1 = this.ORDERED_OBSERVABLE$.subscribe(listener1, errorHandler);
+        const subscriber2 = this.ORDERED_OBSERVABLE$.subscribe(listener2, errorHandler);
+        const subscriber3 = this.ORDERED_OBSERVABLE$.subscribe(listener3, errorHandler);
+        const subscriber4 = this.ORDERED_OBSERVABLE$.subscribe(listener4, errorHandler);
+        const subscriber5 = this.ORDERED_OBSERVABLE$.subscribe(listener5, errorHandler);
+        const subscriber6 = this.ORDERED_OBSERVABLE$.subscribe(listener6, errorHandler);
+        subscriber1.order = 1;
+        subscriber2.order = 2;
+        subscriber3.order = 3;
+        subscriber4.order = 5;
+        subscriber5.order = 5;
+        subscriber6.order = 4;
+
+        this.ORDERED_OBSERVABLE$.next('SOME DATA');
+
+        expect(0).to.be.equal(errorCounter);
+    }
+
     @test 'sorted two subscribers by revers'() {
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
