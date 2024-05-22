@@ -136,3 +136,8 @@ export type IGroup = ICollector & {
     name: string;
     order: number;
 };
+export type isNeedBreak = boolean;
+export type IConditionCallback<T> = (value?: T) => isNeedBreak;
+export type ICondition<T> = {
+    handler: IConditionCallback<T>
+};
