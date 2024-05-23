@@ -1,3 +1,5 @@
+import {SubscribeObject} from "./SubscribeObject";
+
 export type ICallback<T> = (value?: T) => any;
 export type IMarkedForUnsubscribe = {
     isMarkedForUnsubscribe: boolean;
@@ -11,10 +13,10 @@ export type IDestroy = {
     destroy(): void;
     isDestroyed: boolean;
 };
-export type IOnceMarker = {
-    isOnce: boolean;
-    isFinished: boolean;
-};
+// export type IOnceMarker = {
+//     isOnce: boolean;
+//     isFinished: boolean;
+// };
 export type IOrder = {
     order: number;
 };
@@ -132,12 +134,11 @@ export type IOrderedSubscriptionLike = (ISubscriptionLike & IOrder);
 export type IOrderedSubscribe<T> = {
     subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike;
 };
-export type IGroup = ICollector & {
-    name: string;
-    order: number;
-};
-export type isNeedBreak = boolean;
-export type IConditionCallback<T> = (value?: T) => isNeedBreak;
-export type ICondition<T> = {
-    handler: IConditionCallback<T>
-};
+// export type IGroup = ICollector & {
+//     name: string;
+//     order: number;
+// };
+
+export type IPipePayload = { isNeedUnsubscribe: boolean, isNeedExit: boolean, payload: any };
+export type IConditionCallback<T> = (pipeData: IPipePayload, subsObj?: SubscribeObject<T>) => void;
+

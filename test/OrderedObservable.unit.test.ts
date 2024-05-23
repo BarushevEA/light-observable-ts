@@ -31,11 +31,11 @@ class OrderedObservableUnitTest {
         const subscribeObject = this.ORDERED_OBSERVABLE$.subscribe((value: string) => console.log(value), errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         // @ts-ignore
-        const once = subscribeObject.once;
+        // const once = subscribeObject.once;
         // @ts-ignore
-        expect(once.isOnce).to.be.equal(false);
+        // expect(once.isOnce).to.be.equal(false);
         // @ts-ignore
-        expect(once.isFinished).to.be.equal(false);
+        // expect(once.isFinished).to.be.equal(false);
         expect(0).to.be.equal(errorCounter);
     }
 

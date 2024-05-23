@@ -1,15 +1,15 @@
 import {
-    ICallback, ICondition,
+    ICallback,
+    IConditionCallback,
     IErrorCallback,
     IListener,
     IMarkedForUnsubscribe,
     IObserver,
-    IOnceMarker,
+    IPipePayload,
     ISubscribe,
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
-import {negativeCallback, positiveCallback, randomCallback} from "./FunctionLibs";
 
 function callbackSend<T>(value: T, subsObj: SubscribeObject<T>): void {
     const listener = subsObj.listener;
@@ -17,28 +17,15 @@ function callbackSend<T>(value: T, subsObj: SubscribeObject<T>): void {
     if (!subsObj.observable) return subsObj.unsubscribe();
     if (subsObj.isPaused) return;
     if (!subsObj.isPipe) return listener(value);
-    if (subsObj.emitByPositiveCondition && subsObj.emitByPositiveCondition(value)) return listener(value);
-    if (subsObj.emitByNegativeCondition && !subsObj.emitByNegativeCondition(value)) return listener(value);
-    if (subsObj.once.isOnce) {
-        subsObj.once.isFinished = true;
-        listener(value);
-        return subsObj.unsubscribe();
+
+    const pipeData: IPipePayload = {isNeedUnsubscribe: false, isNeedExit: false, payload: value}
+    for (let i = 0; i < subsObj.conditionsList.length; i++) {
+        subsObj.conditionsList[i](pipeData, subsObj);
+        if (pipeData.isNeedUnsubscribe) return subsObj.unsubscribe();
+        if (pipeData.isNeedExit) return;
     }
-    if (subsObj.unsubscribeByNegativeCondition) {
-        if (!subsObj.unsubscribeByNegativeCondition(value)) {
-            subsObj.unsubscribeByNegativeCondition = <any>null;
-            return subsObj.unsubscribe();
-        }
-        return listener(value);
-    }
-    if (subsObj.unsubscribeByPositiveCondition) {
-        if (subsObj.unsubscribeByPositiveCondition(value)) {
-            subsObj.unsubscribeByPositiveCondition = <any>null;
-            return subsObj.unsubscribe();
-        }
-        return listener(value);
-    }
-    if (subsObj.emitMatchCondition && (subsObj.emitMatchCondition(value) === value)) return listener(value);
+
+    return listener(pipeData.payload);
 }
 
 export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
@@ -50,15 +37,9 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     };
     _order = 0;
     isPaused = false;
-    once: IOnceMarker = {isOnce: false, isFinished: false};
-    unsubscribeByNegativeCondition: ICallback<T> = <any>null;
-    unsubscribeByPositiveCondition: ICallback<T> = <any>null;
-    emitByNegativeCondition: ICallback<T> = <any>null;
-    emitByPositiveCondition: ICallback<T> = <any>null;
-    emitMatchCondition: ICallback<T> = <any>null;
     isPipe = false;
 
-    conditionsList: ICondition<T>[] = [];
+    conditionsList: IConditionCallback<T> [] = [];
 
     constructor(observable?: IObserver<T>, isPipe?: boolean) {
         this.observable = observable;
@@ -76,6 +57,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
         this.observable.unSubscribe(this);
         this.observable = <any>null;
         this.listener = <any>null;
+        this.conditionsList.length = 0;
     }
 
     send(value: T): void {
@@ -87,32 +69,57 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     }
 
     setOnce(): ISubscribe<T> {
-        this.once.isOnce = true;
+        this.conditionsList.push(
+            (pipeData: IPipePayload, subsObj?: SubscribeObject<T>): void => {
+                (<any>(<any>subsObj).listener)(pipeData.payload);
+                pipeData.isNeedUnsubscribe = true;
+            }
+        );
         return this;
     }
 
     unsubscribeByNegative(condition: ICallback<T>): ISubscribe<T> {
-        this.unsubscribeByNegativeCondition = condition ?? negativeCallback;
+        this.conditionsList.push(
+            (pipeData: IPipePayload): void => {
+                if (!condition(pipeData.payload)) pipeData.isNeedUnsubscribe = true;
+            }
+        );
         return this
     }
 
     unsubscribeByPositive(condition: ICallback<T>): ISubscribe<T> {
-        this.unsubscribeByPositiveCondition = condition ?? positiveCallback;
+        this.conditionsList.push(
+            (pipeData: IPipePayload): void => {
+                if (condition(pipeData.payload)) pipeData.isNeedUnsubscribe = true;
+            }
+        );
         return this;
     }
 
     emitByNegative(condition: ICallback<T>): ISubscribe<T> {
-        this.emitByNegativeCondition = condition ?? positiveCallback;
+        this.conditionsList.push(
+            (pipeData: IPipePayload): void => {
+                if (condition(pipeData.payload)) pipeData.isNeedExit = true;
+            }
+        );
         return this;
     }
 
     emitByPositive(condition: ICallback<T>): ISubscribe<T> {
-        this.emitByPositiveCondition = condition ?? negativeCallback;
+        this.conditionsList.push(
+            (pipeData: IPipePayload): void => {
+                if (!condition(pipeData.payload)) pipeData.isNeedExit = true;
+            }
+        );
         return this;
     }
 
     emitMatch(condition: ICallback<T>): ISubscribe<T> {
-        this.emitMatchCondition = condition ?? randomCallback;
+        this.conditionsList.push(
+            (pipeData: IPipePayload): void => {
+                if (condition(pipeData.payload) !== pipeData.payload) pipeData.isNeedExit = true;
+            }
+        );
         return this;
     }
 
