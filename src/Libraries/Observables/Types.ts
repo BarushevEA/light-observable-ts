@@ -140,5 +140,5 @@ export type IOrderedSubscribe<T> = {
 // };
 
 export type IPipePayload = { isNeedUnsubscribe: boolean, isNeedExit: boolean, payload: any };
-export type IConditionCallback<T> = (pipeData: IPipePayload, subsObj?: SubscribeObject<T>) => void;
+export type IChainCallback<T> = (pipeData: IPipePayload, subsObj?: SubscribeObject<T>) => void;
 
