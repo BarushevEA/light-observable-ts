@@ -18,14 +18,13 @@ function callbackSend<T>(value: T, subsObj: SubscribeObject<T>): void {
     if (subsObj.isPaused) return;
     if (!subsObj.isPipe) return listener(value);
 
-    const pipeData: IPipePayload = {isNeedUnsubscribe: false, isNeedExit: false, payload: value}
     for (let i = 0; i < subsObj.chainHandlers.length; i++) {
-        subsObj.chainHandlers[i](pipeData, subsObj);
-        if (pipeData.isNeedUnsubscribe) return subsObj.unsubscribe();
-        if (pipeData.isNeedExit) return;
+        subsObj.chainHandlers[i](subsObj);
+        if (subsObj.pipeData.isNeedUnsubscribe) return subsObj.unsubscribe();
+        if (subsObj.pipeData.isNeedExit) return;
     }
 
-    return listener(pipeData.payload);
+    return listener(subsObj.pipeData.payload);
 }
 
 export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
@@ -38,6 +37,7 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     _order = 0;
     isPaused = false;
     isPipe = false;
+    pipeData: IPipePayload = {isNeedUnsubscribe: false, isNeedExit: false, payload: null}
 
     chainHandlers: IChainCallback<T> [] = [];
 
@@ -62,6 +62,9 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
 
     send(value: T): void {
         try {
+            this.pipeData.payload = value;
+            this.pipeData.isNeedUnsubscribe = false;
+            this.pipeData.isNeedExit = false;
             callbackSend(value, this);
         } catch (err) {
             this.errorHandler(value, err);
@@ -70,9 +73,9 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
 
     setOnce(): ISubscribe<T> {
         this.chainHandlers.push(
-            (pipeData: IPipePayload, subsObj?: SubscribeObject<T>): void => {
-                (<any>(<any>subsObj).listener)(pipeData.payload);
-                pipeData.isNeedUnsubscribe = true;
+            (subsObj: SubscribeObject<T>): void => {
+                (<any>(<any>subsObj).listener)(subsObj.pipeData.payload);
+                subsObj.pipeData.isNeedUnsubscribe = true;
             }
         );
         return this;
@@ -80,8 +83,8 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
 
     unsubscribeByNegative(condition: ICallback<T>): ISubscribe<T> {
         this.chainHandlers.push(
-            (pipeData: IPipePayload): void => {
-                if (!condition(pipeData.payload)) pipeData.isNeedUnsubscribe = true;
+            (subsObj: SubscribeObject<T>): void => {
+                if (!condition(subsObj.pipeData.payload)) subsObj.pipeData.isNeedUnsubscribe = true;
             }
         );
         return this
@@ -89,8 +92,8 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
 
     unsubscribeByPositive(condition: ICallback<T>): ISubscribe<T> {
         this.chainHandlers.push(
-            (pipeData: IPipePayload): void => {
-                if (condition(pipeData.payload)) pipeData.isNeedUnsubscribe = true;
+            (subsObj: SubscribeObject<T>): void => {
+                if (condition(subsObj.pipeData.payload)) subsObj.pipeData.isNeedUnsubscribe = true;
             }
         );
         return this;
@@ -98,8 +101,8 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
 
     emitByNegative(condition: ICallback<T>): ISubscribe<T> {
         this.chainHandlers.push(
-            (pipeData: IPipePayload): void => {
-                if (condition(pipeData.payload)) pipeData.isNeedExit = true;
+            (subsObj: SubscribeObject<T>): void => {
+                if (condition(subsObj.pipeData.payload)) subsObj.pipeData.isNeedExit = true;
             }
         );
         return this;
@@ -107,8 +110,8 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
 
     emitByPositive(condition: ICallback<T>): ISubscribe<T> {
         this.chainHandlers.push(
-            (pipeData: IPipePayload): void => {
-                if (!condition(pipeData.payload)) pipeData.isNeedExit = true;
+            (subsObj: SubscribeObject<T>): void => {
+                if (!condition(subsObj.pipeData.payload)) subsObj.pipeData.isNeedExit = true;
             }
         );
         return this;
@@ -116,8 +119,8 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
 
     emitMatch(condition: ICallback<T>): ISubscribe<T> {
         this.chainHandlers.push(
-            (pipeData: IPipePayload): void => {
-                if (condition(pipeData.payload) !== pipeData.payload) pipeData.isNeedExit = true;
+            (subsObj: SubscribeObject<T>): void => {
+                if (condition(subsObj.pipeData.payload) !== subsObj.pipeData.payload) subsObj.pipeData.isNeedExit = true;
             }
         );
         return this;
