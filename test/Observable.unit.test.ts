@@ -1315,4 +1315,36 @@ class ObservableUnitTest {
         expect(2).to.be.equal(counter);
         expect(0).to.be.equal(errorCounter);
     }
+
+    @test 'pipe chain emitByNegative'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            console.log("====================>", data, counter);
+            if (counter === 1) expect("1234").to.be.equal(data);
+            if (counter === 2) expect("11111").to.be.equal(data);
+            if (counter === 3) expect("11115").to.be.equal(data);
+        };
+        this.OBSERVABLE$.pipe()
+            .emitByNegative(data => data.length === 1)
+            .emitByNegative(data => data === "22325")
+            .emitByNegative(data => data === "11315")
+            .subscribe(listener1, errorHandler);
+
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("1234");
+        this.OBSERVABLE$.next("11111");
+        this.OBSERVABLE$.next("11115");
+        this.OBSERVABLE$.next("1");
+        this.OBSERVABLE$.next("22325");
+
+        expect(3).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
 }
