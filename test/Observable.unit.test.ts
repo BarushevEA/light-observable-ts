@@ -1680,4 +1680,41 @@ class ObservableUnitTest {
         expect(7).to.be.equal(counter3);
         expect(0).to.be.equal(errorCounter);
     }
+
+    @test 'pipe chain switch/case'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            console.log("================>",counter, data);
+            if (counter === 1) expect("111").to.be.equal(data);
+            if (counter === 2) expect("222").to.be.equal(data);
+            if (counter === 3) expect("333").to.be.equal(data);
+            if (counter === 4) expect("333").to.be.equal(data);
+        };
+        this.OBSERVABLE$.pipe()
+            .switch()
+            .case(data=>data==="111")
+            .case(data=>data==="222")
+            .case(data=>data==="333")
+            .subscribe(listener1, errorHandler);
+
+        this.OBSERVABLE$.next("111");
+        this.OBSERVABLE$.next("1234");
+        this.OBSERVABLE$.next("11111");
+        this.OBSERVABLE$.next("11115");
+        this.OBSERVABLE$.next("1");
+        this.OBSERVABLE$.next("22325");
+        this.OBSERVABLE$.next("222");
+        this.OBSERVABLE$.next("333");
+        this.OBSERVABLE$.next("333");
+
+        expect(4).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
 }

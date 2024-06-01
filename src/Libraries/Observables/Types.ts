@@ -1,4 +1,4 @@
-import {AbstractPipe} from "./AbstractPipe";
+import {Pipe, SwitchCase} from "./Pipe";
 
 export type ICallback<T> = (value?: T) => any;
 export type IMarkedForUnsubscribe = {
@@ -6,19 +6,18 @@ export type IMarkedForUnsubscribe = {
 };
 export type IErrorCallback = (errorData: any, errorMessage: any) => void;
 export type ISubscribe<T> = {
-    subscribe(listener: IListener<T> | ISetObservableValue , errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
+    subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
 };
 export type IListener<T> = ICallback<T>;
 export type IDestroy = {
     destroy(): void;
     isDestroyed: boolean;
 };
-// export type IOnceMarker = {
-//     isOnce: boolean;
-//     isFinished: boolean;
-// };
 export type IOrder = {
     order: number;
+};
+export type ISwitch<T> = {
+    switch(): SwitchCase<T>;
 };
 export type IOnce<T> = {
     setOnce(): ISubscribe<T>;
@@ -39,6 +38,7 @@ export type ISetup<T> =
     IEmitByPositive<T> &
     IEmitMatchCondition<T> &
     IOnce<T> &
+    ISwitch<T> &
     ISubscribe<T>;
 export type IOrderedSetup<T> =
     IOrderedUnsubscribeByNegative<T> &
@@ -138,5 +138,8 @@ export type IOrderedSubscribe<T> = {
     subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike;
 };
 
-export type IPipePayload = { isNeedUnsubscribe: boolean, isAvailable: boolean, payload: any };
-export type IChainCallback<T> = (pipeObj: AbstractPipe<T>) => void;
+export type IPipePayload = { isBreakChain: boolean, isNeedUnsubscribe: boolean, isAvailable: boolean, payload: any };
+export type IChainCallback<T> = (pipeObj: Pipe<T>) => void;
+export type IPipeCase<T> = {
+    case(condition: ICallback<any>): IPipeCase<T> & ISubscribe<T>;
+};

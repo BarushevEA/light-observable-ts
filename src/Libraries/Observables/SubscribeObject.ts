@@ -7,10 +7,10 @@ import {
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
-import {AbstractPipe} from "./AbstractPipe";
+import {Pipe} from "./Pipe";
 import {getListener} from "./FunctionLibs";
 
-export class SubscribeObject<T> extends AbstractPipe<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
+export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
     isMarkedForUnsubscribe: boolean = false;
     observable: IObserver<T> | undefined;
     listener: IListener<T> | undefined;
@@ -44,6 +44,7 @@ export class SubscribeObject<T> extends AbstractPipe<T> implements ISubscribeObj
     send(value: T): void {
         try {
             this.pipeData.payload = value;
+            this.pipeData.isBreakChain = false;
             processValue(value, this);
         } catch (err) {
             this.errorHandler(value, err);
@@ -81,6 +82,7 @@ function processValue<T>(value: T, subsObj: SubscribeObject<T>): void {
         subsObj.chainHandlers[i](subsObj);
         if (subsObj.pipeData.isNeedUnsubscribe) return subsObj.unsubscribe();
         if (!subsObj.pipeData.isAvailable) return;
+        if (subsObj.pipeData.isBreakChain) break;
     }
 
     return listener(subsObj.pipeData.payload);
