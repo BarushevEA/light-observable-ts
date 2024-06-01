@@ -85,6 +85,9 @@ export type IPause = {
 export type IObservablePipe<T> = {
     pipe(): ISetup<T> | undefined
 };
+export type IOrderedObservablePipe<T> = {
+    pipe(): ISetup<T> | undefined
+};
 export type ISend<T> = {
     send(value: T): void;
 };
@@ -92,31 +95,31 @@ export type IUnsubscribeByNegative<T> = {
     unsubscribeByNegative(condition: ICallback<any>): ISetup<T>;
 };
 export type IOrderedUnsubscribeByNegative<T> = {
-    unsubscribeByNegative(condition: ICallback<any>): IOrderedSubscribe<T>;
+    unsubscribeByNegative(condition: ICallback<any>): IOrderedSetup<T>;
 };
 export type IUnsubscribeByPositive<T> = {
     unsubscribeByPositive(condition: ICallback<any>): ISetup<T>;
 };
 export type IOrderedUnsubscribeByPositive<T> = {
-    unsubscribeByPositive(condition: ICallback<any>): IOrderedSubscribe<T>;
+    unsubscribeByPositive(condition: ICallback<any>): IOrderedSetup<T>;
 };
 export type IEmitByNegative<T> = {
     emitByNegative(condition: ICallback<any>): ISetup<T>;
 };
 export type IOrderedEmitByNegative<T> = {
-    emitByNegative(condition: ICallback<any>): IOrderedSubscribe<T>;
+    emitByNegative(condition: ICallback<any>): IOrderedSetup<T>;
 };
 export type IEmitByPositive<T> = {
     emitByPositive(condition: ICallback<any>): ISetup<T>;
 };
 export type IOrderedEmitByPositive<T> = {
-    emitByPositive(condition: ICallback<any>): IOrderedSubscribe<T>;
+    emitByPositive(condition: ICallback<any>): IOrderedSetup<T>;
 };
 export type IEmitMatchCondition<T> = {
     emitMatch(condition: ICallback<any>): ISetup<T>;
 };
 export type IOrderedEmitMatchCondition<T> = {
-    emitMatch(condition: ICallback<any>): IOrderedSubscribe<T>;
+    emitMatch(condition: ICallback<any>): IOrderedSetup<T>;
 };
 export type ICollector =
     IDestroy &
@@ -129,7 +132,7 @@ export type ICollector =
 export type IOrderedObservable = {
     sortByOrder(): boolean;
 };
-export type IOrdered<T> = IObserver<T> & IOrderedObservable;
+export type IOrdered<T> = IObserver<T> & IOrderedObservable & IOrderedObservablePipe<T>;
 export type IOrderedSubscriptionLike = (ISubscriptionLike & IOrder);
 export type IOrderedSubscribe<T> = {
     subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike;

@@ -36,14 +36,14 @@ export class OrderedObservable<T>
         if (!listener) return undefined;
         const subscribeObject = new OrderedSubscribeObject(this, false);
         subscribeObject.subscribe(listener, errorHandler);
-        this.listeners.push(subscribeObject);
+        this.listeners.push(<any>subscribeObject);
         return subscribeObject;
     }
 
     pipe(): IOrderedSetup<T> | undefined {
         if (this._isDestroyed) return undefined;
         const subscribeObject = new OrderedSubscribeObject(this, true);
-        this.listeners.push(subscribeObject);
+        this.listeners.push(<any>subscribeObject);
         return subscribeObject;
     }
 
