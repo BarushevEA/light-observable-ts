@@ -1,4 +1,4 @@
-import {Pipe, SwitchCase} from "./Pipe";
+import {SwitchCase} from "./Pipe";
 
 export type ICallback<T> = (value?: T) => any;
 export type IMarkedForUnsubscribe = {
@@ -17,6 +17,9 @@ export type IOrder = {
     order: number;
 };
 export type ISwitch<T> = {
+    switch(): SwitchCase<T>;
+};
+export type IOrderedSwitch<T> = {
     switch(): SwitchCase<T>;
 };
 export type IOnce<T> = {
@@ -47,6 +50,7 @@ export type IOrderedSetup<T> =
     IOrderedEmitByPositive<T> &
     IOrderedEmitMatchCondition<T> &
     IOrderedOnce<T> &
+    IOrderedSwitch<T> &
     IOrderedSubscribe<T>;
 export type ISubscribeObject<T> =
     ISubscriptionLike &
@@ -139,7 +143,7 @@ export type IOrderedSubscribe<T> = {
 };
 
 export type IPipePayload = { isBreakChain: boolean, isNeedUnsubscribe: boolean, isAvailable: boolean, payload: any };
-export type IChainCallback<T> = (pipeObj: Pipe<T>) => void;
+export type IChainCallback = () => void;
 export type IPipeCase<T> = {
     case(condition: ICallback<any>): IPipeCase<T> & ISubscribe<T>;
 };

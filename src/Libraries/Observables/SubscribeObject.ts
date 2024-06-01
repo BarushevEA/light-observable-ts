@@ -79,7 +79,7 @@ function processValue<T>(value: T, subsObj: SubscribeObject<T>): void {
         subsObj.pipeData.isNeedUnsubscribe = false;
         subsObj.pipeData.isAvailable = false;
 
-        subsObj.chainHandlers[i](subsObj);
+        subsObj.chainHandlers[i]();
         if (subsObj.pipeData.isNeedUnsubscribe) return subsObj.unsubscribe();
         if (!subsObj.pipeData.isAvailable) return;
         if (subsObj.pipeData.isBreakChain) break;

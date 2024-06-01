@@ -12,63 +12,69 @@ import {
 } from "./Types";
 
 export abstract class Pipe<T> implements ISubscribe<T> {
-    chainHandlers: IChainCallback<T> [] = [];
+    chainHandlers: IChainCallback [] = [];
     pipeData: IPipePayload = {isBreakChain: false, isNeedUnsubscribe: false, isAvailable: false, payload: null};
 
     abstract subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
 
     setOnce(): ISubscribe<T> {
+        const data = this.pipeData;
         this.chainHandlers.push(
-            (pipeObj: Pipe<T>): void => {
-                (<any>(<any>pipeObj).listener)(pipeObj.pipeData.payload);
-                pipeObj.pipeData.isNeedUnsubscribe = true;
+            (): void => {
+                (<IListener<T>>(<any>this).listener)(data.payload);
+                data.isNeedUnsubscribe = true;
             }
         );
         return this;
     }
 
     unsubscribeByNegative(condition: ICallback<T>): ISetup<T> {
+        const data = this.pipeData;
         this.chainHandlers.push(
-            (pipeObj: Pipe<T>): void => {
-                pipeObj.pipeData.isAvailable = true;
-                if (!condition(pipeObj.pipeData.payload)) pipeObj.pipeData.isNeedUnsubscribe = true;
+            (): void => {
+                data.isAvailable = true;
+                if (!condition(data.payload)) data.isNeedUnsubscribe = true;
             }
         );
         return this
     }
 
     unsubscribeByPositive(condition: ICallback<T>): ISetup<T> {
+        const data = this.pipeData;
         this.chainHandlers.push(
-            (pipeObj: Pipe<T>): void => {
-                pipeObj.pipeData.isAvailable = true;
-                if (condition(pipeObj.pipeData.payload)) pipeObj.pipeData.isNeedUnsubscribe = true;
+            (): void => {
+                data.isAvailable = true;
+                if (condition(data.payload)) data.isNeedUnsubscribe = true;
             }
         );
         return this;
     }
 
     emitByNegative(condition: ICallback<T>): ISetup<T> {
+        const data = this.pipeData;
         this.chainHandlers.push(
-            (pipeObj: Pipe<T>): void => {
-                if (!condition(pipeObj.pipeData.payload)) pipeObj.pipeData.isAvailable = true;
+            (): void => {
+                if (!condition(data.payload)) data.isAvailable = true
             }
         );
         return this;
     }
 
     emitByPositive(condition: ICallback<T>): ISetup<T> {
+        const data = this.pipeData;
         this.chainHandlers.push(
-            (pipeObj: Pipe<T>): void => {
-                if (condition(pipeObj.pipeData.payload)) pipeObj.pipeData.isAvailable = true;
+            (): void => {
+                if (condition(data.payload)) data.isAvailable = true;
             }
         );
         return this;
     }
 
     emitMatch(condition: ICallback<T>): ISetup<T> {
+        const data = this.pipeData;
         this.chainHandlers.push(
-            (pipeObj: Pipe<T>): void => {
-                if (condition(pipeObj.pipeData.payload) == pipeObj.pipeData.payload) pipeObj.pipeData.isAvailable = true;
+            (): void => {
+                if (condition(data.payload) == data.payload) data.isAvailable = true;
             }
         );
         return this;
@@ -94,14 +100,13 @@ export class SwitchCase<T> implements ISubscribe<T>, IPipeCase<T> {
     case(condition: ICallback<any>): IPipeCase<T> & ISubscribe<T> {
         this.caseCounter++;
         const id = this.caseCounter;
-        this.pipe.chainHandlers.push(
-            (pipeObj: Pipe<T>): void => {
-                const pipe = pipeObj.pipeData;
-                pipe.isAvailable = true
-                if (condition(pipe.payload)) pipe.isBreakChain = true;
-                if (id === this.pipe.chainHandlers.length && !pipe.isBreakChain) {
-                    pipe.isAvailable = false;
-                }
+        const data = this.pipe.pipeData;
+        const chain = this.pipe.chainHandlers;
+        chain.push(
+            (): void => {
+                data.isAvailable = true
+                if (condition(data.payload)) data.isBreakChain = true;
+                if (id === chain.length && !data.isBreakChain) data.isAvailable = false;
             }
         );
         return this;
