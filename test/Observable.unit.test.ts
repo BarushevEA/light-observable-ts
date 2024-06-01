@@ -1296,24 +1296,23 @@ class ObservableUnitTest {
         const listener1 = (data: string) => {
             counter++;
             console.log("====================>", data, counter);
-            if (counter === 1) expect("1").to.be.equal(data);
-            if (counter === 2) expect("5").to.be.equal(data);
-            if (counter === 3) expect("6").to.be.equal(data);
+            if (counter === 1) expect("11315").to.be.equal(data);
+            if (counter === 2) expect("22325").to.be.equal(data);
         };
         this.OBSERVABLE$.pipe()
-            .emitByPositive(data=>data=="1")
-            .emitByPositive(data=>data=="5")
-            .emitByPositive(data=>data=="6")
+            .emitByPositive(data => data.length === 5)
+            .emitByPositive(data => data[2] === "3")
+            .emitByPositive(data => data[4] === "5")
             .subscribe(listener1, errorHandler);
 
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("1234");
+        this.OBSERVABLE$.next("11111");
+        this.OBSERVABLE$.next("11115");
         this.OBSERVABLE$.next("1");
-        this.OBSERVABLE$.next("2");
-        this.OBSERVABLE$.next("3");
-        this.OBSERVABLE$.next("4");
-        this.OBSERVABLE$.next("5");
-        this.OBSERVABLE$.next("6");
+        this.OBSERVABLE$.next("22325");
 
-        expect(3).to.be.equal(counter);
+        expect(2).to.be.equal(counter);
         expect(0).to.be.equal(errorCounter);
     }
 }

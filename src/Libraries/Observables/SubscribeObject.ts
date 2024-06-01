@@ -74,15 +74,12 @@ function processValue<T>(value: T, subsObj: SubscribeObject<T>): void {
 
     for (let i = 0; i < subsObj.chainHandlers.length; i++) {
         subsObj.pipeData.isNeedUnsubscribe = false;
-        subsObj.pipeData.isNeedSend = false;
+        subsObj.pipeData.isAvailable = false;
 
         subsObj.chainHandlers[i](subsObj);
         if (subsObj.pipeData.isNeedUnsubscribe) return subsObj.unsubscribe();
-        if (subsObj.pipeData.isNeedSend) {
-            listener(subsObj.pipeData.payload);
-            break;
-        }
+        if (!subsObj.pipeData.isAvailable) return;
     }
 
-    return;
+    return listener(subsObj.pipeData.payload);
 }

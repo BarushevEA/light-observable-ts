@@ -135,5 +135,5 @@ export type IOrderedSubscribe<T> = {
     subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike;
 };
 
-export type IPipePayload = { isNeedUnsubscribe: boolean, isNeedSend: boolean, payload: any };
+export type IPipePayload = { isNeedUnsubscribe: boolean, isAvailable: boolean, payload: any };
 export type IChainCallback<T> = (pipeObj: AbstractPipe<T>) => void;
