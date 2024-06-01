@@ -1347,4 +1347,65 @@ class ObservableUnitTest {
         expect(3).to.be.equal(counter);
         expect(0).to.be.equal(errorCounter);
     }
+
+    @test 'pipe chain emitByNegative + emitByPositive'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            console.log("====================>", data, counter);
+            if (counter === 1) expect("1").to.be.equal(data);
+            if (counter === 2) expect("345").to.be.equal(data);
+        };
+        this.OBSERVABLE$.pipe()
+            .emitByPositive(data => data.length < 5)
+            .emitByNegative(data => data.includes("2"))
+            .subscribe(listener1, errorHandler);
+
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("1234");
+        this.OBSERVABLE$.next("11111");
+        this.OBSERVABLE$.next("11115");
+        this.OBSERVABLE$.next("1");
+        this.OBSERVABLE$.next("345");
+        this.OBSERVABLE$.next("22325");
+
+        expect(2).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'pipe chain emitByPositive + once'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            console.log("====================>", data, counter);
+            if (counter === 1) expect("1234").to.be.equal(data);
+        };
+        this.OBSERVABLE$.pipe()
+            .emitByPositive(data => data.length < 5)
+            .setOnce()
+            .subscribe(listener1, errorHandler);
+
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11111");
+        this.OBSERVABLE$.next("11115");
+        this.OBSERVABLE$.next("1234");
+        this.OBSERVABLE$.next("1");
+        this.OBSERVABLE$.next("345");
+        this.OBSERVABLE$.next("22325");
+
+        expect(1).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
 }
