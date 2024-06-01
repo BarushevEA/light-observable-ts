@@ -1492,4 +1492,102 @@ class ObservableUnitTest {
         expect(1).to.be.equal(counter);
         expect(0).to.be.equal(errorCounter);
     }
+
+    @test 'pipe chain unsubscribeByPositive'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            expect("11315").to.be.equal(data);
+        };
+        this.OBSERVABLE$.pipe()
+            .unsubscribeByPositive(data => data === "11")
+            .emitMatch(() => "11315")
+            .subscribe(listener1, errorHandler);
+
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+
+        expect(4).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'pipe chain unsubscribeByNegative'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            expect("11315").to.be.equal(data);
+        };
+        this.OBSERVABLE$.pipe()
+            .unsubscribeByNegative(data => data === "11315")
+            .emitMatch(() => "11315")
+            .subscribe(listener1, errorHandler);
+
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+
+        expect(4).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'pipe chain unsubscribeByNegative + unsubscribeByPositive'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            expect("11315").to.be.equal(data);
+        };
+        this.OBSERVABLE$.pipe()
+            .unsubscribeByNegative(data => data.length === 5)
+            .unsubscribeByPositive(data => data === "22222")
+            .emitMatch(() => "11315")
+            .subscribe(listener1, errorHandler);
+
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("22222");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+
+        expect(2).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
 }

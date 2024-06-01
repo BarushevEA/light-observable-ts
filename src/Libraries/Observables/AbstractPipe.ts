@@ -28,6 +28,7 @@ export abstract class AbstractPipe<T> {
     unsubscribeByNegative(condition: ICallback<T>): ISetup<T> {
         this.chainHandlers.push(
             (pipeObj: AbstractPipe<T>): void => {
+                pipeObj.pipeData.isAvailable = true;
                 if (!condition(pipeObj.pipeData.payload)) pipeObj.pipeData.isNeedUnsubscribe = true;
             }
         );
@@ -37,6 +38,7 @@ export abstract class AbstractPipe<T> {
     unsubscribeByPositive(condition: ICallback<T>): ISetup<T> {
         this.chainHandlers.push(
             (pipeObj: AbstractPipe<T>): void => {
+                pipeObj.pipeData.isAvailable = true;
                 if (condition(pipeObj.pipeData.payload)) pipeObj.pipeData.isNeedUnsubscribe = true;
             }
         );
