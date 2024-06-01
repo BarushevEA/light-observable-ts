@@ -1590,4 +1590,42 @@ class ObservableUnitTest {
         expect(2).to.be.equal(counter);
         expect(0).to.be.equal(errorCounter);
     }
+
+    @test 'subscribe observable'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+
+        const observable1 = new Observable("");
+        const observable2 = new Observable("");
+
+        const listener1 = (data: string) => {
+            counter++;
+            expect(data).to.be.equal('test');
+        }
+        const listener2 = (data: string) => {
+            counter++;
+            expect(data).to.be.equal('test');
+        }
+        const listener3 = (data: string) => {
+            counter++;
+            expect(data).to.be.equal('test');
+        }
+
+        observable1.subscribe(listener1, errorHandler);
+        observable2.subscribe(listener2, errorHandler);
+
+        this.OBSERVABLE$.subscribe(observable1, errorHandler);
+        this.OBSERVABLE$.subscribe(observable2, errorHandler);
+        this.OBSERVABLE$.subscribe(listener3, errorHandler);
+
+        this.OBSERVABLE$.next('test');
+
+        expect(3).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
 }

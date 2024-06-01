@@ -6,6 +6,7 @@ import {
     IOrdered,
     IOrderedSetup,
     IOrderedSubscriptionLike,
+    ISetObservableValue,
     ISubscriptionLike
 } from "./Types";
 import {deleteFromArray, sortAscending, sortDescending} from "./FunctionLibs";
@@ -31,12 +32,10 @@ export class OrderedObservable<T>
         return true;
     }
 
-    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike | undefined {
-        if (this._isDestroyed) return undefined;
-        if (!listener) return undefined;
+    subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): IOrderedSubscriptionLike | undefined {
+        if (!this.isSubsValid(listener)) return undefined;
         const subscribeObject = new OrderedSubscribeObject(this, false);
-        subscribeObject.subscribe(listener, errorHandler);
-        this.listeners.push(<any>subscribeObject);
+        this.addObserver(<any>subscribeObject, listener, errorHandler);
         return subscribeObject;
     }
 

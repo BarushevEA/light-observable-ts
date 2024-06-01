@@ -3,10 +3,12 @@ import {
     IListener,
     IMarkedForUnsubscribe,
     IObserver,
+    ISetObservableValue,
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
 import {AbstractPipe} from "./AbstractPipe";
+import {getListener} from "./FunctionLibs";
 
 export class SubscribeObject<T> extends AbstractPipe<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
     isMarkedForUnsubscribe: boolean = false;
@@ -25,8 +27,8 @@ export class SubscribeObject<T> extends AbstractPipe<T> implements ISubscribeObj
         this.isPipe = !!isPipe;
     }
 
-    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike {
-        this.listener = listener;
+    subscribe(observer: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike {
+        this.listener = getListener(observer);
         errorHandler && (this.errorHandler = errorHandler);
         return this;
     }

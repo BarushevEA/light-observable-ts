@@ -3,12 +3,13 @@ import {
     IListener,
     IMarkedForUnsubscribe,
     IObserver,
+    ISetObservableValue,
     ISetup,
     IStream,
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
-import {quickDeleteFromArray} from "./FunctionLibs";
+import {getListener, quickDeleteFromArray} from "./FunctionLibs";
 import {SubscribeObject} from "./SubscribeObject";
 
 export class Observable<T> implements IObserver<T>, IStream<T> {
@@ -93,13 +94,21 @@ export class Observable<T> implements IObserver<T>, IStream<T> {
         return this.listeners.length;
     }
 
-    public subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
-        if (this._isDestroyed) return undefined;
-        if (!listener) return undefined;
+    public subscribe(observer: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
+        if (!this.isSubsValid(observer)) return undefined;
         const subscribeObject = new SubscribeObject(this, false);
-        subscribeObject.subscribe(listener, errorHandler);
-        this.listeners.push(subscribeObject);
+        this.addObserver(subscribeObject, observer, errorHandler);
         return subscribeObject;
+    }
+
+    protected addObserver(subscribeObject: SubscribeObject<T>, observer: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback) {
+        subscribeObject.subscribe(observer, errorHandler);
+        this.listeners.push(subscribeObject);
+    }
+
+    protected isSubsValid(listener: IListener<T> | ISetObservableValue): boolean {
+        if (this._isDestroyed) return false;
+        return !!listener;
     }
 
     pipe(): ISetup<T> | undefined {

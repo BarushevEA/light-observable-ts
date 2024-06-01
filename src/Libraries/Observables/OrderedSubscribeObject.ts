@@ -8,7 +8,8 @@ import {
     IOrderedObservable,
     IOrderedSetup,
     IOrderedSubscribe,
-    IOrderedSubscriptionLike
+    IOrderedSubscriptionLike,
+    ISetObservableValue
 } from "./Types";
 import {OrderedObservable} from "./OrderedObservable";
 
@@ -31,9 +32,8 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> implements IOr
         (<IOrderedObservable><any>this.observable).sortByOrder();
     }
 
-    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike {
-        this.listener = listener;
-        errorHandler && (this.errorHandler = errorHandler);
+    subscribe(observer: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): IOrderedSubscriptionLike {
+        super.subscribe(observer, errorHandler)
         return this;
     }
 
