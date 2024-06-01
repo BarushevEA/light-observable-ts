@@ -1284,4 +1284,36 @@ class ObservableUnitTest {
         expect(true).to.be.equal(this.OBSERVABLE$.isEnable);
         expect(1).to.be.equal(this.OBSERVABLE$.size());
     }
+
+    @test 'pipe chain emitByPositive'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            console.log("====================>", data, counter);
+            if (counter === 1) expect("1").to.be.equal(data);
+            if (counter === 2) expect("5").to.be.equal(data);
+            if (counter === 3) expect("6").to.be.equal(data);
+        };
+        this.OBSERVABLE$.pipe()
+            .emitByPositive(data=>data=="1")
+            .emitByPositive(data=>data=="5")
+            .emitByPositive(data=>data=="6")
+            .subscribe(listener1, errorHandler);
+
+        this.OBSERVABLE$.next("1");
+        this.OBSERVABLE$.next("2");
+        this.OBSERVABLE$.next("3");
+        this.OBSERVABLE$.next("4");
+        this.OBSERVABLE$.next("5");
+        this.OBSERVABLE$.next("6");
+
+        expect(3).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
 }

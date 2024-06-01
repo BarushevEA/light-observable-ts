@@ -42,8 +42,6 @@ export class SubscribeObject<T> extends AbstractPipe<T> implements ISubscribeObj
     send(value: T): void {
         try {
             this.pipeData.payload = value;
-            this.pipeData.isNeedUnsubscribe = false;
-            this.pipeData.isNeedExit = false;
             processValue(value, this);
         } catch (err) {
             this.errorHandler(value, err);
@@ -75,10 +73,16 @@ function processValue<T>(value: T, subsObj: SubscribeObject<T>): void {
     if (!subsObj.isPipe) return listener(value);
 
     for (let i = 0; i < subsObj.chainHandlers.length; i++) {
+        subsObj.pipeData.isNeedUnsubscribe = false;
+        subsObj.pipeData.isNeedSend = false;
+
         subsObj.chainHandlers[i](subsObj);
         if (subsObj.pipeData.isNeedUnsubscribe) return subsObj.unsubscribe();
-        if (subsObj.pipeData.isNeedExit) return;
+        if (subsObj.pipeData.isNeedSend) {
+            listener(subsObj.pipeData.payload);
+            break;
+        }
     }
 
-    return listener(subsObj.pipeData.payload);
+    return;
 }

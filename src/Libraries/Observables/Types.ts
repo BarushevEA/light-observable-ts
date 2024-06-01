@@ -89,31 +89,31 @@ export type ISend<T> = {
     send(value: T): void;
 };
 export type IUnsubscribeByNegative<T> = {
-    unsubscribeByNegative(condition: ICallback<any>): ISubscribe<T>;
+    unsubscribeByNegative(condition: ICallback<any>): ISetup<T>;
 };
 export type IOrderedUnsubscribeByNegative<T> = {
     unsubscribeByNegative(condition: ICallback<any>): IOrderedSubscribe<T>;
 };
 export type IUnsubscribeByPositive<T> = {
-    unsubscribeByPositive(condition: ICallback<any>): ISubscribe<T>;
+    unsubscribeByPositive(condition: ICallback<any>): ISetup<T>;
 };
 export type IOrderedUnsubscribeByPositive<T> = {
     unsubscribeByPositive(condition: ICallback<any>): IOrderedSubscribe<T>;
 };
 export type IEmitByNegative<T> = {
-    emitByNegative(condition: ICallback<any>): ISubscribe<T>;
+    emitByNegative(condition: ICallback<any>): ISetup<T>;
 };
 export type IOrderedEmitByNegative<T> = {
     emitByNegative(condition: ICallback<any>): IOrderedSubscribe<T>;
 };
 export type IEmitByPositive<T> = {
-    emitByPositive(condition: ICallback<any>): ISubscribe<T>;
+    emitByPositive(condition: ICallback<any>): ISetup<T>;
 };
 export type IOrderedEmitByPositive<T> = {
     emitByPositive(condition: ICallback<any>): IOrderedSubscribe<T>;
 };
 export type IEmitMatchCondition<T> = {
-    emitMatch(condition: ICallback<any>): ISubscribe<T>;
+    emitMatch(condition: ICallback<any>): ISetup<T>;
 };
 export type IOrderedEmitMatchCondition<T> = {
     emitMatch(condition: ICallback<any>): IOrderedSubscribe<T>;
@@ -135,5 +135,5 @@ export type IOrderedSubscribe<T> = {
     subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike;
 };
 
-export type IPipePayload = { isNeedUnsubscribe: boolean, isNeedExit: boolean, payload: any };
+export type IPipePayload = { isNeedUnsubscribe: boolean, isNeedSend: boolean, payload: any };
 export type IChainCallback<T> = (pipeObj: AbstractPipe<T>) => void;

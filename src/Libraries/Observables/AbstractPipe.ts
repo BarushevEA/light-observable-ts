@@ -2,7 +2,7 @@ import {ICallback, IChainCallback, IErrorCallback, IListener, IPipePayload, ISet
 
 export abstract class AbstractPipe<T> {
     chainHandlers: IChainCallback<T> [] = [];
-    pipeData: IPipePayload = {isNeedUnsubscribe: false, isNeedExit: false, payload: null};
+    pipeData: IPipePayload = {isNeedUnsubscribe: false, isNeedSend: false, payload: null};
 
     abstract subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
 
@@ -37,7 +37,7 @@ export abstract class AbstractPipe<T> {
     emitByNegative(condition: ICallback<T>): ISetup<T> {
         this.chainHandlers.push(
             (pipeObj: AbstractPipe<T>): void => {
-                if (condition(pipeObj.pipeData.payload)) pipeObj.pipeData.isNeedExit = true;
+                if (!condition(pipeObj.pipeData.payload)) pipeObj.pipeData.isNeedSend = true;
             }
         );
         return this;
@@ -46,7 +46,7 @@ export abstract class AbstractPipe<T> {
     emitByPositive(condition: ICallback<T>): ISetup<T> {
         this.chainHandlers.push(
             (pipeObj: AbstractPipe<T>): void => {
-                if (!condition(pipeObj.pipeData.payload)) pipeObj.pipeData.isNeedExit = true;
+                if (condition(pipeObj.pipeData.payload)) pipeObj.pipeData.isNeedSend = true;
             }
         );
         return this;
@@ -55,7 +55,7 @@ export abstract class AbstractPipe<T> {
     emitMatch(condition: ICallback<T>): ISetup<T> {
         this.chainHandlers.push(
             (pipeObj: AbstractPipe<T>): void => {
-                if (condition(pipeObj.pipeData.payload) !== pipeObj.pipeData.payload) pipeObj.pipeData.isNeedExit = true;
+                if (condition(pipeObj.pipeData.payload) == pipeObj.pipeData.payload) pipeObj.pipeData.isNeedSend = true;
             }
         );
         return this;
