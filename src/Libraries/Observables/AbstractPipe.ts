@@ -15,7 +15,7 @@ export abstract class AbstractPipe<T> {
 
     abstract subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
 
-    setOnce(): ISetup<T> {
+    setOnce(): ISubscribe<T> {
         this.chainHandlers.push(
             (pipeObj: AbstractPipe<T>): void => {
                 (<any>(<any>pipeObj).listener)(pipeObj.pipeData.payload);

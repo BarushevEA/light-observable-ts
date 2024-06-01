@@ -1295,7 +1295,6 @@ class ObservableUnitTest {
         };
         const listener1 = (data: string) => {
             counter++;
-            console.log("====================>", data, counter);
             if (counter === 1) expect("11315").to.be.equal(data);
             if (counter === 2) expect("22325").to.be.equal(data);
         };
@@ -1326,7 +1325,6 @@ class ObservableUnitTest {
         };
         const listener1 = (data: string) => {
             counter++;
-            console.log("====================>", data, counter);
             if (counter === 1) expect("1234").to.be.equal(data);
             if (counter === 2) expect("11111").to.be.equal(data);
             if (counter === 3) expect("11115").to.be.equal(data);
@@ -1358,7 +1356,6 @@ class ObservableUnitTest {
         };
         const listener1 = (data: string) => {
             counter++;
-            console.log("====================>", data, counter);
             if (counter === 1) expect("1").to.be.equal(data);
             if (counter === 2) expect("345").to.be.equal(data);
         };
@@ -1389,7 +1386,6 @@ class ObservableUnitTest {
         };
         const listener1 = (data: string) => {
             counter++;
-            console.log("====================>", data, counter);
             if (counter === 1) expect("1234").to.be.equal(data);
         };
         this.OBSERVABLE$.pipe()
@@ -1404,6 +1400,94 @@ class ObservableUnitTest {
         this.OBSERVABLE$.next("1");
         this.OBSERVABLE$.next("345");
         this.OBSERVABLE$.next("22325");
+
+        expect(1).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'pipe chain emitMatch'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            if (counter === 1) expect("11315").to.be.equal(data);
+        };
+        this.OBSERVABLE$.pipe()
+            .emitMatch(() => "11315")
+            .subscribe(listener1, errorHandler);
+
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11111");
+        this.OBSERVABLE$.next("11115");
+        this.OBSERVABLE$.next("1234");
+        this.OBSERVABLE$.next("1");
+        this.OBSERVABLE$.next("345");
+        this.OBSERVABLE$.next("22325");
+
+        expect(1).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'pipe chain emitMatch + emitMatch collision'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+        };
+        this.OBSERVABLE$.pipe()
+            .emitMatch(() => "11315")
+            .emitMatch(() => "1")
+            .subscribe(listener1, errorHandler);
+
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11111");
+        this.OBSERVABLE$.next("11115");
+        this.OBSERVABLE$.next("1234");
+        this.OBSERVABLE$.next("1");
+        this.OBSERVABLE$.next("345");
+        this.OBSERVABLE$.next("22325");
+
+        expect(0).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'pipe chain emitMatch + once'() {
+        let errorCounter = 0;
+        let counter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const listener1 = (data: string) => {
+            counter++;
+            if (counter === 1) expect("11315").to.be.equal(data);
+        };
+        this.OBSERVABLE$.pipe()
+            .emitMatch(() => "11315")
+            .setOnce()
+            .subscribe(listener1, errorHandler);
+
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
+        this.OBSERVABLE$.next("11315");
 
         expect(1).to.be.equal(counter);
         expect(0).to.be.equal(errorCounter);
