@@ -9,7 +9,7 @@ import {
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
-import {getListener, quickDeleteFromArray} from "./FunctionLibs";
+import {quickDeleteFromArray} from "./FunctionLibs";
 import {SubscribeObject} from "./SubscribeObject";
 
 export class Observable<T> implements IObserver<T>, IStream<T> {
