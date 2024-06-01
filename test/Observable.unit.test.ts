@@ -1628,4 +1628,56 @@ class ObservableUnitTest {
         expect(3).to.be.equal(counter);
         expect(0).to.be.equal(errorCounter);
     }
+
+    @test 'subscribe observable with pipe'() {
+        let errorCounter = 0;
+        let counter1 = 0;
+        let counter2 = 0;
+        let counter3 = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+
+        const observable1 = new Observable("");
+        const observable2 = new Observable("");
+
+        const listener1 = (data: string) => {
+            counter1++;
+            expect(data).to.be.equal('test1');
+        }
+        const listener2 = (data: string) => {
+            counter2++;
+            expect(data).to.be.equal('test2');
+        }
+        const listener3 = (data: string) => {
+            counter3++;
+        }
+
+        observable1.subscribe(listener1, errorHandler);
+        observable2.subscribe(listener2, errorHandler);
+
+        this.OBSERVABLE$.pipe()
+            .emitMatch(() => 'test1')
+            .subscribe(observable1, errorHandler);
+        this.OBSERVABLE$.pipe()
+            .emitMatch(() => 'test2')
+            .subscribe(observable2, errorHandler);
+        this.OBSERVABLE$.subscribe(listener3, errorHandler);
+
+        this.OBSERVABLE$.next('test1');
+        this.OBSERVABLE$.next('test1');
+        this.OBSERVABLE$.next('test1');
+        this.OBSERVABLE$.next('test1');
+
+        this.OBSERVABLE$.next('test2');
+        this.OBSERVABLE$.next('test2');
+        this.OBSERVABLE$.next('test2');
+
+        expect(4).to.be.equal(counter1);
+        expect(3).to.be.equal(counter2);
+        expect(7).to.be.equal(counter3);
+        expect(0).to.be.equal(errorCounter);
+    }
 }

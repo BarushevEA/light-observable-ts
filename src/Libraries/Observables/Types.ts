@@ -6,7 +6,7 @@ export type IMarkedForUnsubscribe = {
 };
 export type IErrorCallback = (errorData: any, errorMessage: any) => void;
 export type ISubscribe<T> = {
-    subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
+    subscribe(listener: IListener<T> | ISetObservableValue , errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
 };
 export type IListener<T> = ICallback<T>;
 export type IDestroy = {

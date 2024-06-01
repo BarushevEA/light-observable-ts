@@ -4,6 +4,7 @@ import {
     IErrorCallback,
     IListener,
     IPipePayload,
+    ISetObservableValue,
     ISetup,
     ISubscribe,
     ISubscriptionLike
@@ -13,7 +14,7 @@ export abstract class AbstractPipe<T> {
     chainHandlers: IChainCallback<T> [] = [];
     pipeData: IPipePayload = {isNeedUnsubscribe: false, isAvailable: false, payload: null};
 
-    abstract subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
+    abstract subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
 
     setOnce(): ISubscribe<T> {
         this.chainHandlers.push(
