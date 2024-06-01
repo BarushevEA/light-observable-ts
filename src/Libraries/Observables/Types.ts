@@ -1,4 +1,4 @@
-import {SubscribeObject} from "./SubscribeObject";
+import {AbstractPipe} from "./AbstractPipe";
 
 export type ICallback<T> = (value?: T) => any;
 export type IMarkedForUnsubscribe = {
@@ -134,11 +134,6 @@ export type IOrderedSubscriptionLike = (ISubscriptionLike & IOrder);
 export type IOrderedSubscribe<T> = {
     subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike;
 };
-// export type IGroup = ICollector & {
-//     name: string;
-//     order: number;
-// };
 
 export type IPipePayload = { isNeedUnsubscribe: boolean, isNeedExit: boolean, payload: any };
-export type IChainCallback<T> = (subsObj: SubscribeObject<T>) => void;
-
+export type IChainCallback<T> = (pipeObj: AbstractPipe<T>) => void;

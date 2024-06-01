@@ -1,33 +1,14 @@
 import {
-    ICallback,
-    IChainCallback,
     IErrorCallback,
     IListener,
     IMarkedForUnsubscribe,
     IObserver,
-    IPipePayload,
-    ISubscribe,
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
+import {AbstractPipe} from "./AbstractPipe";
 
-function callbackSend<T>(value: T, subsObj: SubscribeObject<T>): void {
-    const listener = subsObj.listener;
-    if (!listener) return subsObj.unsubscribe();
-    if (!subsObj.observable) return subsObj.unsubscribe();
-    if (subsObj.isPaused) return;
-    if (!subsObj.isPipe) return listener(value);
-
-    for (let i = 0; i < subsObj.chainHandlers.length; i++) {
-        subsObj.chainHandlers[i](subsObj);
-        if (subsObj.pipeData.isNeedUnsubscribe) return subsObj.unsubscribe();
-        if (subsObj.pipeData.isNeedExit) return;
-    }
-
-    return listener(subsObj.pipeData.payload);
-}
-
-export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
+export class SubscribeObject<T> extends AbstractPipe<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
     isMarkedForUnsubscribe: boolean = false;
     observable: IObserver<T> | undefined;
     listener: IListener<T> | undefined;
@@ -37,11 +18,9 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     _order = 0;
     isPaused = false;
     isPipe = false;
-    pipeData: IPipePayload = {isNeedUnsubscribe: false, isNeedExit: false, payload: null}
-
-    chainHandlers: IChainCallback<T> [] = [];
 
     constructor(observable?: IObserver<T>, isPipe?: boolean) {
+        super();
         this.observable = observable;
         this.isPipe = !!isPipe;
     }
@@ -65,65 +44,10 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
             this.pipeData.payload = value;
             this.pipeData.isNeedUnsubscribe = false;
             this.pipeData.isNeedExit = false;
-            callbackSend(value, this);
+            processValue(value, this);
         } catch (err) {
             this.errorHandler(value, err);
         }
-    }
-
-    setOnce(): ISubscribe<T> {
-        this.chainHandlers.push(
-            (subsObj: SubscribeObject<T>): void => {
-                (<any>(<any>subsObj).listener)(subsObj.pipeData.payload);
-                subsObj.pipeData.isNeedUnsubscribe = true;
-            }
-        );
-        return this;
-    }
-
-    unsubscribeByNegative(condition: ICallback<T>): ISubscribe<T> {
-        this.chainHandlers.push(
-            (subsObj: SubscribeObject<T>): void => {
-                if (!condition(subsObj.pipeData.payload)) subsObj.pipeData.isNeedUnsubscribe = true;
-            }
-        );
-        return this
-    }
-
-    unsubscribeByPositive(condition: ICallback<T>): ISubscribe<T> {
-        this.chainHandlers.push(
-            (subsObj: SubscribeObject<T>): void => {
-                if (condition(subsObj.pipeData.payload)) subsObj.pipeData.isNeedUnsubscribe = true;
-            }
-        );
-        return this;
-    }
-
-    emitByNegative(condition: ICallback<T>): ISubscribe<T> {
-        this.chainHandlers.push(
-            (subsObj: SubscribeObject<T>): void => {
-                if (condition(subsObj.pipeData.payload)) subsObj.pipeData.isNeedExit = true;
-            }
-        );
-        return this;
-    }
-
-    emitByPositive(condition: ICallback<T>): ISubscribe<T> {
-        this.chainHandlers.push(
-            (subsObj: SubscribeObject<T>): void => {
-                if (!condition(subsObj.pipeData.payload)) subsObj.pipeData.isNeedExit = true;
-            }
-        );
-        return this;
-    }
-
-    emitMatch(condition: ICallback<T>): ISubscribe<T> {
-        this.chainHandlers.push(
-            (subsObj: SubscribeObject<T>): void => {
-                if (condition(subsObj.pipeData.payload) !== subsObj.pipeData.payload) subsObj.pipeData.isNeedExit = true;
-            }
-        );
-        return this;
     }
 
     resume(): void {
@@ -141,4 +65,20 @@ export class SubscribeObject<T> implements ISubscribeObject<T>, IMarkedForUnsubs
     set order(value: number) {
         this._order = value;
     }
+}
+
+function processValue<T>(value: T, subsObj: SubscribeObject<T>): void {
+    const listener = subsObj.listener;
+    if (!listener) return subsObj.unsubscribe();
+    if (!subsObj.observable) return subsObj.unsubscribe();
+    if (subsObj.isPaused) return;
+    if (!subsObj.isPipe) return listener(value);
+
+    for (let i = 0; i < subsObj.chainHandlers.length; i++) {
+        subsObj.chainHandlers[i](subsObj);
+        if (subsObj.pipeData.isNeedUnsubscribe) return subsObj.unsubscribe();
+        if (subsObj.pipeData.isNeedExit) return;
+    }
+
+    return listener(subsObj.pipeData.payload);
 }
