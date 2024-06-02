@@ -1,5 +1,7 @@
 import {
+    IAddFilter,
     IErrorCallback,
+    IFilterSetup,
     IMarkedForUnsubscribe,
     IObserver,
     ISetup,
@@ -10,15 +12,24 @@ import {
 } from "./Types";
 import {quickDeleteFromArray} from "./FunctionLibs";
 import {SubscribeObject} from "./SubscribeObject";
+import {Filter} from "./Filter";
 
-export class Observable<T> implements IObserver<T>, IStream<T> {
+export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     protected listeners: ISubscribeObject<T>[] = [];
     private _isEnable: boolean = true;
     protected _isDestroyed = false;
     protected isNextProcess = false;
     protected listenersForUnsubscribe: ISubscriptionLike[] = [];
+    private filterCase = new Filter<T>();
 
     constructor(private value: T) {
+    }
+
+    addFilter(errorHandler?: IErrorCallback): IFilterSetup<T> {
+        if (errorHandler) {
+            this.filterCase.addErrorHandler(errorHandler);
+        }
+        return this.filterCase;
     }
 
     disable(): void {
@@ -36,6 +47,10 @@ export class Observable<T> implements IObserver<T>, IStream<T> {
     public next(value: T): void {
         if (this._isDestroyed) return;
         if (!this._isEnable) return;
+        if (!this.filterCase.isEmpty) {
+            if (!this.filterCase.processChain(value).isOK) return;
+        }
+
         this.isNextProcess = true;
         this.value = value;
 

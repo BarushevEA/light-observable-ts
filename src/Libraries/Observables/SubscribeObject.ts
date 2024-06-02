@@ -3,7 +3,7 @@ import {
     IListener,
     IMarkedForUnsubscribe,
     IObserver,
-    ISetObservableValue, ISubscribeGroup,
+    ISubscribeGroup,
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
@@ -45,7 +45,7 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T>, 
         try {
             this.pipeData.payload = value;
             this.pipeData.isBreakChain = false;
-            processValue(value, this);
+            this.processValue(value);
         } catch (err) {
             this.errorHandler(value, err);
         }
@@ -66,24 +66,14 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T>, 
     set order(value: number) {
         this._order = value;
     }
-}
 
-function processValue<T>(value: T, subsObj: SubscribeObject<T>): void {
-    const listener = subsObj.listener;
-    if (!listener) return subsObj.unsubscribe();
-    if (!subsObj.observable) return subsObj.unsubscribe();
-    if (subsObj.isPaused) return;
-    if (!subsObj.isPipe) return listener(value);
+    processValue<T>(value: T): void {
+        const listener = this.listener;
+        if (!listener) return this.unsubscribe();
+        if (!this.observable) return this.unsubscribe();
+        if (this.isPaused) return;
+        if (!this.isPipe) return listener(<any>value);
 
-    for (let i = 0; i < subsObj.chainHandlers.length; i++) {
-        subsObj.pipeData.isNeedUnsubscribe = false;
-        subsObj.pipeData.isAvailable = false;
-
-        subsObj.chainHandlers[i]();
-        if (subsObj.pipeData.isNeedUnsubscribe) return subsObj.unsubscribe();
-        if (!subsObj.pipeData.isAvailable) return;
-        if (subsObj.pipeData.isBreakChain) break;
+        return this.processChain(listener);
     }
-
-    return listener(subsObj.pipeData.payload);
 }

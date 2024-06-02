@@ -1,4 +1,5 @@
 import {SwitchCase} from "./Pipe";
+import {FilterSwitchCase} from "./Filter";
 
 export type ICallback<T> = (value?: T) => any;
 export type IMarkedForUnsubscribe = {
@@ -151,3 +152,22 @@ export type ICombinedSubscriber<T> = IListener<T> | ISetObservableValue;
 export type ISubscribeGroup<T> =
     ICombinedSubscriber<T> |
     ICombinedSubscriber<T>[];
+
+export type IAddFilter<T> = {
+    addFilter(): IFilterSetup<T>;
+}
+export type IFilterSetup<T> = IFilter<T> & IFilterSwitch<T>;
+export type IFilter<T> = {
+    filter(condition: ICallback<any>): IFilterSetup<T>;
+};
+export type IFilterSwitch<T> = {
+    switch(): FilterSwitchCase<T>;
+};
+export type IFilterCase<T> = {
+    case(condition: ICallback<any>): IFilterCase<T>;
+};
+export type IFilterPayload = { isBreakChain: boolean, isAvailable: boolean, payload: any };
+export type IFilterResponse<T> = {
+    isOK: boolean;
+    payload: any;
+};
