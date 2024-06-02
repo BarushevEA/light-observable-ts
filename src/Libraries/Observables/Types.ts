@@ -6,7 +6,7 @@ export type IMarkedForUnsubscribe = {
 };
 export type IErrorCallback = (errorData: any, errorMessage: any) => void;
 export type ISubscribe<T> = {
-    subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
+    subscribe(listener: ISubscribeGroup<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
 };
 export type IListener<T> = ICallback<T>;
 export type IDestroy = {
@@ -147,3 +147,7 @@ export type IChainCallback = () => void;
 export type IPipeCase<T> = {
     case(condition: ICallback<any>): IPipeCase<T> & ISubscribe<T>;
 };
+export type ICombinedSubscriber<T> = IListener<T> | ISetObservableValue;
+export type ISubscribeGroup<T> =
+    ICombinedSubscriber<T> |
+    ICombinedSubscriber<T>[];

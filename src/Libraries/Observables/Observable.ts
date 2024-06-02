@@ -1,11 +1,10 @@
 import {
     IErrorCallback,
-    IListener,
     IMarkedForUnsubscribe,
     IObserver,
-    ISetObservableValue,
     ISetup,
     IStream,
+    ISubscribeGroup,
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
@@ -94,19 +93,19 @@ export class Observable<T> implements IObserver<T>, IStream<T> {
         return this.listeners.length;
     }
 
-    public subscribe(observer: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
+    public subscribe(observer: ISubscribeGroup<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
         if (!this.isSubsValid(observer)) return undefined;
         const subscribeObject = new SubscribeObject(this, false);
         this.addObserver(subscribeObject, observer, errorHandler);
         return subscribeObject;
     }
 
-    protected addObserver(subscribeObject: SubscribeObject<T>, observer: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback) {
+    protected addObserver(subscribeObject: SubscribeObject<T>, observer: ISubscribeGroup<T>, errorHandler?: IErrorCallback) {
         subscribeObject.subscribe(observer, errorHandler);
         this.listeners.push(subscribeObject);
     }
 
-    protected isSubsValid(listener: IListener<T> | ISetObservableValue): boolean {
+    protected isSubsValid(listener: ISubscribeGroup<T>): boolean {
         if (this._isDestroyed) return false;
         return !!listener;
     }

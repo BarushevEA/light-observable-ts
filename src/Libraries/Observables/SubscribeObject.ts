@@ -3,7 +3,7 @@ import {
     IListener,
     IMarkedForUnsubscribe,
     IObserver,
-    ISetObservableValue,
+    ISetObservableValue, ISubscribeGroup,
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
@@ -27,7 +27,7 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T>, 
         this.isPipe = !!isPipe;
     }
 
-    subscribe(observer: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike {
+    subscribe(observer: ISubscribeGroup<T>, errorHandler?: IErrorCallback): ISubscriptionLike {
         this.listener = getListener(observer);
         errorHandler && (this.errorHandler = errorHandler);
         return this;

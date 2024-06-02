@@ -1753,11 +1753,11 @@ class ObservableUnitTest {
             console.log("=> manListener", person);
             if (counter === 1) {
                 expect(person.gender).to.be.equal(GENDER.MAN);
-                expect(true).to.be.equal(person.age>17 && person.age<60);
+                expect(true).to.be.equal(person.age > 17 && person.age < 60);
             }
             if (counter === 2) {
                 expect(person.gender).to.be.equal(GENDER.MAN);
-                expect(true).to.be.equal(person.age>17 && person.age<60);
+                expect(true).to.be.equal(person.age > 17 && person.age < 60);
             }
         };
 
@@ -1783,6 +1783,80 @@ class ObservableUnitTest {
 
 
         expect(2).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'pipe chain and group of listeners'() {
+        let errorCounter = 0;
+        let counter = 0;
+        let counter1 = 0;
+        let counter2 = 0;
+        let counter3 = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            errorCounter++;
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+        };
+        const globalCounter = () => counter++;
+        const listener1 = (str) => {
+            counter1++;
+            expect("111").to.be.equal(str);
+        };
+        const listener2 = (str) => {
+            counter2++;
+            expect("222").to.be.equal(str);
+        };
+        const listener3 = (str) => {
+            counter3++;
+            expect("333").to.be.equal(str);
+        };
+
+
+        const observable1 = new Observable("");
+        const observable2 = new Observable("");
+        const observable3 = new Observable("");
+
+        observable1.pipe()
+            .emitMatch(() => "111")
+            .subscribe(listener1);
+
+        observable2.pipe()
+            .emitMatch(() => "222")
+            .subscribe(listener2);
+
+        observable3.pipe()
+            .emitMatch(() => "333")
+            .subscribe(listener3);
+
+        this.OBSERVABLE$.pipe()
+            .emitByPositive(data => data.length > 2)
+            .subscribe([
+                globalCounter,
+                observable1,
+                observable2,
+                observable3
+            ], errorHandler);
+
+        this.OBSERVABLE$.stream([
+            "1",
+            "1",
+            "111",
+            "111",
+            "1",
+            "222",
+            "1",
+            "222",
+            "222",
+            "444",
+            "333",
+            "444",
+            "444",
+        ]);
+
+        expect(2).to.be.equal(counter1);
+        expect(3).to.be.equal(counter2);
+        expect(1).to.be.equal(counter3);
+        expect(9).to.be.equal(counter);
         expect(0).to.be.equal(errorCounter);
     }
 }
