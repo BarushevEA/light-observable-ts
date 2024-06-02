@@ -33,10 +33,10 @@ export class Filter<T> implements IFilter<T>, IFilterSwitch<T> {
         return new FilterSwitchCase<T>(this);
     }
 
-    processChain(value: T): IFilterResponse<T> {
+    processChain(value: T): IFilterResponse {
         const chain = this.chainHandlers;
         const data = this.pipeData;
-        const response: IFilterResponse<T> = {isOK: false, payload: undefined};
+        const response: IFilterResponse = {isOK: false, payload: undefined};
         data.payload = value;
         data.isBreakChain = false;
 

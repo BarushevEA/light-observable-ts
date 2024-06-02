@@ -167,7 +167,7 @@ export type IFilterCase<T> = {
     case(condition: ICallback<any>): IFilterCase<T>;
 };
 export type IFilterPayload = { isBreakChain: boolean, isAvailable: boolean, payload: any };
-export type IFilterResponse<T> = {
+export type IFilterResponse = {
     isOK: boolean;
     payload: any;
 };

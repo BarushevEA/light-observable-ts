@@ -1,12 +1,11 @@
 import {Observable} from "./Observable";
 import {
     IErrorCallback,
-    IListener,
     IMarkedForUnsubscribe,
     IOrdered,
     IOrderedSetup,
     IOrderedSubscriptionLike,
-    ISetObservableValue, ISubscribeGroup,
+    ISubscribeGroup,
     ISubscriptionLike
 } from "./Types";
 import {deleteFromArray, sortAscending, sortDescending} from "./FunctionLibs";
