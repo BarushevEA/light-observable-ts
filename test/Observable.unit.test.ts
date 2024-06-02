@@ -1691,7 +1691,7 @@ class ObservableUnitTest {
         };
         const listener1 = (data: string) => {
             counter++;
-            console.log("================>",counter, data);
+            console.log("================>", counter, data);
             if (counter === 1) expect("111").to.be.equal(data);
             if (counter === 2) expect("222").to.be.equal(data);
             if (counter === 3) expect("333").to.be.equal(data);
@@ -1699,9 +1699,9 @@ class ObservableUnitTest {
         };
         this.OBSERVABLE$.pipe()
             .switch()
-            .case(data=>data==="111")
-            .case(data=>data==="222")
-            .case(data=>data==="333")
+            .case(data => data === "111")
+            .case(data => data === "222")
+            .case(data => data === "333")
             .subscribe(listener1, errorHandler);
 
         this.OBSERVABLE$.next("111");
@@ -1715,6 +1715,74 @@ class ObservableUnitTest {
         this.OBSERVABLE$.next("333");
 
         expect(4).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'pipe chain emitByPositive + switch/case'() {
+        let errorCounter = 0;
+        let counter = 0;
+
+        const GENDER = {
+            MAN: "MAN",
+            WOMAN: "WOMAN"
+        }
+
+        const MAJOR = {
+            DOCTOR: "DOCTOR",
+            LAWYER: "LAWYER",
+            ACTOR: "ACTOR",
+            DRIVER: "DRIVER",
+            FARMER: "FARMER",
+            CHILD: "CHILD",
+        }
+
+        class Person {
+            constructor(public name, public age, public gender, public major) {
+                this.name = name;
+                this.age = age;
+                this.gender = gender;
+                this.major = major;
+            }
+        }
+
+        const observable$ = new Observable<Person>(null);
+
+        const manFilter = person => person.gender === GENDER.MAN;
+        const manListener = person => {
+            counter++
+            console.log("=> manListener", person);
+            if (counter === 1) {
+                expect(person.gender).to.be.equal(GENDER.MAN);
+                expect(true).to.be.equal(person.age>17 && person.age<60);
+            }
+            if (counter === 2) {
+                expect(person.gender).to.be.equal(GENDER.MAN);
+                expect(true).to.be.equal(person.age>17 && person.age<60);
+            }
+        };
+
+        observable$.pipe()
+            .emitByPositive(manFilter)
+            .switch()
+            .case(person => person.age > 17 && person.age < 60)
+            .case(person => person.major === MAJOR.FARMER)
+            .subscribe(manListener);
+
+        observable$.stream([
+            new Person("Andrey", 16, GENDER.MAN, MAJOR.CHILD),
+            new Person("Irog", 6, GENDER.MAN, MAJOR.CHILD),
+            new Person("Dasha", 18, GENDER.WOMAN, MAJOR.FARMER),
+            new Person("Tolya", 10, GENDER.MAN, MAJOR.CHILD),
+            new Person("Kostya", 35, GENDER.MAN, MAJOR.DRIVER),
+            new Person("Natasha", 60, GENDER.WOMAN, MAJOR.ACTOR),
+            new Person("Kiril", 25, GENDER.MAN, MAJOR.FARMER),
+            new Person("Karina", 30, GENDER.WOMAN, MAJOR.DOCTOR),
+            new Person("Sofia", 45, GENDER.WOMAN, MAJOR.LAWYER),
+            new Person("Judy", 55, GENDER.WOMAN, MAJOR.DOCTOR),
+        ])
+
+
+        expect(2).to.be.equal(counter);
         expect(0).to.be.equal(errorCounter);
     }
 }

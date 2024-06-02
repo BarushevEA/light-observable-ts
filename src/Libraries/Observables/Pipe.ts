@@ -87,10 +87,11 @@ export abstract class Pipe<T> implements ISubscribe<T> {
 
 export class SwitchCase<T> implements ISubscribe<T>, IPipeCase<T> {
     private pipe: Pipe<T>;
-    private caseCounter = 0;
+    private caseCounter: number;
 
     constructor(pipe: Pipe<T>) {
         this.pipe = pipe;
+        this.caseCounter = pipe.chainHandlers.length ? pipe.chainHandlers.length: 0;
     }
 
     subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
@@ -105,6 +106,9 @@ export class SwitchCase<T> implements ISubscribe<T>, IPipeCase<T> {
         chain.push(
             (): void => {
                 data.isAvailable = true
+                if (data.payload.gender === "MAN") {
+                    console.log(data.payload);
+                }
                 if (condition(data.payload)) data.isBreakChain = true;
                 if (id === chain.length && !data.isBreakChain) data.isAvailable = false;
             }
