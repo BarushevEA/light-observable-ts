@@ -106,9 +106,6 @@ export class SwitchCase<T> implements ISubscribe<T>, IPipeCase<T> {
         chain.push(
             (): void => {
                 data.isAvailable = true
-                if (data.payload.gender === "MAN") {
-                    console.log(data.payload);
-                }
                 if (condition(data.payload)) data.isBreakChain = true;
                 if (id === chain.length && !data.isBreakChain) data.isAvailable = false;
             }
