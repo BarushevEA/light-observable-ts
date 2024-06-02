@@ -1993,4 +1993,148 @@ class ObservableUnitTest {
         expect(4).to.be.equal(targetCounter);
         expect(0).to.be.equal(errorCounter);
     }
+
+    @test '2 filter switch-case'() {
+        let errorCounter = 0;
+        let counter = 0;
+        let targetCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const globalCounter = () => counter++;
+        const targetListener = (str) => {
+            targetCounter++;
+            if (targetCounter === 1) expect("011").to.be.equal(str);
+            if (targetCounter === 2) expect("011").to.be.equal(str);
+            if (targetCounter === 3) expect("011").to.be.equal(str);
+            if (targetCounter === 4) expect("111100011").to.be.equal(str);
+        };
+        const targetObservable$ = new Observable("");
+        targetObservable$.addFilter(errorHandler)
+            .switch()
+            .case(str => str === "011")
+            .case(str => str === "111100011");
+        targetObservable$.subscribe(targetListener);
+
+        this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
+
+        this.OBSERVABLE$.stream([
+            "10",
+            "1",
+            "0",
+            "11",
+            "1",
+            "1",
+            "011",
+            "011",
+            "011",
+            "1",
+            "11111111",
+            "111100011",
+            "1",
+            "0",
+            "1",
+        ]);
+
+        expect(15).to.be.equal(counter);
+        expect(4).to.be.equal(targetCounter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test '2 filter switch-case without errorHandler'() {
+        let counter = 0;
+        let targetCounter = 0;
+
+        const globalCounter = () => counter++;
+        const targetListener = (str) => {
+            targetCounter++;
+            if (targetCounter === 1) expect("011").to.be.equal(str);
+            if (targetCounter === 2) expect("011").to.be.equal(str);
+            if (targetCounter === 3) expect("011").to.be.equal(str);
+            if (targetCounter === 4) expect("111100011").to.be.equal(str);
+        };
+        const targetObservable$ = new Observable("");
+        targetObservable$.addFilter()
+            .switch()
+            .case(str => str === "011")
+            .case(str => str === "111100011");
+        targetObservable$.subscribe(targetListener);
+
+        this.OBSERVABLE$.subscribe([globalCounter, targetObservable$]);
+
+        this.OBSERVABLE$.stream([
+            "10",
+            "1",
+            "0",
+            "11",
+            "1",
+            "1",
+            "011",
+            "011",
+            "011",
+            "1",
+            "11111111",
+            "111100011",
+            "1",
+            "0",
+            "1",
+        ]);
+
+        expect(15).to.be.equal(counter);
+        expect(4).to.be.equal(targetCounter);
+    }
+
+    @test '2 filter switch-case with throw ERROR'() {
+        let errorCounter = 0;
+        let counter = 0;
+        let targetCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(true).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const globalCounter = () => counter++;
+        const targetListener = (str) => {
+            targetCounter++;
+            if (targetCounter === 1) expect("011").to.be.equal(str);
+            if (targetCounter === 2) expect("011").to.be.equal(str);
+            if (targetCounter === 3) expect("011").to.be.equal(str);
+            if (targetCounter === 4) expect("111100011").to.be.equal(str);
+        };
+        const targetObservable$ = new Observable("");
+        targetObservable$.addFilter(errorHandler)
+            .switch()
+            .case(str => str === "011")
+            .case(str => {
+                throw new Error("This is an error message");
+                return str === "111100011";
+            });
+        targetObservable$.subscribe(targetListener);
+
+        this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
+
+        this.OBSERVABLE$.stream([
+            "10",
+            "1",
+            "0",
+            "11",
+            "1",
+            "1",
+            "011",
+            "011",
+            "011",
+            "1",
+            "11111111",
+            "111100011",
+            "1",
+            "0",
+            "1",
+        ]);
+
+        expect(15).to.be.equal(counter);
+        expect(3).to.be.equal(targetCounter);
+        expect(12).to.be.equal(errorCounter);
+    }
 }
