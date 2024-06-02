@@ -38,6 +38,7 @@ export class Filter<T> implements IFilter<T>, IFilterSwitch<T> {
         const data = this.pipeData;
         const response: IFilterResponse<T> = {isOK: false, payload: undefined};
         data.payload = value;
+        data.isBreakChain = false;
 
         try {
             for (let i = 0; i < chain.length; i++) {
