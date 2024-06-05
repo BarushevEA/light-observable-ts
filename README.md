@@ -6,9 +6,41 @@ EVG Observable
 EVG Observable - is a light library for simple use.
 </p>
 
+## Navigation
+
+- [What is EVG Observable?](#what-is-evg-observable)
+- [Installation](#installation)
+    - [Node.js](#nodejs)
+    - [Browser](#browser)
+- [Usage](#usage)
+    - [Observable simple usage](#observable-simple-usage)
+    - [Browser simple usage](#browser-simple-usage)
+    - [Observable pipe usage](#observable-pipe-usage)
+    - [Ordered observable](#ordered-observable)
+    - [Collector](#collector)
+    - [Advanced Usage Example](#advanced-usage-example)
+- [Methods](#methods)
+    - [Observable](#observable)
+    - [Observable.pipe()](#observablepipe)
+    - [Observable subscriber](#observable-subscriber)
+    - [Ordered observable](#ordered-observable-1)
+    - [Ordered observable subscriber](#ordered-observable-subscriber)
+    - [Collector](#collector-1)
+- [License](#license)
+
 ## What is EVG Observable?
 
-EVG Observable is a compact, lightweight library designed for handling asynchronous events. Despite its small size, it offers over 20 powerful techniques for event management.
+EVG Observable is a robust, lightweight library designed for handling asynchronous events. What sets it apart is its compact size alongside a wealth of powerful features that facilitate efficient event management. Here are some specific features that make it stand out from the rest:
+
+1. **Multi-observable subscription**: With EVG Observable, you are not limited to adding only listeners to your subscribers. Now, you have the option to add other observables as well.
+
+2. **Multi-subscriber capability**: The library allows you to subscribe any number of subscribers to an observable. This works with both listeners and observables.
+
+3. **Extended pipe chain**: The flexibility of EVG Observable extends to pipe chains as well. You can now add any number of filters in a pipe chain whereas previously you were limited to just one.
+
+4. **Inbound and outbound filters**: In addition to existing outbound pipes, the library now supports inbound filters as well, providing you greater control over your data flow.
+
+5. **Flexible switch-case in pipes**: Whether you are dealing with outbound pipes or inbound filters, a flexible switch-case logic has been introduced for better data handling.
 
 ## Installation
 
@@ -343,6 +375,135 @@ observable$.next('SOME DATA');
 // Also, if there is a need to use the collector further, instead of destroying it, you can use collector.unsubscribeAll().
 // To unsubscribe one subscriber, you can use: collector.unsubscribe(subscriber).
 ```
+
+### Advanced Usage Example
+
+The following TypeScript example demonstrates how the extended implementation could be used, incorporating all the new updates:
+
+```typescript
+// Import the Observable library
+import {Observable} from "evg_observable/src/outLib/Observable";
+
+// Constants representing different hair colors
+const HAIR = {
+    BLOND: "BLOND",
+    BLACK: "BLACK",
+    BROWN: "BROWN",
+}
+
+// Constants for gender
+const GENDER = {
+    MAN: "MAN",
+    WOMAN: "WOMAN"
+}
+
+// Constants for different occupations
+const MAJOR = {
+    DOCTOR: "DOCTOR",
+    DRIVER: "DRIVER",
+    CHILD: "CHILD",
+}
+
+// Definition of the "Person" class
+class Person {
+    constructor(
+        public name: string,
+        public age: number,
+        public gender: string,
+        public major: string,
+        public hairColor: string) {
+
+        this.hairColor = hairColor;
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+        this.major = major;
+    }
+}
+
+// Create Observables for individual person, men and women
+const personal$ = new Observable<Person>(null);
+const men$ = new Observable<Person>(null)
+const women$ = new Observable<Person>(null)
+
+// Define various filters to be used later
+const youngAgeFilter = (person: Person) => person.age > 17;
+const oldAgeFilter = (person: Person) => person.age < 60;
+const menFilter = (person: Person) => person.gender === GENDER.MAN;
+const womenFilter = (person: Person) => person.gender === GENDER.WOMAN;
+const blondFilter = (person: Person) => person.hairColor === HAIR.BLOND;
+const blackFilter = (person: Person) => person.hairColor === HAIR.BLACK;
+
+// Callback function to execute when some man is ready to work
+const manReadyToWork = (worker: Person) => {
+    console.log("MAN ==> is ready to work:", worker.name, worker.age, worker.major);
+};
+
+// Callback function to execute when some woman is ready to work
+const womanReadyToWork = (worker: Person) => {
+    console.log("WOMAN ==> is ready to work:", worker.name, worker.age, worker.major);
+};
+
+// Callback function to execute for people with black or blond hair
+const blondAndBlack = (person: Person) => {
+    console.log("PERSON ==> only black or blond:", person.name, person.age, person.hairColor);
+};
+
+// Apply the filters to men$ and women$
+men$.addFilter()
+    .filter(menFilter);
+
+women$.addFilter()
+    .filter(womenFilter);
+
+// Subscribe the callback function to the created Observables
+men$.subscribe(manReadyToWork);
+women$.subscribe(womanReadyToWork);
+
+// Stream the list of people by applying the age filters
+personal$.pipe()
+    .emitByPositive(youngAgeFilter)
+    .emitByPositive(oldAgeFilter)
+    .subscribe([men$, women$]);
+
+// Stream the list of people considering the hair color
+personal$.pipe()
+    .switch()
+    .case(blackFilter)
+    .case(blondFilter)
+    .subscribe(blondAndBlack);
+
+// Start streaming the list of people
+personal$.stream([
+    new Person('Alex', 35, GENDER.MAN, MAJOR.DOCTOR, HAIR.BLOND),
+    new Person('John', 45, GENDER.MAN, MAJOR.DRIVER, HAIR.BLACK),
+    new Person('Alice', 30, GENDER.WOMAN, MAJOR.DOCTOR, HAIR.BROWN),
+    new Person('Sophia', 36, GENDER.WOMAN, MAJOR.DRIVER, HAIR.BLOND),
+    new Person('Matthew', 15, GENDER.MAN, MAJOR.CHILD, HAIR.BROWN),
+    new Person('Emily', 17, GENDER.WOMAN, MAJOR.CHILD, HAIR.BLACK),
+    new Person('James', 40, GENDER.MAN, MAJOR.DOCTOR, HAIR.BLOND),
+    new Person('Emma', 35, GENDER.WOMAN, MAJOR.DRIVER, HAIR.BROWN),
+    new Person('Michael', 15, GENDER.MAN, MAJOR.CHILD, HAIR.BLACK),
+    new Person('Olivia', 16, GENDER.WOMAN, MAJOR.CHILD, HAIR.BLOND)
+]);
+
+// This is the result of handling persons:
+// MAN ==> is ready to work: Alex 35 DOCTOR
+// PERSON ==> only black or blond: Alex 35 BLOND
+// MAN ==> is ready to work: John 45 DRIVER
+// PERSON ==> only black or blond: John 45 BLACK
+// WOMAN ==> is ready to work: Alice 30 DOCTOR
+// WOMAN ==> is ready to work: Sophia 36 DRIVER
+// PERSON ==> only black or blond: Sophia 36 BLOND
+// PERSON ==> only black or blond: Emily 17 BLACK
+// MAN ==> is ready to work: James 40 DOCTOR
+// PERSON ==> only black or blond: James 40 BLOND
+// WOMAN ==> is ready to work: Emma 35 DRIVER
+// PERSON ==> only black or blond: Michael 15 BLACK
+// PERSON ==> only black or blond: Olivia 16 BLOND
+```
+In this example, we are using the Observable Library to handle a list of people, applying various filters to deal with different scenarios. This flexibility and ability to handle complex, intersecting conditions is what makes EVG Observable an invaluable tool for managing asynchronous events.
+Built with the developer's needs in mind, EVG Observable provides a wealth of capabilities at your disposal, making event handling a breeze.
 
 ## Methods
 
