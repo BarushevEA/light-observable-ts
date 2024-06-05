@@ -22,6 +22,7 @@ EVG Observable - is a light library for simple use.
 - [Methods](#methods)
     - [Observable](#observable)
     - [Observable.pipe()](#observablepipe)
+    - [Inbound filters](#inbound-filters)
     - [Observable subscriber](#observable-subscriber)
     - [Ordered observable](#ordered-observable-1)
     - [Ordered observable subscriber](#ordered-observable-subscriber)
@@ -30,17 +31,24 @@ EVG Observable - is a light library for simple use.
 
 ## What is EVG Observable?
 
-EVG Observable is a robust, lightweight library designed for handling asynchronous events. What sets it apart is its compact size alongside a wealth of powerful features that facilitate efficient event management. Here are some specific features that make it stand out from the rest:
+EVG Observable is a robust, lightweight library designed for handling asynchronous events. What sets it apart is its
+compact size alongside a wealth of powerful features that facilitate efficient event management. Here are some specific
+features that make it stand out from the rest:
 
-1. **Multi-observable subscription**: With EVG Observable, you are not limited to adding only listeners to your subscribers. Now, you have the option to add other observables as well.
+1. **Multi-observable subscription**: With EVG Observable, you are not limited to adding only listeners to your
+   subscribers. Now, you have the option to add other observables as well.
 
-2. **Multi-subscriber capability**: The library allows you to subscribe any number of subscribers to an observable. This works with both listeners and observables.
+2. **Multi-subscriber capability**: The library allows you to subscribe any number of subscribers to an observable. This
+   works with both listeners and observables.
 
-3. **Extended pipe chain**: The flexibility of EVG Observable extends to pipe chains as well. You can now add any number of filters in a pipe chain whereas previously you were limited to just one.
+3. **Extended pipe chain**: The flexibility of EVG Observable extends to pipe chains as well. You can now add any number
+   of filters in a pipe chain whereas previously you were limited to just one.
 
-4. **Inbound and outbound filters**: In addition to existing outbound pipes, the library now supports inbound filters as well, providing you greater control over your data flow.
+4. **Inbound and outbound filters**: In addition to existing outbound pipes, the library now supports inbound filters as
+   well, providing you greater control over your data flow.
 
-5. **Flexible switch-case in pipes**: Whether you are dealing with outbound pipes or inbound filters, a flexible switch-case logic has been introduced for better data handling.
+5. **Flexible switch-case in pipes**: Whether you are dealing with outbound pipes or inbound filters, a flexible
+   switch-case logic has been introduced for better data handling.
 
 ## Installation
 
@@ -51,7 +59,9 @@ EVG Observable is a robust, lightweight library designed for handling asynchrono
     $ npm install evg_observable
 
 ### Browser
+
 ```html
+
 <script src="https://unpkg.com/evg_observable/repo/evg_observable.js"></script>
 ```
 
@@ -378,7 +388,8 @@ observable$.next('SOME DATA');
 
 ### Advanced Usage Example
 
-The following TypeScript example demonstrates how the extended implementation could be used, incorporating all the new updates:
+The following TypeScript example demonstrates how the extended implementation could be used, incorporating all the new
+updates:
 
 ```typescript
 // Import the Observable library
@@ -502,48 +513,63 @@ personal$.stream([
 // PERSON ==> only black or blond: Michael 15 BLACK
 // PERSON ==> only black or blond: Olivia 16 BLOND
 ```
-In this example, we are using the Observable Library to handle a list of people, applying various filters to deal with different scenarios. This flexibility and ability to handle complex, intersecting conditions is what makes EVG Observable an invaluable tool for managing asynchronous events.
-Built with the developer's needs in mind, EVG Observable provides a wealth of capabilities at your disposal, making event handling a breeze.
+
+In this example, we are using the Observable Library to handle a list of people, applying various filters to deal with
+different scenarios. This flexibility and ability to handle complex, intersecting conditions is what makes EVG
+Observable an invaluable tool for managing asynchronous events.
+Built with the developer's needs in mind, EVG Observable provides a wealth of capabilities at your disposal, making
+event handling a breeze.
 
 ## Methods
 
 ### Observable
 
-| method                     | will return | description |
-|:---------------------------| :--- | :--- |
-| `.subscribe(listener)`     | subscriber | subscribe listener to observable |
-| `.unSubscribe(subscriber)` | void | unsubscribe listener from observable |
-| `.unsubscribeAll()`        | void | unsubscribe all listeners from the current observable |
-| `.next(value)`             | void | emit data to listeners |
-| `.stream(value[])`         | void | pass data to listeners in parts of the array |
-| `.getValue()`              | value | will return the last value sent, or the value that was set during initialization |
-| `.size()`                  | number | will return the current number of subscribers |
-| `.disable()`               | void | disable emission |
-| `.enable()`                | void | enable emission |
-| `.isEnable`                | boolean | read-only field that shows the state of the observer |
-| `.destroy()`               | void | unsubscribe all listeners from the current observable and destroy it |
-| `.isDestroyed`             | boolean | read-only field that shows the kill state of the observer |
-| `.pipe()`                  | pipe condition object | returns an object with which you can customize the subscriber's behavior |
+| method                     | will return           | description                                                                      |
+|:---------------------------|:----------------------|:---------------------------------------------------------------------------------|
+| `.subscribe(listener)`     | subscriber            | subscribe listener to observable                                                 |
+| `.unSubscribe(subscriber)` | void                  | unsubscribe listener from observable                                             |
+| `.unsubscribeAll()`        | void                  | unsubscribe all listeners from the current observable                            |
+| `.next(value)`             | void                  | emit data to listeners                                                           |
+| `.stream(value[])`         | void                  | pass data to listeners in parts of the array                                     |
+| `.getValue()`              | value                 | will return the last value sent, or the value that was set during initialization |
+| `.size()`                  | number                | will return the current number of subscribers                                    |
+| `.disable()`               | void                  | disable emission                                                                 |
+| `.enable()`                | void                  | enable emission                                                                  |
+| `.isEnable`                | boolean               | read-only field that shows the state of the observer                             |
+| `.destroy()`               | void                  | unsubscribe all listeners from the current observable and destroy it             |
+| `.isDestroyed`             | boolean               | read-only field that shows the kill state of the observer                        |
+| `.pipe()`                  | pipe condition object | returns an object with which you can customize the subscriber's behavior         |
 
 ### Observable`.pipe()`
 
-| method | will return | description |
-| :--- | :--- | :--- |
-| `.setOnce()` | pipe subscribe object | observable will send a value to the subscriber only once, and the subscriber will unsubscribe. |
-| `.unsubscribeByNegative(*condition)` | pipe subscribe object | observable will send a value to the subscriber as long as the condition is positive, on the first negative result, the subscriber will unsubscribe |
-| `.unsubscribeByPositive(*condition)` | pipe subscribe object | observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe |
-| `.emitByNegative(*condition)` | pipe subscribe object | observable will send a value to the listener only if condition returns "false", there is no automatic unsubscription |
-| `.emitByPositive(*condition)` | pipe subscribe object | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription |
-| `.emitMatch(*condition)` | pipe subscribe object | observable will send a value to the subscriber only if the return value of the condition matches the data being sent, in this case, there is no automatic unsubscription |
-| `.subscribe(listener)` | subscriber | subscribe listener to observable |
+| method                               | will return       | description                                                                                                                                                                                                             |
+|:-------------------------------------|:------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `.setOnce()`                         | pipe object       | observable will send a value to the subscriber only once, and the subscriber will unsubscribe.                                                                                                                          |
+| `.unsubscribeByNegative(*condition)` | pipe object       | observable will send a value to the subscriber as long as the condition is positive, on the first negative result, the subscriber will unsubscribe                                                                      |
+| `.unsubscribeByPositive(*condition)` | pipe object       | observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe                                                                      |
+| `.emitByNegative(*condition)`        | pipe object       | observable will send a value to the listener only if condition returns "false", there is no automatic unsubscription                                                                                                    |
+| `.emitByPositive(*condition)`        | pipe object       | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |
+| `.emitMatch(*condition)`             | pipe object       | observable will send a value to the subscriber only if the return value of the condition matches the data being sent, in this case, there is no automatic unsubscription                                                |
+| `.switch()`                          | SwitchCase object | transitions the pipe into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored. This allows you to handle multiple cases more conveniently. |
+| `.case(*condition)`                  | PipeCase object   | Adds a condition to the chain of cases. The entire chain operates on the principle of "OR". This is different from other pipe methods which, when chained, operate on the principle of "AND".                           |
+| `.subscribe(listener)`               | subscriber        | subscribe listener to observable                                                                                                                                                                                        |
+_*condition_ - this is a function that should return a value that will affect the behavior of the subscriber
 
+### Inbound filters
+
+| Method                | Will Return          | Description                                                                                                                                                                       |
+|:----------------------|:---------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `.addFilter()`        | InboundFilter object | Transitions the Observable into the mode of adding inbound filters.                                                                                                               |
+| `.filter(*condition)` | InboundFilter object | Part of the filter chain that operates on the principle of "AND". If the condition returns `true`, the filter passes the data along the chain.                                    |
+| `.switch()`           | InboundFilter object | Transitions the filter into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored.                     
+| `.case(*condition)`   | InboundFilter object | Adds a condition to the chain of cases that operate on the principle of "OR". This is different from other filter methods which, when chained, operate on the principle of "AND". |
 _*condition_ - this is a function that should return a value that will affect the behavior of the subscriber
 
 ### Observable subscriber
 
-| method | will return | description |
-| :--- | :--- | :--- |
-| `.unsubscribe()` | void | unsubscribe listener from observable |
+| method           | will return | description                          |
+|:-----------------|:------------|:-------------------------------------|
+| `.unsubscribe()` | void        | unsubscribe listener from observable |
 
 ### Ordered observable
 
@@ -553,24 +579,23 @@ Has the same methods as Observable.
 
 Has the same methods as subscriber. But there is an "order" field and two new methods.
 
-| field | type | description |
-| :--- | :--- | :--- |
+| field    | type   | description                                                                                                                                                                           |
+|:---------|:-------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `.order` | number | Determines the order in which the subscriber is called, the subscriber with the lowest ordinal number is called first, the subscriber with the highest ordinal number is called last. |
 
-
-| method | will return | description                  |
-| :--- | :--- |:-----------------------------|
-| `.setAscendingSort()` | boolean | set order by ascending sort  |
-| `.setDescendingSort()` | boolean | set order by descending sort |
+| method                 | will return | description                  |
+|:-----------------------|:------------|:-----------------------------|
+| `.setAscendingSort()`  | boolean     | set order by ascending sort  |
+| `.setDescendingSort()` | boolean     | set order by descending sort |
 
 ### Collector
 
-| method | will return | description |
-| :--- | :--- | :--- |
-| `.collect( ...subscribers)` | void | collects subscribers |
-| `.unsubscribe(subscriber)` | void | unsubscribe a subscriber from it's observable |
-| `.unsubscribeAll()` | void | unsubscribe all subscribers from their observables |
-| `.destroy()` | void | unsubscribe all subscribers and destroy collector|
+| method                      | will return | description                                        |
+|:----------------------------|:------------|:---------------------------------------------------|
+| `.collect( ...subscribers)` | void        | collects subscribers                               |
+| `.unsubscribe(subscriber)`  | void        | unsubscribe a subscriber from it's observable      |
+| `.unsubscribeAll()`         | void        | unsubscribe all subscribers from their observables |
+| `.destroy()`                | void        | unsubscribe all subscribers and destroy collector  |
 
 ## License
 
