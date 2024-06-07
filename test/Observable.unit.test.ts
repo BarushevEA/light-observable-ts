@@ -2182,4 +2182,48 @@ class ObservableUnitTest {
         expect(15).to.be.equal(counter);
         expect(3).to.be.equal(targetCounter);
     }
+
+    @test 'filters arr'() {
+        let errorCounter = 0;
+        let counter = 0;
+        let targetCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(true).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const globalCounter = () => counter++;
+        const targetListener = (str) => {
+            targetCounter++;
+        };
+        const targetObservable$ = new Observable("");
+        targetObservable$.addFilter(errorHandler)
+            .filter(str => str.includes("1"))
+            .pushFilters([
+                str => str.includes("2"),
+                str => str.length<5,
+            ]);
+        targetObservable$.subscribe(targetListener);
+
+        this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
+
+        this.OBSERVABLE$.stream([
+            "1",
+            "12",
+            "123",
+            "123",
+            "1234",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+        ]);
+
+        expect(12).to.be.equal(counter);
+        expect(4).to.be.equal(targetCounter);
+        expect(0).to.be.equal(errorCounter);
+    }
 }
