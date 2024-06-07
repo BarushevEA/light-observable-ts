@@ -2,7 +2,6 @@ import {
     IAddFilter,
     IErrorCallback,
     IFilterSetup,
-    IMarkedForUnsubscribe,
     IObserver,
     ISetup,
     IStream,
@@ -78,9 +77,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     public unSubscribe(listener: ISubscriptionLike): void {
         if (this._isDestroyed) return;
         if (this.isNextProcess && listener) {
-            const marker: IMarkedForUnsubscribe = <any>listener;
-            !marker.isMarkedForUnsubscribe && this.listenersForUnsubscribe.push(listener);
-            marker.isMarkedForUnsubscribe = true;
+            this.listenersForUnsubscribe.push(listener);
             return;
         }
         this.listeners && !quickDeleteFromArray(this.listeners, listener);

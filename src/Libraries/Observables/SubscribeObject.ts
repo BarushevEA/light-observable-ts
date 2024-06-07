@@ -1,17 +1,8 @@
-import {
-    IErrorCallback,
-    IListener,
-    IMarkedForUnsubscribe,
-    IObserver,
-    ISubscribeGroup,
-    ISubscribeObject,
-    ISubscriptionLike
-} from "./Types";
+import {IErrorCallback, IListener, IObserver, ISubscribeGroup, ISubscribeObject, ISubscriptionLike} from "./Types";
 import {Pipe} from "./Pipe";
 import {getListener} from "./FunctionLibs";
 
-export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T>, IMarkedForUnsubscribe {
-    isMarkedForUnsubscribe: boolean = false;
+export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
     observable: IObserver<T> | undefined;
     listener: IListener<T> | undefined;
     errorHandler: IErrorCallback = (errorData: any, errorMessage: any) => {
