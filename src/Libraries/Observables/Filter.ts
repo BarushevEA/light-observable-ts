@@ -13,6 +13,7 @@ import {
 export class Filter<T> implements IFilter<T>, IFilterSwitch<T> {
     chainHandlers: IChainCallback [] = [];
     pipeData: IFilterPayload = {isBreakChain: false, isAvailable: false, payload: null};
+    response: IFilterResponse = {isOK: false, payload: undefined};
     private errorHandler: IErrorCallback | undefined;
 
     get isEmpty(): boolean {
@@ -36,7 +37,9 @@ export class Filter<T> implements IFilter<T>, IFilterSwitch<T> {
     processChain(value: T): IFilterResponse {
         const chain = this.chainHandlers;
         const data = this.pipeData;
-        const response: IFilterResponse = {isOK: false, payload: undefined};
+        const response = this.response;
+        response.isOK = false;
+        response.payload = undefined;
         data.payload = value;
         data.isBreakChain = false;
 
