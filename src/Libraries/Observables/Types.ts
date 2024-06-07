@@ -1,5 +1,5 @@
 import {SwitchCase} from "./Pipe";
-import {FilterSwitchCase} from "./Filter";
+import {FilterSwitchCase} from "./FilterCollection";
 
 export type ICallback<T> = (value?: T) => any;
 export type IErrorCallback = (errorData: any, errorMessage: any) => void;
@@ -156,12 +156,14 @@ export type IAddFilter<T> = {
 export type IFilterSetup<T> = IFilter<T> & IFilterSwitch<T>;
 export type IFilter<T> = {
     filter(condition: ICallback<any>): IFilterSetup<T>;
+    pushFilters(conditions: ICallback<any>[]): IFilterSetup<T>;
 };
 export type IFilterSwitch<T> = {
     switch(): FilterSwitchCase<T>;
 };
 export type IFilterCase<T> = {
     case(condition: ICallback<any>): IFilterCase<T>;
+    pushCases(conditions: ICallback<any>[]): IFilterCase<T>;
 };
 export type IFilterPayload = { isBreakChain: boolean, isAvailable: boolean, payload: any };
 export type IFilterResponse = {

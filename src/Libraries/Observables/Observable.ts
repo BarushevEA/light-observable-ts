@@ -11,7 +11,7 @@ import {
 } from "./Types";
 import {quickDeleteFromArray} from "./FunctionLibs";
 import {SubscribeObject} from "./SubscribeObject";
-import {Filter} from "./Filter";
+import {FilterCollection} from "./FilterCollection";
 
 export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     protected listeners: ISubscribeObject<T>[] = [];
@@ -19,7 +19,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     protected _isDestroyed = false;
     protected isNextProcess = false;
     protected listenersForUnsubscribe: ISubscriptionLike[] = [];
-    private filterCase = new Filter<T>();
+    private filterCase = new FilterCollection<T>();
 
     constructor(private value: T) {
     }

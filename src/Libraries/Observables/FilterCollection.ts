@@ -9,8 +9,9 @@ import {
     IFilterSetup,
     IFilterSwitch
 } from "./Types";
+import * as console from "node:console";
 
-export class Filter<T> implements IFilter<T>, IFilterSwitch<T> {
+export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
     chainHandlers: IChainCallback [] = [];
     pipeData: IFilterPayload = {isBreakChain: false, isAvailable: false, payload: null};
     response: IFilterResponse = {isOK: false, payload: undefined};
@@ -27,6 +28,12 @@ export class Filter<T> implements IFilter<T>, IFilterSwitch<T> {
                 if (condition(data.payload)) data.isAvailable = true;
             }
         );
+        return this;
+    }
+
+    pushFilters(conditions: ICallback<any>[]): IFilterSetup<T> {
+        if (!Array.isArray(conditions)) return this;
+        for (let i = 0; i < conditions.length; i++) this.filter(conditions[i]);
         return this;
     }
 
@@ -72,10 +79,10 @@ export class Filter<T> implements IFilter<T>, IFilterSwitch<T> {
 }
 
 export class FilterSwitchCase<T> implements IFilterCase<T> {
-    private pipe: Filter<T>;
+    private pipe: FilterCollection<T>;
     private caseCounter: number;
 
-    constructor(pipe: Filter<T>) {
+    constructor(pipe: FilterCollection<T>) {
         this.pipe = pipe;
         this.caseCounter = pipe.chainHandlers.length ? pipe.chainHandlers.length : 0;
     }
@@ -92,6 +99,12 @@ export class FilterSwitchCase<T> implements IFilterCase<T> {
                 if (id === chain.length && !data.isBreakChain) data.isAvailable = false;
             }
         );
+        return this;
+    }
+
+    pushCases(conditions: ICallback<any>[]): IFilterCase<T>{
+        if (!Array.isArray(conditions)) return this;
+        for (let i = 0; i < conditions.length; i++) this.case(conditions[i]);
         return this;
     }
 }
