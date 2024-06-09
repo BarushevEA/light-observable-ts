@@ -3,6 +3,7 @@ import * as _chai from 'chai';
 import {expect} from 'chai';
 import {IOrder, IOrderedSubscriptionLike, IPause} from "../src/Libraries/Observables/Types";
 import {OrderedObservable} from "../src/Libraries/Observables/OrderedObservable";
+import {Observable} from "../src/Libraries/Observables/Observable";
 
 _chai.should();
 _chai.expect;
@@ -1679,6 +1680,190 @@ class OrderedObservableUnitTest {
         this.ORDERED_OBSERVABLE$.next("11315");
 
         expect(2).to.be.equal(counter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+
+    @test 'refine arr'() {
+        let errorCounter = 0;
+        let glCounter = 0;
+        let targetCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(true).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const globalCounter = () => glCounter++;
+        const targetListener = (str) => {
+            targetCounter++;
+        };
+        const targetObservable$ = new OrderedObservable("");
+        targetObservable$
+            .pipe()
+            .refine(str => str.includes("1"))
+            .pushRefiners([
+                str => str.includes("2"),
+                str => str.length < 5,
+            ])
+            .subscribe(targetListener);
+
+        this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
+
+        this.ORDERED_OBSERVABLE$.stream([
+            "1",
+            "12",
+            "123",
+            "123",
+            "1234",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+        ]);
+
+        expect(12).to.be.equal(glCounter);
+        expect(4).to.be.equal(targetCounter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'refine arr (pushRefiners not array)'() {
+        let errorCounter = 0;
+        let glCounter = 0;
+        let targetCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(true).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const globalCounter = () => glCounter++;
+        const targetListener = (str) => {
+            targetCounter++;
+        };
+        const targetObservable$ = new OrderedObservable("");
+        targetObservable$.pipe()
+            .refine(str => str.includes("1"))
+            .pushRefiners(<any>"10")
+            .refine(str => str.includes("5"))
+            .subscribe(targetListener);
+
+        this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
+
+        this.ORDERED_OBSERVABLE$.stream([
+            "1",
+            "12",
+            "123",
+            "123",
+            "1234",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+        ]);
+
+        expect(12).to.be.equal(glCounter);
+        expect(7).to.be.equal(targetCounter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'pipe cases arr'() {
+        let errorCounter = 0;
+        let glCounter = 0;
+        let targetCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(true).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const globalCounter = () => glCounter++;
+        const targetListener = (str) => {
+            targetCounter++;
+        };
+        const targetObservable$ = new OrderedObservable("");
+        targetObservable$.pipe()
+            .switch()
+            .pushCases([
+                str => str.includes("2"),
+                str => str.includes("5"),
+            ])
+            .case(str => str.includes("7"))
+            .subscribe(targetListener);
+
+        this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
+
+        this.ORDERED_OBSERVABLE$.stream([
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+        ]);
+
+        expect(16).to.be.equal(glCounter);
+        expect(5).to.be.equal(targetCounter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'pipe cases arr (pushCases not array)'() {
+        let errorCounter = 0;
+        let glCounter = 0;
+        let targetCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(true).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const globalCounter = () => glCounter++;
+        const targetListener = (str) => {
+            targetCounter++;
+        };
+        const targetObservable$ = new OrderedObservable("");
+        targetObservable$.pipe()
+            .switch()
+            .case(str => str.includes("7"))
+            .pushCases(<any>10)
+            .case(str => str.includes("6"))
+            .subscribe(targetListener);
+
+        this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
+
+        this.ORDERED_OBSERVABLE$.stream([
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+        ]);
+
+        expect(16).to.be.equal(glCounter);
+        expect(3).to.be.equal(targetCounter);
         expect(0).to.be.equal(errorCounter);
     }
 }
