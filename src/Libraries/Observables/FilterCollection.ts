@@ -9,7 +9,6 @@ import {
     IFilterSetup,
     IFilterSwitch
 } from "./Types";
-import * as console from "node:console";
 
 export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
     chainHandlers: IChainCallback [] = [];
@@ -102,7 +101,7 @@ export class FilterSwitchCase<T> implements IFilterCase<T> {
         return this;
     }
 
-    pushCases(conditions: ICallback<any>[]): IFilterCase<T>{
+    pushCases(conditions: ICallback<any>[]): IFilterCase<T> {
         if (!Array.isArray(conditions)) return this;
         for (let i = 0; i < conditions.length; i++) this.case(conditions[i]);
         return this;
