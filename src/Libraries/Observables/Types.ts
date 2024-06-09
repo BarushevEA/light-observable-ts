@@ -113,9 +113,13 @@ export type IOrderedEmitByNegative<T> = {
 };
 export type IEmitByPositive<T> = {
     emitByPositive(condition: ICallback<any>): ISetup<T>;
+    refine(condition: ICallback<any>): ISetup<T>;
+    pushRefiners(conditions: ICallback<any>[]): ISetup<T>;
 };
 export type IOrderedEmitByPositive<T> = {
     emitByPositive(condition: ICallback<any>): IOrderedSetup<T>;
+    refine(condition: ICallback<any>): ISetup<T>;
+    pushRefiners(conditions: ICallback<any>[]): ISetup<T>;
 };
 export type IEmitMatchCondition<T> = {
     emitMatch(condition: ICallback<any>): ISetup<T>;
@@ -144,6 +148,7 @@ export type IPipePayload = { isBreakChain: boolean, isNeedUnsubscribe: boolean, 
 export type IChainCallback = () => void;
 export type IPipeCase<T> = {
     case(condition: ICallback<any>): IPipeCase<T> & ISubscribe<T>;
+    pushCases(conditions: ICallback<any>[]): IPipeCase<T> & ISubscribe<T>;
 };
 export type ICombinedSubscriber<T> = IListener<T> | ISetObservableValue;
 export type ISubscribeGroup<T> =
