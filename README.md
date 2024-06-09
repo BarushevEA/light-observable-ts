@@ -549,20 +549,27 @@ event handling a breeze.
 | `.unsubscribeByPositive(*condition)` | pipe object       | observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe                                                                      |
 | `.emitByNegative(*condition)`        | pipe object       | observable will send a value to the listener only if condition returns "false", there is no automatic unsubscription                                                                                                    |
 | `.emitByPositive(*condition)`        | pipe object       | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |
+| `.refine(*condition)`                | pipe object       | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |
+| `.pushRefiners(*conditions)`         | pipe object       | This method allows you to add a group of conditions for filtering data in the pipeline chain.                                                                                                                           |
 | `.emitMatch(*condition)`             | pipe object       | observable will send a value to the subscriber only if the return value of the condition matches the data being sent, in this case, there is no automatic unsubscription                                                |
 | `.switch()`                          | SwitchCase object | transitions the pipe into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored. This allows you to handle multiple cases more conveniently. |
 | `.case(*condition)`                  | PipeCase object   | Adds a condition to the chain of cases. The entire chain operates on the principle of "OR". This is different from other pipe methods which, when chained, operate on the principle of "AND".                           |
+| `.pushCases(*conditions)`            | PipeCase object   | This method allows you to add a group of conditions for filtering cases data in the pipeline chain.                                                                                                                     |
 | `.subscribe(listener)`               | subscriber        | subscribe listener to observable                                                                                                                                                                                        |
+
 _*condition_ - this is a function that should return a value that will affect the behavior of the subscriber
 
 ### Inbound filters
 
-| Method                | Will Return          | Description                                                                                                                                                                       |
-|:----------------------|:---------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `.addFilter()`        | InboundFilter object | Transitions the Observable into the mode of adding inbound filters.                                                                                                               |
-| `.filter(*condition)` | InboundFilter object | Part of the filter chain that operates on the principle of "AND". If the condition returns `true`, the filter passes the data along the chain.                                    |
-| `.switch()`           | InboundFilter object | Transitions the filter into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored.                     
-| `.case(*condition)`   | InboundFilter object | Adds a condition to the chain of cases that operate on the principle of "OR". This is different from other filter methods which, when chained, operate on the principle of "AND". |
+| Method                      | Will Return          | Description                                                                                                                                                                       |
+|:----------------------------|:---------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `.addFilter()`              | InboundFilter object | Transitions the Observable into the mode of adding inbound filters.                                                                                                               |
+| `.filter(*condition)`       | InboundFilter object | Part of the filter chain that operates on the principle of "AND". If the condition returns `true`, the filter passes the data along the chain.                                    |
+| `.pushFilters(*conditions)` | InboundFilter object | This method allows you to add a group of conditions for filtering data in the chain.                                                                                              |
+| `.switch()`                 | InboundFilter object | Transitions the filter into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored.                     
+| `.case(*condition)`         | InboundFilter object | Adds a condition to the chain of cases that operate on the principle of "OR". This is different from other filter methods which, when chained, operate on the principle of "AND". |
+| `.pushCases(*conditions)`   | InboundFilter object | This method allows you to add a group of conditions for filtering cases data in the chain.                                                                                        |
+
 _*condition_ - this is a function that should return a value that will affect the behavior of the subscriber
 
 ### Observable subscriber
