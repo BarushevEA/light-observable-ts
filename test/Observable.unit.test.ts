@@ -2201,7 +2201,7 @@ class ObservableUnitTest {
             .filter(str => str.includes("1"))
             .pushFilters([
                 str => str.includes("2"),
-                str => str.length<5,
+                str => str.length < 5,
             ]);
         targetObservable$.subscribe(targetListener);
 
@@ -2268,6 +2268,7 @@ class ObservableUnitTest {
         expect(7).to.be.equal(targetCounter);
         expect(0).to.be.equal(errorCounter);
     }
+
     @test 'filters cases arr'() {
         let errorCounter = 0;
         let glCounter = 0;
@@ -2316,6 +2317,7 @@ class ObservableUnitTest {
         expect(5).to.be.equal(targetCounter);
         expect(0).to.be.equal(errorCounter);
     }
+
     @test 'filters cases arr (pushCases not array)'() {
         let errorCounter = 0;
         let glCounter = 0;
