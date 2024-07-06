@@ -534,6 +534,40 @@ Observable an invaluable tool for managing asynchronous events.
 Built with the developer's needs in mind, EVG Observable provides a wealth of capabilities at your disposal, making
 event handling a breeze.
 
+Here is an advanced example of the `pipe` usage which introduces a new method called `then`. It allows transforming payload data in the pipe chain by applying a user callback function.
+
+Here is the syntax:
+
+```typescript
+const targetObservable$ = new Observable("");
+const targetListener = (num: number) => console.log(num);
+
+targetObservable$
+    .pipe()
+    .refine(str => str.includes("2"))      // check if a string contains "2"
+    .then<number>(str => str.length)       // transform the string to its length
+    .refine(num => num > 4)                // filter out the lengths that is greater than 4
+    .then<number>(num => num * 2)          // multiply the length by 2
+    .setOnce()                             // make sure this action only happens once
+    .subscribe(targetListener);            // subscribe the listener to the observable
+
+targetObservable$.stream([
+    "1",
+    "12",
+    "123",
+    "123",
+    "1234",
+    "12345",
+    "12345",
+    "12345",
+    "12345",
+    "12345",
+    "12345",
+    "12345",
+]);
+```
+In this example, the observable is first refined with a condition to check for a string that includes "2". This string, if it passes the condition, is then transformed into its length via a then invocation. Further, this length is filtered down to lengths that are greater than 4. The lengths that pass this condition are thus doubled and the resulting observable is set to be a once-off observable to which a listener is subscribed. `
+
 ## Methods
 
 ### Observable
@@ -556,20 +590,21 @@ event handling a breeze.
 
 ### Observable`.pipe()`
 
-| method                               | will return       | description                                                                                                                                                                                                             |
-|:-------------------------------------|:------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `.setOnce()`                         | pipe object       | observable will send a value to the subscriber only once, and the subscriber will unsubscribe.                                                                                                                          |
-| `.unsubscribeByNegative(*condition)` | pipe object       | observable will send a value to the subscriber as long as the condition is positive, on the first negative result, the subscriber will unsubscribe                                                                      |
-| `.unsubscribeByPositive(*condition)` | pipe object       | observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe                                                                      |
-| `.emitByNegative(*condition)`        | pipe object       | observable will send a value to the listener only if condition returns "false", there is no automatic unsubscription                                                                                                    |
-| `.emitByPositive(*condition)`        | pipe object       | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |
-| `.refine(*condition)`                | pipe object       | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |
-| `.pushRefiners(*conditions)`         | pipe object       | This method allows you to add a group of conditions for filtering data in the pipeline chain.                                                                                                                           |
-| `.emitMatch(*condition)`             | pipe object       | observable will send a value to the subscriber only if the return value of the condition matches the data being sent, in this case, there is no automatic unsubscription                                                |
-| `.switch()`                          | SwitchCase object | transitions the pipe into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored. This allows you to handle multiple cases more conveniently. |
-| `.case(*condition)`                  | PipeCase object   | Adds a condition to the chain of cases. The entire chain operates on the principle of "OR". This is different from other pipe methods which, when chained, operate on the principle of "AND".                           |
-| `.pushCases(*conditions)`            | PipeCase object   | This method allows you to add a group of conditions for filtering cases data in the pipeline chain.                                                                                                                     |
-| `.subscribe(listener)`               | subscriber        | subscribe listener to observable                                                                                                                                                                                        |
+| method                               | will return                            | description                                                                                                                                                                                                             |
+|:-------------------------------------|:---------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `.setOnce()`                         | pipe object                            | observable will send a value to the subscriber only once, and the subscriber will unsubscribe.                                                                                                                          |
+| `.unsubscribeByNegative(*condition)` | pipe object                            | observable will send a value to the subscriber as long as the condition is positive, on the first negative result, the subscriber will unsubscribe                                                                      |
+| `.unsubscribeByPositive(*condition)` | pipe object                            | observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe                                                                      |
+| `.emitByNegative(*condition)`        | pipe object                            | observable will send a value to the listener only if condition returns "false", there is no automatic unsubscription                                                                                                    |
+| `.emitByPositive(*condition)`        | pipe object                            | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |
+| `.refine(*condition)`                | pipe object                            | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |
+| `.pushRefiners(*conditions)`         | pipe object                            | This method allows you to add a group of conditions for filtering data in the pipeline chain.                                                                                                                           |
+| `.emitMatch(*condition)`             | pipe object                            | observable will send a value to the subscriber only if the return value of the condition matches the data being sent, in this case, there is no automatic unsubscription                                                |
+| `.switch()`                          | SwitchCase object                      | transitions the pipe into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored. This allows you to handle multiple cases more conveniently. |
+| `.case(*condition)`                  | PipeCase object                        | Adds a condition to the chain of cases. The entire chain operates on the principle of "OR". This is different from other pipe methods which, when chained, operate on the principle of "AND".                           |
+| `.pushCases(*conditions)`            | PipeCase object                        | This method allows you to add a group of conditions for filtering cases data in the pipeline chain.                                                                                                                     |
+| `.then<K>(condition: ICallback<T>)`  | Observable instance with new data type | This method allows transforming payload data in the pipe chain by applying user callback function. `condition` should be a function that takes the current data and returns transformed data of possibly another type.  |
+| `.subscribe(listener)`               | subscriber                             | subscribe listener to observable                                                                                                                                                                                        |
 
 _*condition_ - this is a function that should return a value that will affect the behavior of the subscriber
 
