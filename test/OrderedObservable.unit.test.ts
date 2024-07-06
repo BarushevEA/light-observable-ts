@@ -1377,6 +1377,7 @@ class OrderedObservableUnitTest {
         expect(true).to.be.equal(this.ORDERED_OBSERVABLE$.isEnable);
         expect(1).to.be.equal(this.ORDERED_OBSERVABLE$.size());
     }
+
     @test 'pipe chain emitByPositive'() {
         let errorCounter = 0;
         let counter = 0;
@@ -1864,6 +1865,140 @@ class OrderedObservableUnitTest {
 
         expect(16).to.be.equal(glCounter);
         expect(3).to.be.equal(targetCounter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'then by arr'() {
+        let errorCounter = 0;
+        let glCounter = 0;
+        let targetCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(true).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const globalCounter = () => glCounter++;
+        const targetListener = (num: number) => {
+            targetCounter++;
+        };
+        const targetObservable$ = new Observable("");
+        targetObservable$
+            .pipe()
+            .refine(str => str.includes("2"))
+            .then<number>(str => str.length)
+            .refine(num => num > 3)
+            .subscribe(targetListener);
+
+        this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
+
+        this.ORDERED_OBSERVABLE$.stream([
+            "1",
+            "12",
+            "123",
+            "123",
+            "1234",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+        ]);
+
+        expect(12).to.be.equal(glCounter);
+        expect(8).to.be.equal(targetCounter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'then by arr once'() {
+        let errorCounter = 0;
+        let glCounter = 0;
+        let targetCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(true).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const globalCounter = () => glCounter++;
+        const targetListener = (num: number) => {
+            targetCounter++;
+            expect(5).to.be.equal(num);
+        };
+        const targetObservable$ = new Observable("");
+        targetObservable$
+            .pipe()
+            .refine(str => str.includes("2"))
+            .then<number>(str => str.length)
+            .refine(num => num > 4)
+            .setOnce()
+            .subscribe(targetListener);
+
+        this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
+
+        this.ORDERED_OBSERVABLE$.stream([
+            "1",
+            "12",
+            "123",
+            "123",
+            "1234",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+        ]);
+
+        expect(12).to.be.equal(glCounter);
+        expect(1).to.be.equal(targetCounter);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'then by arr once and multiply'() {
+        let errorCounter = 0;
+        let glCounter = 0;
+        let targetCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            console.log("==================> ERROR", errorMessage);
+            expect(true).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const globalCounter = () => glCounter++;
+        const targetListener = (num: number) => {
+            targetCounter++;
+            expect(10).to.be.equal(num);
+        };
+        const targetObservable$ = new Observable("");
+        targetObservable$
+            .pipe()
+            .refine(str => str.includes("2"))
+            .then<number>(str => str.length)
+            .refine(num => num > 4)
+            .then<number>(num => num * 2)
+            .setOnce()
+            .subscribe(targetListener);
+
+        this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
+
+        this.ORDERED_OBSERVABLE$.stream([
+            "1",
+            "12",
+            "123",
+            "123",
+            "1234",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+            "12345",
+        ]);
+
+        expect(12).to.be.equal(glCounter);
+        expect(1).to.be.equal(targetCounter);
         expect(0).to.be.equal(errorCounter);
     }
 }

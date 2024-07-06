@@ -50,6 +50,7 @@ export type IOrderedSetup<T> =
     IOrderedEmitMatchCondition<T> &
     IOrderedOnce<T> &
     IOrderedSwitch<T> &
+    IOrderedTransform<T> &
     IOrderedSubscribe<T>;
 export type ISubscribeObject<T> =
     ISubscriptionLike &
@@ -124,6 +125,9 @@ export type IOrderedEmitByPositive<T> = {
     emitByPositive(condition: ICallback<any>): IOrderedSetup<T>;
     refine(condition: ICallback<any>): ISetup<T>;
     pushRefiners(conditions: ICallback<any>[]): ISetup<T>;
+};
+export type IOrderedTransform<T> = {
+    then<K>(condition: ICallback<T>): ISetup<K>;
 };
 export type IEmitMatchCondition<T> = {
     emitMatch(condition: ICallback<any>): ISetup<T>;

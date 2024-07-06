@@ -58,14 +58,6 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> implements IOr
         return <any>super.emitByPositive(condition);
     }
 
-    refine(condition: ICallback<any>): ISetup<T> {
-        return <any>super.emitByPositive(condition);
-    }
-
-    pushRefiners(conditions: ICallback<any>[]): ISetup<T> {
-        return <any>super.pushRefiners(conditions);
-    }
-
     emitMatch(condition: ICallback<any>): IOrderedSetup<T> {
         return <any>super.emitMatch(condition);
     }
