@@ -40,6 +40,7 @@ export type ISetup<T> =
     IEmitMatchCondition<T> &
     IOnce<T> &
     ISwitch<T> &
+    ITransform<T> &
     ISubscribe<T>;
 export type IOrderedSetup<T> =
     IOrderedUnsubscribeByNegative<T> &
@@ -112,9 +113,12 @@ export type IOrderedEmitByNegative<T> = {
     emitByNegative(condition: ICallback<any>): IOrderedSetup<T>;
 };
 export type IEmitByPositive<T> = {
-    emitByPositive(condition: ICallback<any>): ISetup<T>;
-    refine(condition: ICallback<any>): ISetup<T>;
-    pushRefiners(conditions: ICallback<any>[]): ISetup<T>;
+    emitByPositive(condition: ICallback<T>): ISetup<T>;
+    refine(condition: ICallback<T>): ISetup<T>;
+    pushRefiners(conditions: ICallback<T>[]): ISetup<T>;
+};
+export type ITransform<T> = {
+    then<K>(condition: ICallback<T>): ISetup<K>;
 };
 export type IOrderedEmitByPositive<T> = {
     emitByPositive(condition: ICallback<any>): IOrderedSetup<T>;

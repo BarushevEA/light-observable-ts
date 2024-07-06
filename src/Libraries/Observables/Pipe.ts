@@ -70,11 +70,22 @@ export abstract class Pipe<T> implements ISubscribe<T> {
         return this;
     }
 
-    refine(condition: ICallback<any>): ISetup<T>{
+    refine(condition: ICallback<T>): ISetup<T> {
         return this.emitByPositive(condition);
     }
 
-    pushRefiners(conditions: ICallback<any>[]): ISetup<T>{
+    then<K>(condition: ICallback<T>): ISetup<K> {
+        const data = this.pipeData;
+        this.chainHandlers.push(
+            (): void => {
+                data.payload = condition(data.payload);
+                data.isAvailable = true;
+            }
+        );
+        return <any>this as ISetup<K>;
+    }
+
+    pushRefiners(conditions: ICallback<any>[]): ISetup<T> {
         if (!Array.isArray(conditions)) return this;
         for (let i = 0; i < conditions.length; i++) this.emitByPositive(conditions[i]);
         return this;
@@ -139,7 +150,7 @@ export class SwitchCase<T> implements ISubscribe<T>, IPipeCase<T> {
         return this;
     }
 
-    pushCases(conditions: ICallback<any>[]): IPipeCase<T> & ISubscribe<T>{
+    pushCases(conditions: ICallback<any>[]): IPipeCase<T> & ISubscribe<T> {
         if (!Array.isArray(conditions)) return this;
         for (let i = 0; i < conditions.length; i++) this.case(conditions[i]);
         return this;
