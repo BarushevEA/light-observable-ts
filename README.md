@@ -131,7 +131,7 @@ observable$.destroy(); // all subscribers have automatically unsubscribed
     subscriber1.unsubscribe();
     subscriber2.unsubscribe();
 
-    // if a observable$ is not needed
+    // if an observable$ is not needed
     observable$.destroy(); // all subscribers have automatically unsubscribed
 
     // also if observable$ needs to be used further, but subscribers are not needed, you can use the observable$.unsubscribeAll() method
@@ -254,6 +254,56 @@ observable$.next('Next4 typed data');
 observable$.next(TARGET_DATA);
 // Print to console - listener1: TARGET_DATA
 // Print to console - listener2: TARGET_DATA
+```
+
+### pipe().serialize()
+
+To convert the observable's data to JSON format, you can use the serialize method. This method turns the observer's
+input data into a JSON string before sending them to subscribers.
+Return Value: An ISetup<string> object
+Usage Example:
+
+```ts
+import {Observable} from "evg_observable/src/outLib/Observable";
+type IPoint = { x: number, y: number };
+
+const rawObject: IPoint = {x: 10, y: 20};
+const listener = (data: string) => {
+    console.log('Received data:', data); // Received data: {"x":10,"y":20}
+};
+
+const observable = new Observable<IPoint>(null);
+observable
+    .pipe()
+    .serialize()
+    .subscribe(listener);
+observable.next(rawObject);
+```
+
+### pipe().serialize()
+
+The deserialize method is used to convert data received from the observer from a JSON string back into a JavaScript
+object.
+Return Value: An ISetup<K> object, where K is the type of data resulting from the transformation.
+Usage Example:
+
+```ts
+import {Observable} from "evg_observable/src/outLib/Observable";
+type IPoint = { x: number, y: number };
+
+const rawObject: IPoint = {x: 10, y: 20};
+const json: string = JSON.stringify(rawObject);
+const listener = (data: IPoint) => {
+    console.log('Received data.x:', data.x); // Received data.x: 10
+    console.log('Received data.y:', data.y); // Received data.y: 20
+};
+
+const observable = new Observable<string>("");
+observable
+    .pipe()
+    .deserialize<IPoint>()
+    .subscribe(listener);
+observable.next(json);
 ```
 
 ## Ordered observable
@@ -572,6 +622,8 @@ observable is set to be a once-off observable to which a listener is subscribed.
 | `.case(*condition)`                  | PipeCase object                        | Adds a condition to the chain of cases. The entire chain operates on the principle of "OR". This is different from other pipe methods which, when chained, operate on the principle of "AND".                           |
 | `.pushCases(*conditions)`            | PipeCase object                        | This method allows you to add a group of conditions for filtering cases data in the pipeline chain.                                                                                                                     |
 | `.then<K>(condition: ICallback<T>)`  | Observable instance with new data type | This method allows transforming payload data in the pipe chain by applying user callback function. `condition` should be a function that takes the current data and returns transformed data of possibly another type.  |
+| `.serialize()`                       | pipe object                            | Converts the observers data into a JSON string.                                                                                                                                                                         |
+| `.deserialize<K>()`                  | pipe object                            | Converts a JSON string into an object of type K.                                                                                                                                                                        |
 | `.subscribe(listener)`               | subscriber                             | subscribe listener to observable                                                                                                                                                                                        |
 
 _*condition_ - this is a function that should return a value that will affect the behavior of the subscriber

@@ -2001,4 +2001,37 @@ class OrderedObservableUnitTest {
         expect(1).to.be.equal(targetCounter);
         expect(0).to.be.equal(errorCounter);
     }
+
+    @test 'serialize'() {
+        const rawObject: { x: number, y: number } = {x: 10, y: 20};
+        const listener = (data: string) => {
+            expect(data).to.be.a("string");
+            const deserialized: { x: number, y: number; } = JSON.parse(data);
+            expect(10).to.be.equal(deserialized.x);
+            expect(20).to.be.equal(deserialized.y);
+        };
+
+        const observable = new OrderedObservable<{ x: number, y: number }>(null);
+        observable
+            .pipe()
+            .serialize()
+            .subscribe(listener);
+        observable.next(rawObject);
+    }
+
+    @test 'deserialize'() {
+        const rawObject: { x: number, y: number } = {x: 10, y: 20};
+        const json: string = JSON.stringify(rawObject);
+        const listener = (data: { x: number, y: number }) => {
+            expect(10).to.be.equal(data.x);
+            expect(20).to.be.equal(data.y);
+        };
+
+        const observable = new OrderedObservable<string>("");
+        observable
+            .pipe()
+            .deserialize<{ x: number, y: number }>()
+            .subscribe(listener);
+        observable.next(json);
+    }
 }
