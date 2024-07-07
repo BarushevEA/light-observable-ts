@@ -280,7 +280,7 @@ observable
 observable.next(rawObject);
 ```
 
-### pipe().serialize()
+### pipe().deserialize<K>()
 
 The deserialize method is used to convert data received from the observer from a JSON string back into a JavaScript
 object.
