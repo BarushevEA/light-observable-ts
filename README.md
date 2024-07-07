@@ -260,7 +260,8 @@ observable$.next(TARGET_DATA);
 
 To convert the observable's data to JSON format, you can use the serialize method. This method turns the observer's
 input data into a JSON string before sending them to subscribers.
-Return Value: An ISetup&lt;string&gt; object
+Return Value: An ISetup&lt;string&gt; object.
+
 Usage Example:
 
 ```ts
@@ -285,6 +286,7 @@ observable.next(rawObject);
 The deserialize method is used to convert data received from the observer from a JSON string back into a JavaScript
 object.
 Return Value: An ISetup&lt;K&gt; object, where K is the type of data resulting from the transformation.
+
 Usage Example:
 
 ```ts
