@@ -213,37 +213,39 @@ observable$.next('Next3 typed data');
 
 Observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the
 subscriber will unsubscribe.
-
 ```ts
 import {Observable} from "evg_observable/src/outLib/Observable";
 
-const observable$ = new Observable('Some typed data (not only string)');
-const listener1 = (value: string) => console.log('listener1:', value);
-const listener2 = (value: string) => console.log('listener2:', value);
-let isPositive = false;
+type ISomeData = {
+    message: string;
+    isNeedUnsubscribe: boolean;
+}
 
-const subscriber1 = observable$
+const observable$ = new Observable<ISomeData>({message: "some message", isNeedUnsubscribe: false});
+const listener1 = (value: ISomeData) => console.log('listener1:', value);
+const listener2 = (value: ISomeData) => console.log('listener2:', value);
+
+observable$
     .pipe()
-    .unsubscribeByPositive(() => isPositive)
+    .unsubscribeByPositive((data: ISomeData) => data.isNeedUnsubscribe)
     .subscribe(listener1);
-const subscriber2 = observable$.subscribe(listener2);
+
+observable$
+    .subscribe(listener2);
 
 console.log(observable$.getValue());
-// Print to console - Some typed data (not only string)
 
-observable$.next('Next1 typed data');
-// Print to console - listener1: Next1 typed data
-// Print to console - listener2: Next1 typed data
+observable$.next({message: "some message1", isNeedUnsubscribe: false});
+observable$.next({message: "some message2", isNeedUnsubscribe: false});
+observable$.next({message: "some message3", isNeedUnsubscribe: true});
 
-observable$.next('Next2 typed data');
-// Print to console - listener1: Next2 typed data
-// Print to console - listener2: Next2 typed data
-
-isPositive = true;
-observable$.next('Next3 typed data');
-// Print to console - listener2: Next3 typed data
-
-// subscriber1 is automatically unsubscribed when positive condition
+// logs:
+// { message: 'some message', isNeedUnsubscribe: false }
+// listener1: { message: 'some message1', isNeedUnsubscribe: false }
+// listener2: { message: 'some message1', isNeedUnsubscribe: false }
+// listener1: { message: 'some message2', isNeedUnsubscribe: false }
+// listener2: { message: 'some message2', isNeedUnsubscribe: false }
+// listener2: { message: 'some message3', isNeedUnsubscribe: true }
 ```
 
 ### pipe().emitByNegative(condition)

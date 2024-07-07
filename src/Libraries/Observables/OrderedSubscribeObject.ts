@@ -9,8 +9,7 @@ import {
     IOrderedSetup,
     IOrderedSubscribe,
     IOrderedSubscriptionLike,
-    ISetObservableValue,
-    ISetup
+    ISetObservableValue
 } from "./Types";
 import {OrderedObservable} from "./OrderedObservable";
 
