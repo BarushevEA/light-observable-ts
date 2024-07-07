@@ -172,47 +172,11 @@ observable$.next('Next2 typed data');
 // subscriber1 is automatically unsubscribed after first usage
 ```
 
-### pipe().unsubscribeByNegative(condition)
-
-Observable will send a value to the subscriber as long as the condition is positive, on the first negative result, the
-subscriber will unsubscribe.
-
-```ts
-import {Observable} from "evg_observable/src/outLib/Observable";
-
-const observable$ = new Observable('Some typed data (not only string)');
-const listener1 = (value: string) => console.log('listener1:', value);
-const listener2 = (value: string) => console.log('listener2:', value);
-let isPositive = true;
-
-const subscriber1 = observable$
-    .pipe()
-    .unsubscribeByNegative(() => isPositive)
-    .subscribe(listener1);
-const subscriber2 = observable$.subscribe(listener2);
-
-console.log(observable$.getValue());
-// Print to console - Some typed data (not only string)
-
-observable$.next('Next1 typed data');
-// Print to console - listener1: Next1 typed data
-// Print to console - listener2: Next1 typed data
-
-observable$.next('Next2 typed data');
-// Print to console - listener1: Next2 typed data
-// Print to console - listener2: Next2 typed data
-
-isPositive = false;
-observable$.next('Next3 typed data');
-// Print to console - listener2: Next3 typed data
-
-// subscriber1 is automatically unsubscribed when negative condition
-```
-
-### pipe().unsubscribeByPositive(condition)
+### pipe().unsubscribeBy(condition)
 
 Observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the
 subscriber will unsubscribe.
+
 ```ts
 import {Observable} from "evg_observable/src/outLib/Observable";
 
@@ -227,7 +191,7 @@ const listener2 = (value: ISomeData) => console.log('listener2:', value);
 
 observable$
     .pipe()
-    .unsubscribeByPositive((data: ISomeData) => data.isNeedUnsubscribe)
+    .unsubscribeBy((data: ISomeData) => data.isNeedUnsubscribe)
     .subscribe(listener1);
 
 observable$
@@ -248,11 +212,7 @@ observable$.next({message: "some message3", isNeedUnsubscribe: true});
 // listener2: { message: 'some message3', isNeedUnsubscribe: true }
 ```
 
-### pipe().emitByNegative(condition)
-
-Observable will send a value to the listener only if condition returns "false". There is no automatic unsubscription.
-
-### pipe().emitByPositive(condition)
+### pipe().refine(condition)
 
 Observable will send a value to the listener only if condition returns "true". There is no automatic unsubscription.
 
@@ -536,7 +496,8 @@ Observable an invaluable tool for managing asynchronous events.
 Built with the developer's needs in mind, EVG Observable provides a wealth of capabilities at your disposal, making
 event handling a breeze.
 
-Here is an advanced example of the `pipe` usage which introduces a new method called `then`. It allows transforming payload data in the pipe chain by applying a user callback function.
+Here is an advanced example of the `pipe` usage which introduces a new method called `then`. It allows transforming
+payload data in the pipe chain by applying a user callback function.
 
 Here is the syntax:
 
@@ -568,7 +529,11 @@ targetObservable$.stream([
     "12345",
 ]);
 ```
-In this example, the observable is first refined with a condition to check for a string that includes "2". This string, if it passes the condition, is then transformed into its length via a then invocation. Further, this length is filtered down to lengths that are greater than 4. The lengths that pass this condition are thus doubled and the resulting observable is set to be a once-off observable to which a listener is subscribed. `
+
+In this example, the observable is first refined with a condition to check for a string that includes "2". This string,
+if it passes the condition, is then transformed into its length via a then invocation. Further, this length is filtered
+down to lengths that are greater than 4. The lengths that pass this condition are thus doubled and the resulting
+observable is set to be a once-off observable to which a listener is subscribed. `
 
 ## Methods
 
@@ -597,6 +562,7 @@ In this example, the observable is first refined with a condition to check for a
 | `.setOnce()`                         | pipe object                            | observable will send a value to the subscriber only once, and the subscriber will unsubscribe.                                                                                                                          |
 | `.unsubscribeByNegative(*condition)` | pipe object                            | observable will send a value to the subscriber as long as the condition is positive, on the first negative result, the subscriber will unsubscribe                                                                      |
 | `.unsubscribeByPositive(*condition)` | pipe object                            | observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe                                                                      |
+| `.unsubscribeBy(*condition)`         | pipe object                            | observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe                                                                      |
 | `.emitByNegative(*condition)`        | pipe object                            | observable will send a value to the listener only if condition returns "false", there is no automatic unsubscription                                                                                                    |
 | `.emitByPositive(*condition)`        | pipe object                            | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |
 | `.refine(*condition)`                | pipe object                            | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |

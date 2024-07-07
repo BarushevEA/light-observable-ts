@@ -50,6 +50,10 @@ export abstract class Pipe<T> implements ISubscribe<T> {
         return this;
     }
 
+    unsubscribeBy(condition: ICallback<T>): ISetup<T>{
+        return this.unsubscribeByPositive(condition);
+    }
+
     emitByNegative(condition: ICallback<T>): ISetup<T> {
         const data = this.pipeData;
         this.chainHandlers.push(

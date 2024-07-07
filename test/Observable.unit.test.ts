@@ -354,6 +354,27 @@ class ObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
+    @test 'Add one by pipe and "unsubscribeBy true"'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const str = '0123456789';
+        const listener = (value: string) => expect(value).to.be.equal(str);
+        const condition = () => true;
+        const subscribeObject = this.OBSERVABLE$
+            .pipe()
+            .unsubscribeBy(condition)
+            .subscribe(listener, errorHandler);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        this.OBSERVABLE$.next(str);
+        // @ts-ignore
+        // expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(null);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
+    }
+
     @test 'Add one by pipe and "unsubscribeByPositive false"'() {
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {

@@ -96,22 +96,24 @@ export type ISend<T> = {
     send(value: T): void;
 };
 export type IUnsubscribeByNegative<T> = {
-    unsubscribeByNegative(condition: ICallback<any>): ISetup<T>;
+    unsubscribeByNegative(condition: ICallback<T>): ISetup<T>;
 };
 export type IOrderedUnsubscribeByNegative<T> = {
-    unsubscribeByNegative(condition: ICallback<any>): IOrderedSetup<T>;
+    unsubscribeByNegative(condition: ICallback<T>): IOrderedSetup<T>;
 };
 export type IUnsubscribeByPositive<T> = {
-    unsubscribeByPositive(condition: ICallback<any>): ISetup<T>;
+    unsubscribeByPositive(condition: ICallback<T>): ISetup<T>;
+    unsubscribeBy(condition: ICallback<T>): ISetup<T>;
 };
 export type IOrderedUnsubscribeByPositive<T> = {
-    unsubscribeByPositive(condition: ICallback<any>): IOrderedSetup<T>;
+    unsubscribeByPositive(condition: ICallback<T>): IOrderedSetup<T>;
+    unsubscribeBy(condition: ICallback<T>): ISetup<T>;
 };
 export type IEmitByNegative<T> = {
-    emitByNegative(condition: ICallback<any>): ISetup<T>;
+    emitByNegative(condition: ICallback<T>): ISetup<T>;
 };
 export type IOrderedEmitByNegative<T> = {
-    emitByNegative(condition: ICallback<any>): IOrderedSetup<T>;
+    emitByNegative(condition: ICallback<T>): IOrderedSetup<T>;
 };
 export type IEmitByPositive<T> = {
     emitByPositive(condition: ICallback<T>): ISetup<T>;
