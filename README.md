@@ -70,7 +70,7 @@ features that make it stand out from the rest:
 ## Observable simple usage
 
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observable";
+import {Observable} from "evg_observable";
 
 const observable$ = new Observable('Some typed data (not only string)');
 
@@ -147,7 +147,7 @@ observable$.destroy(); // all subscribers have automatically unsubscribed
 Observable will send a value to the subscriber only once, and the subscriber will unsubscribe.
 
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observable";
+import {Observable} from "evg_observable";
 
 const observable$ = new Observable('Some typed data (not only string)');
 const listener1 = (value: string) => console.log('listener1:', value);
@@ -178,7 +178,7 @@ Observable will send a value to the subscriber as long as the condition is negat
 subscriber will unsubscribe.
 
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observable";
+import {Observable} from "evg_observable";
 
 type ISomeData = {
     message: string;
@@ -222,7 +222,7 @@ Observable will send a value to the subscriber only if the return value of the c
 this case, there is no automatic unsubscription.
 
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observable";
+import {Observable} from "evg_observable";
 
 const observable$ = new Observable('Some typed data (not only string)');
 const listener1 = (value: string) => console.log('listener1:', value);
@@ -265,7 +265,7 @@ Return Value: An ISetup&lt;string&gt; object.
 Usage Example:
 
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observable";
+import {Observable} from "evg_observable";
 type IPoint = { x: number, y: number };
 
 const rawObject: IPoint = {x: 10, y: 20};
@@ -290,7 +290,7 @@ Return Value: An ISetup&lt;K&gt; object, where K is the type of data resulting f
 Usage Example:
 
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observable";
+import {Observable} from "evg_observable";
 type IPoint = { x: number, y: number };
 
 const rawObject: IPoint = {x: 10, y: 20};
@@ -314,7 +314,7 @@ Ordered observable - differs from Observable in that it allows you to emit messa
 are the same.
 
 ```ts
-import {OrderedObservable} from "evg_observable/src/outLib/OrderedObservable";
+import {OrderedObservable} from "evg_observable";
 
 const observable$ = new OrderedObservable('Some typed data (not only string)');
 const listener1 = (value: string) => console.log('listener1:', value);
@@ -360,8 +360,8 @@ observable$.next('SOME DATA');
 You can also use the subscriber collector for convenience.
 
 ```ts
-import {Observable} from "evg_observable/src/outLib/Observable";
-import {Collector} from "evg_observable/src/outLib/Collector";
+import {Observable} from "evg_observable";
+import {Collector} from "evg_observable";
 
 const collector = new Collector();
 const observable$ = new Observable('Some typed data (not only string)');
@@ -407,7 +407,7 @@ updates:
 
 ```typescript
 // Import the Observable library
-import {Observable} from "evg_observable/src/outLib/Observable";
+import {Observable} from "evg_observable";
 
 // Constants representing different hair colors
 const HAIR = {
@@ -554,6 +554,8 @@ payload data in the pipe chain by applying a user callback function.
 Here is the syntax:
 
 ```typescript
+import {Observable} from "evg_observable";
+
 const targetObservable$ = new Observable("");
 const targetListener = (num: number) => console.log(num);
 
