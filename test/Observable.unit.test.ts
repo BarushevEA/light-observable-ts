@@ -37,6 +37,7 @@ class ObservableUnitTest {
         // // @ts-ignore
         // expect(once.isFinished).to.be.equal(false);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'unsubscribe one by subject'() {
@@ -47,6 +48,22 @@ class ObservableUnitTest {
         };
         const subscribeObject = this.OBSERVABLE$.subscribe((value: string) => console.log(value), errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        subscribeObject.unsubscribe();
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
+    }
+
+    @test 'unsubscribe one by subject twice'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const subscribeObject = this.OBSERVABLE$.subscribe((value: string) => console.log(value), errorHandler);
+        expect(this.OBSERVABLE$.size()).to.be.equal(1);
+        subscribeObject.unsubscribe();
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
+        expect(0).to.be.equal(errorCounter);
         subscribeObject.unsubscribe();
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
@@ -192,6 +209,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.once.isFinished).to.be.equal(true);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe, "once" and one without pipe'() {
@@ -238,6 +256,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.once.isFinished).to.be.equal(true);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add bad pipe'() {
@@ -267,6 +286,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "unsubscribeByNegative false"'() {
@@ -288,6 +308,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "unsubscribeByNegative" (5 positive, 5 negative)'() {
@@ -312,6 +333,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Try use .unsubscribeByNegative(condition) when "condition" is undefined'() {
@@ -352,6 +374,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "unsubscribeBy true"'() {
@@ -373,6 +396,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "unsubscribeByPositive false"'() {
@@ -394,6 +418,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "unsubscribeByPositive" (5 negative, 5 positive)'() {
@@ -418,6 +443,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Try use .unsubscribeByPositive(condition) when "condition" is undefined'() {
@@ -458,6 +484,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "emitByNegative false"'() {
@@ -479,6 +506,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "emitByNegative" (5 negative, 5 positive)'() {
@@ -506,6 +534,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "emitByNegative" (5 positive 5 negative)'() {
@@ -533,6 +562,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Try use .emitByNegative(condition) when "condition" is undefined'() {
@@ -573,6 +603,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "emitByPositive false"'() {
@@ -594,6 +625,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "emitByPositive" (5 negative, 5 positive)'() {
@@ -621,6 +653,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "emitByPositive" (5 positive 5 negative)'() {
@@ -648,6 +681,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Try use .emitByPositive(condition) when "condition" is undefined'() {
@@ -686,6 +720,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "emitMatch false"'() {
@@ -705,6 +740,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "emitMatch 10 elements" (on value "0")'() {
@@ -732,6 +768,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "emitMatch 10 elements" (on value "9")'() {
@@ -759,6 +796,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Add one by pipe and "emitMatch 10 elements" (on value "5")'() {
@@ -786,6 +824,7 @@ class ObservableUnitTest {
         // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'Try use .emitMatch(condition) when "condition" is undefined'() {
@@ -827,6 +866,7 @@ class ObservableUnitTest {
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(accumulatorStr).to.be.equal('012389');
         expect(0).to.be.equal(errorCounter);
+        subscribeObject.unsubscribe();
     }
 
     @test 'order identification'() {
@@ -1462,7 +1502,7 @@ class ObservableUnitTest {
             expect(false).to.be.equal(!!errorMessage);
             errorCounter++;
         };
-        const listener1 = (data: string) => {
+        const listener1 = () => {
             counter++;
         };
         this.OBSERVABLE$.pipe()
@@ -1672,7 +1712,7 @@ class ObservableUnitTest {
             counter2++;
             expect(data).to.be.equal('test2');
         }
-        const listener3 = (data: string) => {
+        const listener3 = () => {
             counter3++;
         }
 
@@ -2129,8 +2169,8 @@ class ObservableUnitTest {
             .switch()
             .case(str => str === "011")
             .case(str => {
+                console.log(str === "111100011");
                 throw new Error("This is an error message");
-                return str === "111100011";
             });
         targetObservable$.subscribe(targetListener);
 
@@ -2175,8 +2215,8 @@ class ObservableUnitTest {
             .switch()
             .case(str => str === "011")
             .case(str => {
+                console.log(str === "111100011");
                 throw new Error("This is an error message");
-                return str === "111100011";
             });
         targetObservable$.subscribe(targetListener);
 
@@ -2214,7 +2254,7 @@ class ObservableUnitTest {
             errorCounter++;
         };
         const globalCounter = () => glCounter++;
-        const targetListener = (str) => {
+        const targetListener = () => {
             targetCounter++;
         };
         const targetObservable$ = new Observable("");
@@ -2258,7 +2298,7 @@ class ObservableUnitTest {
             errorCounter++;
         };
         const globalCounter = () => glCounter++;
-        const targetListener = (str) => {
+        const targetListener = () => {
             targetCounter++;
         };
         const targetObservable$ = new Observable("");
@@ -2300,7 +2340,7 @@ class ObservableUnitTest {
             errorCounter++;
         };
         const globalCounter = () => glCounter++;
-        const targetListener = (str) => {
+        const targetListener = () => {
             targetCounter++;
         };
         const targetObservable$ = new Observable("");
@@ -2349,7 +2389,7 @@ class ObservableUnitTest {
             errorCounter++;
         };
         const globalCounter = () => glCounter++;
-        const targetListener = (str) => {
+        const targetListener = () => {
             targetCounter++;
         };
         const targetObservable$ = new Observable("");
@@ -2396,7 +2436,7 @@ class ObservableUnitTest {
             errorCounter++;
         };
         const globalCounter = () => glCounter++;
-        const targetListener = (str) => {
+        const targetListener = () => {
             targetCounter++;
         };
         const targetObservable$ = new Observable("");
@@ -2441,7 +2481,7 @@ class ObservableUnitTest {
             errorCounter++;
         };
         const globalCounter = () => glCounter++;
-        const targetListener = (str) => {
+        const targetListener = () => {
             targetCounter++;
         };
         const targetObservable$ = new Observable("");
@@ -2483,7 +2523,7 @@ class ObservableUnitTest {
             errorCounter++;
         };
         const globalCounter = () => glCounter++;
-        const targetListener = (str) => {
+        const targetListener = () => {
             targetCounter++;
         };
         const targetObservable$ = new Observable("");
@@ -2532,7 +2572,7 @@ class ObservableUnitTest {
             errorCounter++;
         };
         const globalCounter = () => glCounter++;
-        const targetListener = (str) => {
+        const targetListener = () => {
             targetCounter++;
         };
         const targetObservable$ = new Observable("");
@@ -2579,7 +2619,7 @@ class ObservableUnitTest {
             errorCounter++;
         };
         const globalCounter = () => glCounter++;
-        const targetListener = (num: number) => {
+        const targetListener = () => {
             targetCounter++;
         };
         const targetObservable$ = new Observable("");
