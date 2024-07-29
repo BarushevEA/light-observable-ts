@@ -29,13 +29,13 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
         this.observable.unSubscribe(this);
         this.observable = <any>null;
         this.listener = <any>null;
-        this.chainHandlers.length = 0;
+        this.chain.length = 0;
     }
 
     send(value: T): void {
         try {
-            this.pipeData.payload = value;
-            this.pipeData.isBreakChain = false;
+            this.flow.payload = value;
+            this.flow.isBreak = false;
             this.processValue(value);
         } catch (err) {
             this.errorHandler(value, err);

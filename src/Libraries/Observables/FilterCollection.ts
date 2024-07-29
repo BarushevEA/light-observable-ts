@@ -11,17 +11,17 @@ import {
 } from "./Types";
 
 export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
-    chainHandlers: IFilterChainCallback [] = [];
-    pipeData: IFilterPayload = {isBreakChain: false, isAvailable: false, payload: null};
+    chain: IFilterChainCallback [] = [];
+    flow: IFilterPayload = {isBreak: false, isAvailable: false, payload: null};
     response: IFilterResponse = {isOK: false, payload: undefined};
-    private errorHandler: IErrorCallback | undefined;
+    private errHandler: IErrorCallback | undefined;
 
     get isEmpty(): boolean {
-        return !this.chainHandlers.length;
+        return !this.chain.length;
     }
 
     private push(callback: IFilterChainCallback): IFilterSetup<T> {
-        this.chainHandlers.push(callback);
+        this.chain.push(callback);
         return this;
     }
 
@@ -44,13 +44,13 @@ export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
     }
 
     processChain(value: T): IFilterResponse {
-        const chain = this.chainHandlers;
-        const data = this.pipeData;
+        const chain = this.chain;
+        const data = this.flow;
         const response = this.response;
         response.isOK = false;
         response.payload = undefined;
         data.payload = value;
-        data.isBreakChain = false;
+        data.isBreak = false;
 
         try {
             for (let i = 0; i < chain.length; i++) {
@@ -58,11 +58,11 @@ export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
 
                 chain[i](data);
                 if (!data.isAvailable) return response;
-                if (data.isBreakChain) break;
+                if (data.isBreak) break;
             }
         } catch (err) {
-            if (this.errorHandler) {
-                this.errorHandler(err, "Filter.processChain ERROR:");
+            if (this.errHandler) {
+                this.errHandler(err, "Filter.processChain ERROR:");
             } else {
                 console.log("Filter.processChain ERROR:", err);
             }
@@ -76,28 +76,28 @@ export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
     }
 
     addErrorHandler(errorHandler: IErrorCallback) {
-        this.errorHandler = errorHandler;
+        this.errHandler = errorHandler;
     }
 }
 
 export class FilterSwitchCase<T> implements IFilterCase<T> {
     private pipe: FilterCollection<T>;
-    private caseCounter: number;
+    private counter: number;
 
     constructor(pipe: FilterCollection<T>) {
         this.pipe = pipe;
-        this.caseCounter = pipe.chainHandlers.length ? pipe.chainHandlers.length : 0;
+        this.counter = pipe.chain.length ? pipe.chain.length : 0;
     }
 
     case(condition: ICallback<any>): IFilterCase<T> {
-        this.caseCounter++;
-        const id = this.caseCounter;
-        const chain = this.pipe.chainHandlers;
+        this.counter++;
+        const id = this.counter;
+        const chain = this.pipe.chain;
         chain.push(
             (data: IFilterPayload): void => {
                 data.isAvailable = true
-                if (condition(data.payload)) data.isBreakChain = true;
-                if (id === chain.length && !data.isBreakChain) data.isAvailable = false;
+                if (condition(data.payload)) data.isBreak = true;
+                if (id === chain.length && !data.isBreak) data.isAvailable = false;
             }
         );
         return this;

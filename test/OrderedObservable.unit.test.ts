@@ -220,71 +220,71 @@ class OrderedObservableUnitTest {
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(0);
     }
 
-    @test 'Add one by pipe and "unsubscribeByNegative true"'() {
-        let errorCounter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        const str = '0123456789';
-        const listener = (value: string) => expect(value).to.be.equal(str);
-        const condition = () => true;
-        const subscribeObject = this.ORDERED_OBSERVABLE$
-            .pipe()
-            .unsubscribeByNegative(condition)
-            .subscribe(listener, errorHandler);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        this.ORDERED_OBSERVABLE$.next(str);
-        // @ts-ignore
-        // expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(condition);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'Add one by pipe and "unsubscribeByNegative true"'() {
+    //     let errorCounter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     const str = '0123456789';
+    //     const listener = (value: string) => expect(value).to.be.equal(str);
+    //     const condition = () => true;
+    //     const subscribeObject = this.ORDERED_OBSERVABLE$
+    //         .pipe()
+    //         .unsubscribeByNegative(condition)
+    //         .subscribe(listener, errorHandler);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     this.ORDERED_OBSERVABLE$.next(str);
+    //     // @ts-ignore
+    //     // expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(condition);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
-    @test 'Add one by pipe and "unsubscribeByNegative false"'() {
-        let errorCounter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        const str = '0123456789';
-        const listener = (value: string) => expect(value).to.be.equal(null);
-        const condition = () => false;
-        const subscribeObject = this.ORDERED_OBSERVABLE$
-            .pipe()
-            .unsubscribeByNegative(condition)
-            .subscribe(listener, errorHandler);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        this.ORDERED_OBSERVABLE$.next(str);
-        // @ts-ignore
-        // expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(0);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'Add one by pipe and "unsubscribeByNegative false"'() {
+    //     let errorCounter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     const str = '0123456789';
+    //     const listener = (value: string) => expect(value).to.be.equal(null);
+    //     const condition = () => false;
+    //     const subscribeObject = this.ORDERED_OBSERVABLE$
+    //         .pipe()
+    //         .unsubscribeByNegative(condition)
+    //         .subscribe(listener, errorHandler);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     this.ORDERED_OBSERVABLE$.next(str);
+    //     // @ts-ignore
+    //     // expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(0);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
-    @test 'Add one by pipe and "unsubscribeByNegative" (5 positive, 5 negative)'() {
-        let errorCounter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        let counter = 0;
-        const str = '0123456789';
-        const listener = (value: string) => expect(value).to.be.equal(str[counter]);
-        const condition = () => counter < 5;
-        const subscribeObject = this.ORDERED_OBSERVABLE$
-            .pipe()
-            .unsubscribeByNegative(condition)
-            .subscribe(listener, errorHandler);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        for (; counter < 10; counter++) {
-            this.ORDERED_OBSERVABLE$.next(str[counter]);
-        }
-        // @ts-ignore
-        // expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(0);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'Add one by pipe and "unsubscribeByNegative" (5 positive, 5 negative)'() {
+    //     let errorCounter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     let counter = 0;
+    //     const str = '0123456789';
+    //     const listener = (value: string) => expect(value).to.be.equal(str[counter]);
+    //     const condition = () => counter < 5;
+    //     const subscribeObject = this.ORDERED_OBSERVABLE$
+    //         .pipe()
+    //         .unsubscribeByNegative(condition)
+    //         .subscribe(listener, errorHandler);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     for (; counter < 10; counter++) {
+    //         this.ORDERED_OBSERVABLE$.next(str[counter]);
+    //     }
+    //     // @ts-ignore
+    //     // expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(0);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
     @test 'Add one by pipe and "unsubscribeByPositive true"'() {
         let errorCounter = 0;
@@ -297,7 +297,7 @@ class OrderedObservableUnitTest {
         const condition = () => true;
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .unsubscribeByPositive(condition)
+            .unsubscribeBy(condition)
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         this.ORDERED_OBSERVABLE$.next(str);
@@ -318,7 +318,7 @@ class OrderedObservableUnitTest {
         const condition = () => false;
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .unsubscribeByPositive(condition)
+            .unsubscribeBy(condition)
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         this.ORDERED_OBSERVABLE$.next(str);
@@ -340,7 +340,7 @@ class OrderedObservableUnitTest {
         const condition = () => counter > 4;
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .unsubscribeByPositive(condition)
+            .unsubscribeBy(condition)
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
@@ -352,101 +352,101 @@ class OrderedObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
-    @test 'Add one by pipe and "emitByNegative true"'() {
-        let errorCounter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        const str = '0123456789';
-        const listener = (value: string) => expect(value).to.be.equal(null);
-        const condition = () => true;
-        const subscribeObject = this.ORDERED_OBSERVABLE$
-            .pipe()
-            .emitByNegative(condition)
-            .subscribe(listener, errorHandler);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        this.ORDERED_OBSERVABLE$.next(str);
-        // @ts-ignore
-        // expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'Add one by pipe and "emitByNegative true"'() {
+    //     let errorCounter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     const str = '0123456789';
+    //     const listener = (value: string) => expect(value).to.be.equal(null);
+    //     const condition = () => true;
+    //     const subscribeObject = this.ORDERED_OBSERVABLE$
+    //         .pipe()
+    //         .emitByNegative(condition)
+    //         .subscribe(listener, errorHandler);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     this.ORDERED_OBSERVABLE$.next(str);
+    //     // @ts-ignore
+    //     // expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
-    @test 'Add one by pipe and "emitByNegative false"'() {
-        let errorCounter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        const str = '0123456789';
-        const listener = (value: string) => expect(value).to.be.equal(str);
-        const condition = () => false;
-        const subscribeObject = this.ORDERED_OBSERVABLE$
-            .pipe()
-            .emitByNegative(condition)
-            .subscribe(listener, errorHandler);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        this.ORDERED_OBSERVABLE$.next(str);
-        // @ts-ignore
-        // expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'Add one by pipe and "emitByNegative false"'() {
+    //     let errorCounter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     const str = '0123456789';
+    //     const listener = (value: string) => expect(value).to.be.equal(str);
+    //     const condition = () => false;
+    //     const subscribeObject = this.ORDERED_OBSERVABLE$
+    //         .pipe()
+    //         .emitByNegative(condition)
+    //         .subscribe(listener, errorHandler);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     this.ORDERED_OBSERVABLE$.next(str);
+    //     // @ts-ignore
+    //     // expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
-    @test 'Add one by pipe and "emitByNegative" (5 negative, 5 positive)'() {
-        let errorCounter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        let counter = 0;
-        const str = '0123456789';
-        const listener = (value: string) => {
-            expect(value).to.be.equal(str[counter]);
-            expect(true).to.be.equal(counter > -1 && counter < 5);
-        };
-        const condition = () => counter > 4;
-        const subscribeObject = this.ORDERED_OBSERVABLE$
-            .pipe()
-            .emitByNegative(condition)
-            .subscribe(listener, errorHandler);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        for (; counter < 10; counter++) {
-            this.ORDERED_OBSERVABLE$.next(str[counter]);
-        }
-        // @ts-ignore
-        // expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'Add one by pipe and "emitByNegative" (5 negative, 5 positive)'() {
+    //     let errorCounter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     let counter = 0;
+    //     const str = '0123456789';
+    //     const listener = (value: string) => {
+    //         expect(value).to.be.equal(str[counter]);
+    //         expect(true).to.be.equal(counter > -1 && counter < 5);
+    //     };
+    //     const condition = () => counter > 4;
+    //     const subscribeObject = this.ORDERED_OBSERVABLE$
+    //         .pipe()
+    //         .emitByNegative(condition)
+    //         .subscribe(listener, errorHandler);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     for (; counter < 10; counter++) {
+    //         this.ORDERED_OBSERVABLE$.next(str[counter]);
+    //     }
+    //     // @ts-ignore
+    //     // expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
-    @test 'Add one by pipe and "emitByNegative" (5 positive 5 negative)'() {
-        let errorCounter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        let counter = 0;
-        const str = '0123456789';
-        const listener = (value: string) => {
-            expect(value).to.be.equal(str[counter]);
-            expect(true).to.be.equal(counter > 4 && counter < 10);
-        };
-        const condition = () => counter < 5;
-        const subscribeObject = this.ORDERED_OBSERVABLE$
-            .pipe()
-            .emitByNegative(condition)
-            .subscribe(listener, errorHandler);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        for (; counter < 10; counter++) {
-            this.ORDERED_OBSERVABLE$.next(str[counter]);
-        }
-        // @ts-ignore
-        // expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'Add one by pipe and "emitByNegative" (5 positive 5 negative)'() {
+    //     let errorCounter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     let counter = 0;
+    //     const str = '0123456789';
+    //     const listener = (value: string) => {
+    //         expect(value).to.be.equal(str[counter]);
+    //         expect(true).to.be.equal(counter > 4 && counter < 10);
+    //     };
+    //     const condition = () => counter < 5;
+    //     const subscribeObject = this.ORDERED_OBSERVABLE$
+    //         .pipe()
+    //         .emitByNegative(condition)
+    //         .subscribe(listener, errorHandler);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     for (; counter < 10; counter++) {
+    //         this.ORDERED_OBSERVABLE$.next(str[counter]);
+    //     }
+    //     // @ts-ignore
+    //     // expect(subscribeObject.emitByNegativeCondition).to.be.equal(condition);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
     @test 'Add one by pipe and "emitByPositive true"'() {
         let errorCounter = 0;
@@ -459,7 +459,7 @@ class OrderedObservableUnitTest {
         const condition = () => true;
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .emitByPositive(condition)
+            .refine(condition)
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         this.ORDERED_OBSERVABLE$.next(str);
@@ -480,7 +480,7 @@ class OrderedObservableUnitTest {
         const condition = () => false;
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .emitByPositive(condition)
+            .refine(condition)
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         this.ORDERED_OBSERVABLE$.next(str);
@@ -505,7 +505,7 @@ class OrderedObservableUnitTest {
         const condition = () => counter > 4;
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .emitByPositive(condition)
+            .refine(condition)
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
@@ -532,7 +532,7 @@ class OrderedObservableUnitTest {
         const condition = () => counter < 5;
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .emitByPositive(condition)
+            .refine(condition)
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
@@ -544,124 +544,124 @@ class OrderedObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
-    @test 'Add one by pipe and "emitMatch true"'() {
-        let errorCounter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        const str = '0123456789';
-        const condition = () => '0123456789';
-        const listener = (value: string) => expect(value).to.be.equal(str);
-        const subscribeObject = this.ORDERED_OBSERVABLE$
-            .pipe()
-            .emitMatch(condition)
-            .subscribe(listener, errorHandler);
-        // @ts-ignore
-        // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'Add one by pipe and "emitMatch true"'() {
+    //     let errorCounter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     const str = '0123456789';
+    //     const condition = () => '0123456789';
+    //     const listener = (value: string) => expect(value).to.be.equal(str);
+    //     const subscribeObject = this.ORDERED_OBSERVABLE$
+    //         .pipe()
+    //         .emitMatch(condition)
+    //         .subscribe(listener, errorHandler);
+    //     // @ts-ignore
+    //     // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
-    @test 'Add one by pipe and "emitMatch false"'() {
-        let errorCounter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        // const str = '0123456789';
-        const condition = () => '0123456789';
-        const listener = (value: string) => expect(value).to.be.equal(null);
-        const subscribeObject = this.ORDERED_OBSERVABLE$
-            .pipe()
-            .emitMatch(condition)
-            .subscribe(listener, errorHandler);
-        // @ts-ignore
-        // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'Add one by pipe and "emitMatch false"'() {
+    //     let errorCounter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     // const str = '0123456789';
+    //     const condition = () => '0123456789';
+    //     const listener = (value: string) => expect(value).to.be.equal(null);
+    //     const subscribeObject = this.ORDERED_OBSERVABLE$
+    //         .pipe()
+    //         .emitMatch(condition)
+    //         .subscribe(listener, errorHandler);
+    //     // @ts-ignore
+    //     // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
-    @test 'Add one by pipe and "emitMatch 10 elements" (on value "0")'() {
-        let errorCounter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        let counter = 0;
-        const str = '0123456789';
-        const listener = (value: string) => {
-            expect(value).to.be.equal('0');
-            expect(true).to.be.equal(counter === 0);
-        };
-        const condition = () => '0';
-        const subscribeObject = this.ORDERED_OBSERVABLE$
-            .pipe()
-            .emitMatch(condition)
-            .subscribe(listener, errorHandler);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        for (; counter < 10; counter++) {
-            this.ORDERED_OBSERVABLE$.next(str[counter]);
-        }
-        // @ts-ignore
-        // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'Add one by pipe and "emitMatch 10 elements" (on value "0")'() {
+    //     let errorCounter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     let counter = 0;
+    //     const str = '0123456789';
+    //     const listener = (value: string) => {
+    //         expect(value).to.be.equal('0');
+    //         expect(true).to.be.equal(counter === 0);
+    //     };
+    //     const condition = () => '0';
+    //     const subscribeObject = this.ORDERED_OBSERVABLE$
+    //         .pipe()
+    //         .emitMatch(condition)
+    //         .subscribe(listener, errorHandler);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     for (; counter < 10; counter++) {
+    //         this.ORDERED_OBSERVABLE$.next(str[counter]);
+    //     }
+    //     // @ts-ignore
+    //     // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
-    @test 'Add one by pipe and "emitMatch 10 elements" (on value "9")'() {
-        let errorCounter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        let counter = 0;
-        const str = '0123456789';
-        const listener = (value: string) => {
-            expect(value).to.be.equal('9');
-            expect(true).to.be.equal(counter === 9);
-        };
-        const condition = () => '9';
-        const subscribeObject = this.ORDERED_OBSERVABLE$
-            .pipe()
-            .emitMatch(condition)
-            .subscribe(listener, errorHandler);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        for (; counter < 10; counter++) {
-            this.ORDERED_OBSERVABLE$.next(str[counter]);
-        }
-        // @ts-ignore
-        // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'Add one by pipe and "emitMatch 10 elements" (on value "9")'() {
+    //     let errorCounter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     let counter = 0;
+    //     const str = '0123456789';
+    //     const listener = (value: string) => {
+    //         expect(value).to.be.equal('9');
+    //         expect(true).to.be.equal(counter === 9);
+    //     };
+    //     const condition = () => '9';
+    //     const subscribeObject = this.ORDERED_OBSERVABLE$
+    //         .pipe()
+    //         .emitMatch(condition)
+    //         .subscribe(listener, errorHandler);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     for (; counter < 10; counter++) {
+    //         this.ORDERED_OBSERVABLE$.next(str[counter]);
+    //     }
+    //     // @ts-ignore
+    //     // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
-    @test 'Add one by pipe and "emitMatch 10 elements" (on value "5")'() {
-        let errorCounter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        let counter = 0;
-        const str = '0123456789';
-        const listener = (value: string) => {
-            expect(value).to.be.equal('5');
-            expect(true).to.be.equal(counter === 5);
-        };
-        const condition = () => '5';
-        const subscribeObject = this.ORDERED_OBSERVABLE$
-            .pipe()
-            .emitMatch(condition)
-            .subscribe(listener, errorHandler);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        for (; counter < 10; counter++) {
-            this.ORDERED_OBSERVABLE$.next(str[counter]);
-        }
-        // @ts-ignore
-        // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
-        expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'Add one by pipe and "emitMatch 10 elements" (on value "5")'() {
+    //     let errorCounter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     let counter = 0;
+    //     const str = '0123456789';
+    //     const listener = (value: string) => {
+    //         expect(value).to.be.equal('5');
+    //         expect(true).to.be.equal(counter === 5);
+    //     };
+    //     const condition = () => '5';
+    //     const subscribeObject = this.ORDERED_OBSERVABLE$
+    //         .pipe()
+    //         .emitMatch(condition)
+    //         .subscribe(listener, errorHandler);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     for (; counter < 10; counter++) {
+    //         this.ORDERED_OBSERVABLE$.next(str[counter]);
+    //     }
+    //     // @ts-ignore
+    //     // expect(subscribeObject.emitMatchCondition).to.be.equal(condition);
+    //     expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
     @test 'pause / resume'() {
         let errorCounter = 0;
@@ -1392,9 +1392,9 @@ class OrderedObservableUnitTest {
             if (counter === 2) expect("22325").to.be.equal(data);
         };
         this.ORDERED_OBSERVABLE$.pipe()
-            .emitByPositive(data => data.length === 5)
-            .emitByPositive(data => data[2] === "3")
-            .emitByPositive(data => data[4] === "5")
+            .refine(data => data.length === 5)
+            .refine(data => data[2] === "3")
+            .refine(data => data[4] === "5")
             .subscribe(listener1, errorHandler);
 
         this.ORDERED_OBSERVABLE$.next("11315");
@@ -1408,66 +1408,66 @@ class OrderedObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
-    @test 'pipe chain emitByNegative'() {
-        let errorCounter = 0;
-        let counter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            console.log("==================> ERROR", errorMessage);
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        const listener1 = (data: string) => {
-            counter++;
-            if (counter === 1) expect("1234").to.be.equal(data);
-            if (counter === 2) expect("11111").to.be.equal(data);
-            if (counter === 3) expect("11115").to.be.equal(data);
-        };
-        this.ORDERED_OBSERVABLE$.pipe()
-            .emitByNegative(data => data.length === 1)
-            .emitByNegative(data => data === "22325")
-            .emitByNegative(data => data === "11315")
-            .subscribe(listener1, errorHandler);
+    // @test 'pipe chain emitByNegative'() {
+    //     let errorCounter = 0;
+    //     let counter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         console.log("==================> ERROR", errorMessage);
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     const listener1 = (data: string) => {
+    //         counter++;
+    //         if (counter === 1) expect("1234").to.be.equal(data);
+    //         if (counter === 2) expect("11111").to.be.equal(data);
+    //         if (counter === 3) expect("11115").to.be.equal(data);
+    //     };
+    //     this.ORDERED_OBSERVABLE$.pipe()
+    //         .emitByNegative(data => data.length === 1)
+    //         .emitByNegative(data => data === "22325")
+    //         .emitByNegative(data => data === "11315")
+    //         .subscribe(listener1, errorHandler);
+    //
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("1234");
+    //     this.ORDERED_OBSERVABLE$.next("11111");
+    //     this.ORDERED_OBSERVABLE$.next("11115");
+    //     this.ORDERED_OBSERVABLE$.next("1");
+    //     this.ORDERED_OBSERVABLE$.next("22325");
+    //
+    //     expect(3).to.be.equal(counter);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("1234");
-        this.ORDERED_OBSERVABLE$.next("11111");
-        this.ORDERED_OBSERVABLE$.next("11115");
-        this.ORDERED_OBSERVABLE$.next("1");
-        this.ORDERED_OBSERVABLE$.next("22325");
-
-        expect(3).to.be.equal(counter);
-        expect(0).to.be.equal(errorCounter);
-    }
-
-    @test 'pipe chain emitByNegative + emitByPositive'() {
-        let errorCounter = 0;
-        let counter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            console.log("==================> ERROR", errorMessage);
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        const listener1 = (data: string) => {
-            counter++;
-            if (counter === 1) expect("1").to.be.equal(data);
-            if (counter === 2) expect("345").to.be.equal(data);
-        };
-        this.ORDERED_OBSERVABLE$.pipe()
-            .emitByPositive(data => data.length < 5)
-            .emitByNegative(data => data.includes("2"))
-            .subscribe(listener1, errorHandler);
-
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("1234");
-        this.ORDERED_OBSERVABLE$.next("11111");
-        this.ORDERED_OBSERVABLE$.next("11115");
-        this.ORDERED_OBSERVABLE$.next("1");
-        this.ORDERED_OBSERVABLE$.next("345");
-        this.ORDERED_OBSERVABLE$.next("22325");
-
-        expect(2).to.be.equal(counter);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'pipe chain emitByNegative + emitByPositive'() {
+    //     let errorCounter = 0;
+    //     let counter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         console.log("==================> ERROR", errorMessage);
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     const listener1 = (data: string) => {
+    //         counter++;
+    //         if (counter === 1) expect("1").to.be.equal(data);
+    //         if (counter === 2) expect("345").to.be.equal(data);
+    //     };
+    //     this.ORDERED_OBSERVABLE$.pipe()
+    //         .emitByPositive(data => data.length < 5)
+    //         .emitByNegative(data => data.includes("2"))
+    //         .subscribe(listener1, errorHandler);
+    //
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("1234");
+    //     this.ORDERED_OBSERVABLE$.next("11111");
+    //     this.ORDERED_OBSERVABLE$.next("11115");
+    //     this.ORDERED_OBSERVABLE$.next("1");
+    //     this.ORDERED_OBSERVABLE$.next("345");
+    //     this.ORDERED_OBSERVABLE$.next("22325");
+    //
+    //     expect(2).to.be.equal(counter);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
     @test 'pipe chain emitByPositive + once'() {
         let errorCounter = 0;
@@ -1482,7 +1482,7 @@ class OrderedObservableUnitTest {
             if (counter === 1) expect("1234").to.be.equal(data);
         };
         this.ORDERED_OBSERVABLE$.pipe()
-            .emitByPositive(data => data.length < 5)
+            .refine(data => data.length < 5)
             .setOnce()
             .subscribe(listener1, errorHandler);
 
@@ -1511,7 +1511,7 @@ class OrderedObservableUnitTest {
             if (counter === 1) expect("11315").to.be.equal(data);
         };
         this.ORDERED_OBSERVABLE$.pipe()
-            .emitMatch(() => "11315")
+            .refine((str) => str === "11315")
             .subscribe(listener1, errorHandler);
 
         this.ORDERED_OBSERVABLE$.next("11315");
@@ -1538,8 +1538,8 @@ class OrderedObservableUnitTest {
             counter++;
         };
         this.ORDERED_OBSERVABLE$.pipe()
-            .emitMatch(() => "11315")
-            .emitMatch(() => "1")
+            .refine((str) => str === "11315")
+            .refine((str) => str === "1")
             .subscribe(listener1, errorHandler);
 
         this.ORDERED_OBSERVABLE$.next("11315");
@@ -1567,7 +1567,7 @@ class OrderedObservableUnitTest {
             if (counter === 1) expect("11315").to.be.equal(data);
         };
         this.ORDERED_OBSERVABLE$.pipe()
-            .emitMatch(() => "11315")
+            .refine((str) => str === "11315")
             .setOnce()
             .subscribe(listener1, errorHandler);
 
@@ -1599,8 +1599,8 @@ class OrderedObservableUnitTest {
             expect("11315").to.be.equal(data);
         };
         this.ORDERED_OBSERVABLE$.pipe()
-            .unsubscribeByPositive(data => data === "11")
-            .emitMatch(() => "11315")
+            .unsubscribeBy(data => data === "11")
+            .refine((str) => str === "11315")
             .subscribe(listener1, errorHandler);
 
         this.ORDERED_OBSERVABLE$.next("11315");
@@ -1618,71 +1618,71 @@ class OrderedObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
-    @test 'pipe chain unsubscribeByNegative'() {
-        let errorCounter = 0;
-        let counter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            console.log("==================> ERROR", errorMessage);
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        const listener1 = (data: string) => {
-            counter++;
-            expect("11315").to.be.equal(data);
-        };
-        this.ORDERED_OBSERVABLE$.pipe()
-            .unsubscribeByNegative(data => data === "11315")
-            .emitMatch(() => "11315")
-            .subscribe(listener1, errorHandler);
+    // @test 'pipe chain unsubscribeByNegative'() {
+    //     let errorCounter = 0;
+    //     let counter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         console.log("==================> ERROR", errorMessage);
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     const listener1 = (data: string) => {
+    //         counter++;
+    //         expect("11315").to.be.equal(data);
+    //     };
+    //     this.ORDERED_OBSERVABLE$.pipe()
+    //         .unsubscribeByNegative(data => data === "11315")
+    //         .emitMatch(() => "11315")
+    //         .subscribe(listener1, errorHandler);
+    //
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //
+    //     expect(4).to.be.equal(counter);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-
-        expect(4).to.be.equal(counter);
-        expect(0).to.be.equal(errorCounter);
-    }
-
-    @test 'pipe chain unsubscribeByNegative + unsubscribeByPositive'() {
-        let errorCounter = 0;
-        let counter = 0;
-        const errorHandler = (errorData: any, errorMessage: any) => {
-            console.log("==================> ERROR", errorMessage);
-            expect(false).to.be.equal(!!errorMessage);
-            errorCounter++;
-        };
-        const listener1 = (data: string) => {
-            counter++;
-            expect("11315").to.be.equal(data);
-        };
-        this.ORDERED_OBSERVABLE$.pipe()
-            .unsubscribeByNegative(data => data.length === 5)
-            .unsubscribeByPositive(data => data === "22222")
-            .emitMatch(() => "11315")
-            .subscribe(listener1, errorHandler);
-
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("22222");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-        this.ORDERED_OBSERVABLE$.next("11315");
-
-        expect(2).to.be.equal(counter);
-        expect(0).to.be.equal(errorCounter);
-    }
+    // @test 'pipe chain unsubscribeByNegative + unsubscribeByPositive'() {
+    //     let errorCounter = 0;
+    //     let counter = 0;
+    //     const errorHandler = (errorData: any, errorMessage: any) => {
+    //         console.log("==================> ERROR", errorMessage);
+    //         expect(false).to.be.equal(!!errorMessage);
+    //         errorCounter++;
+    //     };
+    //     const listener1 = (data: string) => {
+    //         counter++;
+    //         expect("11315").to.be.equal(data);
+    //     };
+    //     this.ORDERED_OBSERVABLE$.pipe()
+    //         .unsubscribeByNegative(data => data.length === 5)
+    //         .unsubscribeByPositive(data => data === "22222")
+    //         .emitMatch(() => "11315")
+    //         .subscribe(listener1, errorHandler);
+    //
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("22222");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //     this.ORDERED_OBSERVABLE$.next("11315");
+    //
+    //     expect(2).to.be.equal(counter);
+    //     expect(0).to.be.equal(errorCounter);
+    // }
 
 
     @test 'refine arr'() {

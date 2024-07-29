@@ -12,13 +12,13 @@ import {
 } from "./Types";
 
 export abstract class Pipe<T> implements ISubscribe<T> {
-    chainHandlers: IChainCallback [] = [];
-    pipeData: IPipePayload = {isBreakChain: false, isNeedUnsubscribe: false, isAvailable: false, payload: null};
+    chain: IChainCallback [] = [];
+    flow: IPipePayload = {isBreak: false, isUnsubscribe: false, isAvailable: false, payload: null};
 
     abstract subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
 
     private push(callback: IChainCallback): ISetup<T> {
-        this.chainHandlers.push(callback);
+        this.chain.push(callback);
         return this;
     }
 
@@ -26,42 +26,21 @@ export abstract class Pipe<T> implements ISubscribe<T> {
         return this.push(
             (data: IPipePayload): void => {
                 (<IListener<T>>(<any>this).listener)(data.payload);
-                data.isNeedUnsubscribe = true;
-            }
-        );
-    }
-
-    unsubscribeByNegative(condition: ICallback<T>): ISetup<T> {
-        return this.push(
-            (data: IPipePayload): void => {
-                data.isAvailable = true;
-                if (!condition(data.payload)) data.isNeedUnsubscribe = true;
-            }
-        );
-    }
-
-    unsubscribeByPositive(condition: ICallback<T>): ISetup<T> {
-        return this.push(
-            (data: IPipePayload): void => {
-                data.isAvailable = true;
-                if (condition(data.payload)) data.isNeedUnsubscribe = true;
+                data.isUnsubscribe = true;
             }
         );
     }
 
     unsubscribeBy(condition: ICallback<T>): ISetup<T> {
-        return this.unsubscribeByPositive(condition);
-    }
-
-    emitByNegative(condition: ICallback<T>): ISetup<T> {
         return this.push(
             (data: IPipePayload): void => {
-                if (!condition(data.payload)) data.isAvailable = true
+                data.isAvailable = true;
+                if (condition(data.payload)) data.isUnsubscribe = true;
             }
         );
     }
 
-    emitByPositive(condition: ICallback<T>): ISetup<T> {
+    refine(condition: ICallback<T>): ISetup<T> {
         return this.push(
             (data: IPipePayload): void => {
                 if (condition(data.payload)) data.isAvailable = true;
@@ -69,26 +48,14 @@ export abstract class Pipe<T> implements ISubscribe<T> {
         );
     }
 
-    refine(condition: ICallback<T>): ISetup<T> {
-        return this.emitByPositive(condition);
-    }
-
     pushRefiners(conditions: ICallback<any>[]): ISetup<T> {
         if (!Array.isArray(conditions)) return this;
-        for (let i = 0; i < conditions.length; i++) this.emitByPositive(conditions[i]);
+        for (let i = 0; i < conditions.length; i++) this.refine(conditions[i]);
         return this;
     }
 
-    emitMatch(condition: ICallback<T>): ISetup<T> {
-        return this.push(
-            (data: IPipePayload): void => {
-                if (condition(data.payload) == data.payload) data.isAvailable = true;
-            }
-        );
-    }
-
-    switch(): SwitchCase<T> {
-        return new SwitchCase<T>(this);
+    switch(): PipeSwitchCase<T> {
+        return new PipeSwitchCase<T>(this);
     }
 
     then<K>(condition: ICallback<T>): ISetup<K> {
@@ -119,29 +86,29 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 
     processChain(listener: IListener<T>): void {
-        const chain = this.chainHandlers;
-        const data = this.pipeData;
+        const chain = this.chain;
+        const data = this.flow;
         for (let i = 0; i < chain.length; i++) {
-            data.isNeedUnsubscribe = false;
+            data.isUnsubscribe = false;
             data.isAvailable = false;
 
             chain[i](data);
-            if (data.isNeedUnsubscribe) return (<any>this).unsubscribe();
+            if (data.isUnsubscribe) return (<any>this).unsubscribe();
             if (!data.isAvailable) return;
-            if (data.isBreakChain) break;
+            if (data.isBreak) break;
         }
 
         return listener(data.payload);
     }
 }
 
-export class SwitchCase<T> implements ISubscribe<T>, IPipeCase<T> {
+export class PipeSwitchCase<T> implements ISubscribe<T>, IPipeCase<T> {
     private pipe: Pipe<T>;
-    private caseCounter: number;
+    private counter: number;
 
     constructor(pipe: Pipe<T>) {
         this.pipe = pipe;
-        this.caseCounter = pipe.chainHandlers.length ? pipe.chainHandlers.length : 0;
+        this.counter = pipe.chain.length ? pipe.chain.length : 0;
     }
 
     subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
@@ -149,14 +116,14 @@ export class SwitchCase<T> implements ISubscribe<T>, IPipeCase<T> {
     }
 
     case(condition: ICallback<any>): IPipeCase<T> & ISubscribe<T> {
-        this.caseCounter++;
-        const id = this.caseCounter;
-        const chain = this.pipe.chainHandlers;
+        this.counter++;
+        const id = this.counter;
+        const chain = this.pipe.chain;
         chain.push(
             (data: IPipePayload): void => {
                 data.isAvailable = true
-                if (condition(data.payload)) data.isBreakChain = true;
-                if (id === chain.length && !data.isBreakChain) data.isAvailable = false;
+                if (condition(data.payload)) data.isBreak = true;
+                if (id === chain.length && !data.isBreak) data.isAvailable = false;
             }
         );
         return this;
