@@ -106,7 +106,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     }
 
     public subscribe(observer: ISubscribeGroup<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
-        if (!this.isSubsValid(observer)) return undefined;
+        if (!this.isListener(observer)) return undefined;
         const subscribeObject = new SubscribeObject(this, false);
         this.addObserver(subscribeObject, observer, errorHandler);
         return subscribeObject;
@@ -117,7 +117,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
         this.listeners.push(subscribeObject);
     }
 
-    protected isSubsValid(listener: ISubscribeGroup<T>): boolean {
+    protected isListener(listener: ISubscribeGroup<T>): boolean {
         if (this.isKilled) return false;
         return !!listener;
     }

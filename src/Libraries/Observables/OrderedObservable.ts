@@ -31,7 +31,7 @@ export class OrderedObservable<T>
     }
 
     subscribe(listener: ISubscribeGroup<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike | undefined {
-        if (!this.isSubsValid(listener)) return undefined;
+        if (!this.isListener(listener)) return undefined;
         const subscribeObject = new OrderedSubscribeObject(this, false);
         this.addObserver(<any>subscribeObject, listener, errorHandler);
         return subscribeObject;
