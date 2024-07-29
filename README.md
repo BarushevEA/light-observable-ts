@@ -216,46 +216,6 @@ observable$.next({message: "some message3", isNeedUnsubscribe: true});
 
 Observable will send a value to the listener only if condition returns "true". There is no automatic unsubscription.
 
-### pipe().emitMatch(condition)
-
-Observable will send a value to the subscriber only if the return value of the condition matches the data being sent. In
-this case, there is no automatic unsubscription.
-
-```ts
-import {Observable} from "evg_observable";
-
-const observable$ = new Observable('Some typed data (not only string)');
-const listener1 = (value: string) => console.log('listener1:', value);
-const listener2 = (value: string) => console.log('listener2:', value);
-const TARGET_DATA = 'TARGET_DATA';
-
-const subscriber1 = observable$
-    .pipe()
-    .emitMatch(() => TARGET_DATA)
-    .subscribe(listener1);
-const subscriber2 = observable$.subscribe(listener2);
-
-console.log(observable$.getValue());
-// Print to console - Some typed data (not only string)
-
-observable$.next('Next1 typed data');
-// Print to console - listener2: Next1 typed data
-
-observable$.next('Next2 typed data');
-// Print to console - listener2: Next2 typed data
-
-observable$.next(TARGET_DATA);
-// Print to console - listener1: TARGET_DATA
-// Print to console - listener2: TARGET_DATA
-
-observable$.next('Next4 typed data');
-// Print to console - listener2: Next4 typed data
-
-observable$.next(TARGET_DATA);
-// Print to console - listener1: TARGET_DATA
-// Print to console - listener2: TARGET_DATA
-```
-
 ### pipe().serialize()
 
 To convert the observable's data to JSON format, you can use the serialize method. This method turns the observer's
@@ -501,8 +461,8 @@ women$.pipe()
 
 // Stream the list of people by applying the age filters
 personal$.pipe()
-    .emitByPositive(youngAgeFilter)
-    .emitByPositive(oldAgeFilter)
+    .refine(youngAgeFilter)
+    .refine(oldAgeFilter)
     .subscribe([men$, women$]);
 
 // Stream the list of people considering the hair color
@@ -614,14 +574,9 @@ observable is set to be a once-off observable to which a listener is subscribed.
 | method                               | will return                            | description                                                                                                                                                                                                             |
 |:-------------------------------------|:---------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `.setOnce()`                         | pipe object                            | observable will send a value to the subscriber only once, and the subscriber will unsubscribe.                                                                                                                          |
-| `.unsubscribeByNegative(*condition)` | pipe object                            | observable will send a value to the subscriber as long as the condition is positive, on the first negative result, the subscriber will unsubscribe                                                                      |
-| `.unsubscribeByPositive(*condition)` | pipe object                            | observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe                                                                      |
 | `.unsubscribeBy(*condition)`         | pipe object                            | observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe                                                                      |
-| `.emitByNegative(*condition)`        | pipe object                            | observable will send a value to the listener only if condition returns "false", there is no automatic unsubscription                                                                                                    |
-| `.emitByPositive(*condition)`        | pipe object                            | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |
 | `.refine(*condition)`                | pipe object                            | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |
 | `.pushRefiners(*conditions)`         | pipe object                            | This method allows you to add a group of conditions for filtering data in the pipeline chain.                                                                                                                           |
-| `.emitMatch(*condition)`             | pipe object                            | observable will send a value to the subscriber only if the return value of the condition matches the data being sent, in this case, there is no automatic unsubscription                                                |
 | `.switch()`                          | SwitchCase object                      | transitions the pipe into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored. This allows you to handle multiple cases more conveniently. |
 | `.case(*condition)`                  | PipeCase object                        | Adds a condition to the chain of cases. The entire chain operates on the principle of "OR". This is different from other pipe methods which, when chained, operate on the principle of "AND".                           |
 | `.pushCases(*conditions)`            | PipeCase object                        | This method allows you to add a group of conditions for filtering cases data in the pipeline chain.                                                                                                                     |
