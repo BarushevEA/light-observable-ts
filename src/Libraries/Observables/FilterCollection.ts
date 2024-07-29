@@ -1,7 +1,7 @@
 import {
     ICallback,
     IErrorCallback,
-    IFilter,
+    IFilter, IFilterCase,
     IFilterChainCallback,
     IFilterPayload,
     IFilterResponse,
@@ -80,5 +80,5 @@ export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
     }
 }
 
-export class FilterSwitchCase<T> extends SwitchCase<T, FilterCollection<T>, IFilter<T>> {
+export class FilterSwitchCase<T> extends SwitchCase<T, FilterCollection<T>, IFilterCase<T>> {
 }
