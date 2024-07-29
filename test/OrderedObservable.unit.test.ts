@@ -2,8 +2,8 @@ import {suite, test} from '@testdeck/mocha';
 import * as _chai from 'chai';
 import {expect} from 'chai';
 import {IOrder, IOrderedSubscriptionLike, IPause} from "../src/Libraries/Observables/Types";
-import {OrderedObservable} from "../src/Libraries/Observables/OrderedObservable";
-import {Observable} from "../src/Libraries/Observables/Observable";
+import {OrderedObservable} from "../src/Libraries/Observables";
+import {Observable} from "../src/Libraries/Observables";
 
 _chai.should();
 _chai.expect;
@@ -1197,7 +1197,7 @@ class OrderedObservableUnitTest {
         const listener = (value: string) => value;
         const subscriber1 = this.ORDERED_OBSERVABLE$.subscribe(listener, errorHandler);
         // @ts-ignore
-        this.ORDERED_OBSERVABLE$._isDestroyed = true;
+        this.ORDERED_OBSERVABLE$.isKilled = true;
         subscriber1.order = 10;
         expect(this.ORDERED_OBSERVABLE$.pipe()).to.be.equal(undefined);
         expect(subscriber1.order).to.be.equal(undefined);

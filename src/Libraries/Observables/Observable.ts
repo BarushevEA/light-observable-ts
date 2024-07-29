@@ -15,69 +15,69 @@ import {FilterCollection} from "./FilterCollection";
 
 export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     protected listeners: ISubscribeObject<T>[] = [];
-    private _isEnable: boolean = true;
-    protected _isDestroyed = false;
-    protected isNextProcess = false;
-    protected listenersForUnsubscribe: ISubscriptionLike[] = [];
-    private filterCase = new FilterCollection<T>();
+    private isStop: boolean = true;
+    protected isKilled = false;
+    protected isProcess = false;
+    protected trash: ISubscriptionLike[] = [];
+    private filters = new FilterCollection<T>();
 
     constructor(private value: T) {
     }
 
     addFilter(errorHandler?: IErrorCallback): IFilterSetup<T> {
         if (errorHandler) {
-            this.filterCase.addErrorHandler(errorHandler);
+            this.filters.addErrorHandler(errorHandler);
         }
-        return this.filterCase;
+        return this.filters;
     }
 
     disable(): void {
-        this._isEnable = false;
+        this.isStop = false;
     }
 
     enable(): void {
-        this._isEnable = true;
+        this.isStop = true;
     }
 
     get isEnable(): boolean {
-        return this._isEnable;
+        return this.isStop;
     }
 
     public next(value: T): void {
-        if (this._isDestroyed) return;
-        if (!this._isEnable) return;
-        if (!this.filterCase.isEmpty) {
-            if (!this.filterCase.processChain(value).isOK) return;
+        if (this.isKilled) return;
+        if (!this.isStop) return;
+        if (!this.filters.isEmpty) {
+            if (!this.filters.processChain(value).isOK) return;
         }
 
-        this.isNextProcess = true;
+        this.isProcess = true;
         this.value = value;
 
         for (let i = 0; i < this.listeners.length; i++) this.listeners[i].send(value);
 
-        this.isNextProcess = false;
-        this.listenersForUnsubscribe.length && this.handleListenersForUnsubscribe();
+        this.isProcess = false;
+        this.trash.length && this.handleListenersForUnsubscribe();
     }
 
     stream(values: T[]): void {
-        if (this._isDestroyed) return;
-        if (!this._isEnable) return;
+        if (this.isKilled) return;
+        if (!this.isStop) return;
 
         for (let i = 0; i < values.length; i++) this.next(values[i]);
     }
 
     private handleListenersForUnsubscribe(): void {
-        const length = this.listenersForUnsubscribe.length;
+        const length = this.trash.length;
 
-        for (let i = 0; i < length; i++) this.unSubscribe(this.listenersForUnsubscribe[i]);
+        for (let i = 0; i < length; i++) this.unSubscribe(this.trash[i]);
 
-        this.listenersForUnsubscribe.length = 0;
+        this.trash.length = 0;
     }
 
     public unSubscribe(listener: ISubscriptionLike): void {
-        if (this._isDestroyed) return;
-        if (this.isNextProcess && listener) {
-            this.listenersForUnsubscribe.push(listener);
+        if (this.isKilled) return;
+        if (this.isProcess && listener) {
+            this.trash.push(listener);
             return;
         }
         this.listeners && !quickDeleteFromArray(this.listeners, listener);
@@ -87,21 +87,21 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
         this.value = <any>null;
         this.unsubscribeAll();
         this.listeners = <any>null;
-        this._isDestroyed = true;
+        this.isKilled = true;
     }
 
     public unsubscribeAll(): void {
-        if (this._isDestroyed) return;
+        if (this.isKilled) return;
         this.listeners.length = 0;
     }
 
     public getValue(): T | undefined {
-        if (this._isDestroyed) return undefined;
+        if (this.isKilled) return undefined;
         return this.value;
     }
 
     public size(): number {
-        if (this._isDestroyed) return 0;
+        if (this.isKilled) return 0;
         return this.listeners.length;
     }
 
@@ -118,18 +118,18 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     }
 
     protected isSubsValid(listener: ISubscribeGroup<T>): boolean {
-        if (this._isDestroyed) return false;
+        if (this.isKilled) return false;
         return !!listener;
     }
 
     pipe(): ISetup<T> | undefined {
-        if (this._isDestroyed) return undefined;
+        if (this.isKilled) return undefined;
         const subscribeObject = new SubscribeObject(this, true);
         this.listeners.push(subscribeObject);
         return subscribeObject;
     }
 
     get isDestroyed(): boolean {
-        return this._isDestroyed;
+        return this.isKilled;
     }
 }

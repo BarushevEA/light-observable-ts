@@ -3,25 +3,25 @@ import {quickDeleteFromArray} from "./FunctionLibs";
 
 export class Collector implements ICollector {
     protected list: ISubscriptionLike[] = [];
-    private _isDestroyed = false;
+    private isKilled = false;
 
     collect(...subscriptionLikeList: ISubscriptionLike[]): void {
-        if (!this._isDestroyed) this.list.push(...subscriptionLikeList);
+        if (!this.isKilled) this.list.push(...subscriptionLikeList);
     }
 
     unsubscribe(subscriptionLike: ISubscriptionLike | undefined): void {
-        if (this._isDestroyed) return;
+        if (this.isKilled) return;
         subscriptionLike?.unsubscribe();
         quickDeleteFromArray(this.list, subscriptionLike);
     }
 
     unsubscribeAll(): void | null {
-        if (this._isDestroyed) return;
+        if (this.isKilled) return;
         while (this.list.length > 0) this.unsubscribe(this.list.pop());
     }
 
     size(): number {
-        if (this._isDestroyed) return 0;
+        if (this.isKilled) return 0;
         return this.list.length;
     }
 
@@ -29,10 +29,10 @@ export class Collector implements ICollector {
         this.unsubscribeAll();
         this.list.length = 0;
         this.list = <any>0;
-        this._isDestroyed = true;
+        this.isKilled = true;
     }
 
     get isDestroyed(): boolean {
-        return this._isDestroyed;
+        return this.isKilled;
     }
 }
