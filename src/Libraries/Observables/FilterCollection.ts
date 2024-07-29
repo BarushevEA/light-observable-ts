@@ -2,13 +2,13 @@ import {
     ICallback,
     IErrorCallback,
     IFilter,
-    IFilterCase,
     IFilterChainCallback,
     IFilterPayload,
     IFilterResponse,
     IFilterSetup,
     IFilterSwitch
 } from "./Types";
+import {SwitchCase} from "./AbstractSwitchCase";
 
 export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
     chain: IFilterChainCallback [] = [];
@@ -80,32 +80,5 @@ export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
     }
 }
 
-export class FilterSwitchCase<T> implements IFilterCase<T> {
-    private pipe: FilterCollection<T>;
-    private counter: number;
-
-    constructor(pipe: FilterCollection<T>) {
-        this.pipe = pipe;
-        this.counter = pipe.chain.length ? pipe.chain.length : 0;
-    }
-
-    case(condition: ICallback<any>): IFilterCase<T> {
-        this.counter++;
-        const id = this.counter;
-        const chain = this.pipe.chain;
-        chain.push(
-            (data: IFilterPayload): void => {
-                data.isAvailable = true
-                if (condition(data.payload)) data.isBreak = true;
-                if (id === chain.length && !data.isBreak) data.isAvailable = false;
-            }
-        );
-        return this;
-    }
-
-    pushCases(conditions: ICallback<any>[]): IFilterCase<T> {
-        if (!Array.isArray(conditions)) return this;
-        for (let i = 0; i < conditions.length; i++) this.case(conditions[i]);
-        return this;
-    }
+export class FilterSwitchCase<T> extends SwitchCase<T, FilterCollection<T>, IFilter<T>> {
 }

@@ -154,9 +154,13 @@ export type IOrderedSubscribe<T> = {
     subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike;
 };
 
+export type IChainContainer = {
+    chain: any[];
+}
+
 export type IPipePayload = { isBreak: boolean, isUnsubscribe: boolean, isAvailable: boolean, payload: any };
 export type IChainCallback = (data: IPipePayload) => void;
-export type IPipeCase<T> = {
+export type IPipeCase<T> = ISubscribe<T> & {
     case(condition: ICallback<any>): IPipeCase<T> & ISubscribe<T>;
     pushCases(conditions: ICallback<any>[]): IPipeCase<T> & ISubscribe<T>;
 };

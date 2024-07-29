@@ -1,6 +1,5 @@
 import {SubscribeObject} from "./SubscribeObject";
 import {
-    ICallback,
     IErrorCallback,
     IListener,
     IObserver,

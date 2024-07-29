@@ -10,6 +10,7 @@ import {
     ISubscribe,
     ISubscriptionLike
 } from "./Types";
+import {SwitchCase} from "./AbstractSwitchCase";
 
 export abstract class Pipe<T> implements ISubscribe<T> {
     chain: IChainCallback [] = [];
@@ -102,36 +103,8 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 }
 
-export class PipeSwitchCase<T> implements ISubscribe<T>, IPipeCase<T> {
-    private pipe: Pipe<T>;
-    private counter: number;
-
-    constructor(pipe: Pipe<T>) {
-        this.pipe = pipe;
-        this.counter = pipe.chain.length ? pipe.chain.length : 0;
-    }
-
+export class PipeSwitchCase<T> extends SwitchCase<T, Pipe<T>, IPipeCase<T>> implements ISubscribe<T> {
     subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
         return this.pipe.subscribe(listener, errorHandler);
-    }
-
-    case(condition: ICallback<any>): IPipeCase<T> & ISubscribe<T> {
-        this.counter++;
-        const id = this.counter;
-        const chain = this.pipe.chain;
-        chain.push(
-            (data: IPipePayload): void => {
-                data.isAvailable = true
-                if (condition(data.payload)) data.isBreak = true;
-                if (id === chain.length && !data.isBreak) data.isAvailable = false;
-            }
-        );
-        return this;
-    }
-
-    pushCases(conditions: ICallback<any>[]): IPipeCase<T> & ISubscribe<T> {
-        if (!Array.isArray(conditions)) return this;
-        for (let i = 0; i < conditions.length; i++) this.case(conditions[i]);
-        return this;
     }
 }
