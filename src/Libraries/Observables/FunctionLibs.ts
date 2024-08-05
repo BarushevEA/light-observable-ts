@@ -10,23 +10,20 @@ export const sortDescending = (a: ISubscribeObject<any>, b: ISubscribeObject<any
     if (a.order < b.order) return 1;
     return 0;
 };
-
-export function deleteFromArray<T>(arr: T[], component: T): boolean {
+export const deleteFromArray = <T>(arr: T[], component: T): boolean => {
     const index = arr.indexOf(component);
     if (index === -1) return false;
     arr.splice(index, 1);
     return true;
-}
-
-export function quickDeleteFromArray<T>(arr: T[], component: T): boolean {
+};
+export const quickDeleteFromArray = <T>(arr: T[], component: T): boolean => {
     const index = arr.indexOf(component);
     if (index === -1) return false;
     arr[index] = arr[arr.length - 1];
     arr.length = arr.length - 1;
     return true;
-}
-
-export function getListener<T>(listener: ISubscribeGroup<T>): IListener<T> {
+};
+export const getListener = <T>(listener: ISubscribeGroup<T>): IListener<T> => {
     if (Array.isArray(listener)) {
         const group: IListener<T>[] = [];
 
@@ -40,9 +37,8 @@ export function getListener<T>(listener: ISubscribeGroup<T>): IListener<T> {
     }
 
     return wrapListener(<any>listener);
-}
-
-function wrapListener<T>(listener: IListener<T> | ISetObservableValue) {
+};
+const wrapListener = <T>(listener: IListener<T> | ISetObservableValue) => {
     if ("next" in listener) return (value?: T): any => listener.next(value);
     return <any>listener;
-}
+};
