@@ -19,7 +19,7 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(this.OBSERVABLE$.value).to.be.equal('');
         // @ts-ignore
-        expect(this.OBSERVABLE$.listeners).to.be.eql([]);
+        expect(this.OBSERVABLE$.subs).to.be.eql([]);
     }
 
     @test 'Add one subscriber'() {
@@ -930,7 +930,7 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(this.OBSERVABLE$.value).to.be.equal(null);
         // @ts-ignore
-        expect(this.OBSERVABLE$.listeners).to.be.equal(null);
+        expect(this.OBSERVABLE$.subs).to.be.equal(null);
         expect(0).to.be.equal(errorCounter);
     }
 
@@ -945,7 +945,7 @@ class ObservableUnitTest {
         };
         const subscribeObject = this.OBSERVABLE$.subscribe(listener, errorHandler);
         // @ts-ignore
-        subscribeObject.observable = 0;
+        subscribeObject.observer = 0;
         this.OBSERVABLE$.next('some data');
         expect(0).to.be.equal(errorCounter);
     }

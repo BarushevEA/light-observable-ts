@@ -1,7 +1,8 @@
 import {
     ICallback,
     IErrorCallback,
-    IFilter, IFilterCase,
+    IFilter,
+    IFilterCase,
     IFilterChainCallback,
     IFilterPayload,
     IFilterResponse,
@@ -27,9 +28,7 @@ export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
 
     filter(condition: ICallback<any>): IFilterSetup<T> {
         return this.push(
-            (data: IFilterPayload): void => {
-                if (condition(data.payload)) data.isAvailable = true;
-            }
+            (data: IFilterPayload): void => condition(data.payload) && (data.isAvailable = true) as any
         );
     }
 
@@ -55,7 +54,6 @@ export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
         try {
             for (let i = 0; i < chain.length; i++) {
                 data.isAvailable = false;
-
                 chain[i](data);
                 if (!data.isAvailable) return response;
                 if (data.isBreak) break;

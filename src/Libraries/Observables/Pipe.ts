@@ -43,9 +43,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
 
     refine(condition: ICallback<T>): ISetup<T> {
         return this.push(
-            (data: IPipePayload): void => {
-                if (condition(data.payload)) data.isAvailable = true;
-            }
+            (data: IPipePayload): void => condition(data.payload) && (data.isAvailable = true) as any
         );
     }
 

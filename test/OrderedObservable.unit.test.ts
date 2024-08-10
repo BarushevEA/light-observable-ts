@@ -20,7 +20,7 @@ class OrderedObservableUnitTest {
         // @ts-ignore
         expect(this.ORDERED_OBSERVABLE$.value).to.be.equal('');
         // @ts-ignore
-        expect(this.ORDERED_OBSERVABLE$.listeners).to.be.eql([]);
+        expect(this.ORDERED_OBSERVABLE$.subs).to.be.eql([]);
     }
 
     @test 'Add one subscriber'() {
@@ -746,7 +746,7 @@ class OrderedObservableUnitTest {
         // @ts-ignore
         expect(this.ORDERED_OBSERVABLE$.value).to.be.equal(null);
         // @ts-ignore
-        expect(this.ORDERED_OBSERVABLE$.listeners).to.be.equal(null);
+        expect(this.ORDERED_OBSERVABLE$.subs).to.be.equal(null);
         expect(0).to.be.equal(errorCounter);
     }
 
@@ -761,7 +761,7 @@ class OrderedObservableUnitTest {
         };
         const subscribeObject = this.ORDERED_OBSERVABLE$.subscribe(listener, errorHandler);
         // @ts-ignore
-        subscribeObject.observable = 0;
+        subscribeObject.observer = 0;
         this.ORDERED_OBSERVABLE$.next('some data');
         expect(0).to.be.equal(errorCounter);
     }
@@ -1137,7 +1137,7 @@ class OrderedObservableUnitTest {
         }
 
         // @ts-ignore
-        subscribers = this.ORDERED_OBSERVABLE$.listeners;
+        subscribers = this.ORDERED_OBSERVABLE$.subs;
         this.ORDERED_OBSERVABLE$.next('SOME DATA');
         expect(orders).to.be.eql([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
@@ -1146,7 +1146,7 @@ class OrderedObservableUnitTest {
         orders = [];
 
         // @ts-ignore
-        subscribers = this.ORDERED_OBSERVABLE$.listeners;
+        subscribers = this.ORDERED_OBSERVABLE$.subs;
         this.ORDERED_OBSERVABLE$.next('SOME DATA');
         expect(orders).to.be.eql([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]);
         expect(0).to.be.equal(errorCounter);
@@ -1172,7 +1172,7 @@ class OrderedObservableUnitTest {
         }
 
         // @ts-ignore
-        subscribers = this.ORDERED_OBSERVABLE$.listeners;
+        subscribers = this.ORDERED_OBSERVABLE$.subs;
         this.ORDERED_OBSERVABLE$.next('SOME DATA');
         expect(orders).to.be.eql([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
@@ -1182,7 +1182,7 @@ class OrderedObservableUnitTest {
         orders = [];
 
         // @ts-ignore
-        subscribers = this.ORDERED_OBSERVABLE$.listeners;
+        subscribers = this.ORDERED_OBSERVABLE$.subs;
         this.ORDERED_OBSERVABLE$.next('SOME DATA');
         expect(orders).to.be.eql([-2, -1, 0, 1, 2, 3, 4, 5, 6, 7]);
         expect(0).to.be.equal(errorCounter);
@@ -1197,7 +1197,7 @@ class OrderedObservableUnitTest {
         const listener = (value: string) => value;
         const subscriber1 = this.ORDERED_OBSERVABLE$.subscribe(listener, errorHandler);
         // @ts-ignore
-        this.ORDERED_OBSERVABLE$.isKilled = true;
+        this.ORDERED_OBSERVABLE$.killed = true;
         subscriber1.order = 10;
         expect(this.ORDERED_OBSERVABLE$.pipe()).to.be.equal(undefined);
         expect(subscriber1.order).to.be.equal(undefined);

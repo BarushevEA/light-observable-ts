@@ -3,19 +3,19 @@ import {Pipe} from "./Pipe";
 import {getListener} from "./FunctionLibs";
 
 export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
-    observable: IObserver<T> | undefined;
+    observer: IObserver<T> | undefined;
     listener: IListener<T> | undefined;
     errorHandler: IErrorCallback = (errorData: any, errorMessage: any) => {
         console.log(`(Unit of SubscribeObject).send(${errorData}) ERROR:`, errorMessage);
     };
     _order = 0;
-    isPaused = false;
-    isPipe = false;
+    paused = false;
+    piped = false;
 
     constructor(observable?: IObserver<T>, isPipe?: boolean) {
         super();
-        this.observable = observable;
-        this.isPipe = !!isPipe;
+        this.observer = observable;
+        this.piped = !!isPipe;
     }
 
     subscribe(observer: ISubscribeGroup<T>, errorHandler?: IErrorCallback): ISubscriptionLike {
@@ -25,9 +25,9 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
     }
 
     public unsubscribe(): void {
-        if (!this.observable) return;
-        this.observable.unSubscribe(this);
-        this.observable = <any>null;
+        if (!this.observer) return;
+        this.observer.unSubscribe(this);
+        this.observer = <any>null;
         this.listener = <any>null;
         this.chain.length = 0;
     }
@@ -43,11 +43,11 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
     }
 
     resume(): void {
-        this.isPaused = false;
+        this.paused = false;
     }
 
     pause(): void {
-        this.isPaused = true;
+        this.paused = true;
     }
 
     get order(): number {
@@ -61,9 +61,9 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
     processValue<T>(value: T): void {
         const listener = this.listener;
         if (!listener) return this.unsubscribe();
-        if (!this.observable) return;
-        if (this.isPaused) return;
-        if (!this.isPipe) return listener(<any>value);
+        if (!this.observer) return;
+        if (this.paused) return;
+        if (!this.piped) return listener(<any>value);
 
         return this.processChain(listener);
     }
