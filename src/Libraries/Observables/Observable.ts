@@ -15,7 +15,7 @@ import {FilterCollection} from "./FilterCollection";
 
 export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     protected subs: ISubscribeObject<T>[] = [];
-    private stop: boolean = true;
+    private enabled: boolean = true;
     protected killed = false;
     protected process = false;
     protected trash: ISubscriptionLike[] = [];
@@ -30,20 +30,20 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     }
 
     disable(): void {
-        this.stop = false;
+        this.enabled = false;
     }
 
     enable(): void {
-        this.stop = true;
+        this.enabled = true;
     }
 
     get isEnable(): boolean {
-        return this.stop;
+        return this.enabled;
     }
 
     public next(value: T): void {
         if (this.killed) return;
-        if (!this.stop) return;
+        if (!this.enabled) return;
         if (!this.filters.isEmpty && !this.filters.processChain(value).isOK) return;
 
         this.process = true;
@@ -57,7 +57,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
 
     stream(values: T[]): void {
         if (this.killed) return;
-        if (!this.stop) return;
+        if (!this.enabled) return;
 
         for (let i = 0; i < values.length; i++) this.next(values[i]);
     }
@@ -80,10 +80,24 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     }
 
     public destroy(): void {
-        this.value = <any>null;
-        this.unsubscribeAll();
-        this.subs = <any>null;
+        if (this.killed) return;
         this.killed = true;
+
+        if (!this.process) {
+            this.value = <any>null;
+            this.unsubscribeAll();
+            this.subs.length = 0;
+            return;
+        }
+
+        const timer = setInterval(() => {
+            if (this.process) return;
+
+            clearInterval(timer);
+            this.value = <any>null;
+            this.unsubscribeAll();
+            this.subs.length = 0;
+        }, 10);
     }
 
     public unsubscribeAll(): void {

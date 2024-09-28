@@ -930,7 +930,7 @@ class ObservableUnitTest {
         // @ts-ignore
         expect(this.OBSERVABLE$.value).to.be.equal(null);
         // @ts-ignore
-        expect(this.OBSERVABLE$.subs).to.be.equal(null);
+        expect(this.OBSERVABLE$.subs.length).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
     }
 

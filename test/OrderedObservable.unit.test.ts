@@ -746,7 +746,7 @@ class OrderedObservableUnitTest {
         // @ts-ignore
         expect(this.ORDERED_OBSERVABLE$.value).to.be.equal(null);
         // @ts-ignore
-        expect(this.ORDERED_OBSERVABLE$.subs).to.be.equal(null);
+        expect(this.ORDERED_OBSERVABLE$.subs.length).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
     }
 
