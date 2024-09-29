@@ -85,7 +85,6 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
 
         if (!this.process) {
             this.value = <any>null;
-            this.unsubscribeAll();
             this.subs.length = 0;
             return;
         }
@@ -95,7 +94,6 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
 
             clearInterval(timer);
             this.value = <any>null;
-            this.unsubscribeAll();
             this.subs.length = 0;
         }, 10);
     }
@@ -116,6 +114,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     }
 
     public subscribe(observer: ISubscribeGroup<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
+        if (this.killed) return undefined;
         if (!this.isListener(observer)) return undefined;
         const subscribeObject = new SubscribeObject(this, false);
         this.addObserver(subscribeObject, observer, errorHandler);
