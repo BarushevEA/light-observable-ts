@@ -57,7 +57,7 @@ export function quickDeleteFromArray<T>(arr: T[], component: T): boolean {
     const index = arr.indexOf(component);
     if (index === -1) return false;
     arr[index] = arr[arr.length - 1];
-    arr.length = arr.length - 1;
+    arr.length --;
     return true;
 }
 
