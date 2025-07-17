@@ -9,7 +9,10 @@
   "scripts": {
     "test": "nyc ./node_modules/.bin/_mocha 'test/**/*.test.ts'",
     "remove": "rm -rf ./src/Libraries; rm -rf ./test; rm .mocharc.json; rm .nyrc.json; rm register.js; rm tsconfig.json",
-    "build": "tsc --declaration; npm run remove"
+    "build": "tsc --declaration; npm run remove",
+    "benchmark": "ts-node benchmark.ts",
+    "benchmark:comparison": "ts-node benchmark-comparison.ts",
+    "benchmark:optimizations": "ts-node benchmark-optimizations.ts"
   },
   "repository": {
     "type": "git",
@@ -22,13 +25,17 @@
   },
   "homepage": "https://github.com/BarushevEA/light-observable-ts#readme",
   "devDependencies": {
-    "typescript": "^5.4.5",
     "@testdeck/mocha": "^0.3.3",
+    "@types/benchmark": "^2.1.5",
     "@types/chai": "^4.3.4",
+    "benchmark": "^2.1.4",
     "chai": "^4.3.7",
+    "microtime": "^3.1.1",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
-    "ts-node": "^10.9.1"
+    "rxjs": "^7.8.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.4.5"
   },
   "keywords": [
     "EVG Observable",
