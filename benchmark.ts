@@ -5,7 +5,8 @@ import {
     ISubscriptionLike,
     Observable,
     OrderedObservable,
-    quickDeleteFromArray
+    quickDeleteFromArray,
+    deleteFromArray
 } from './src/Libraries/Observables';
 
 // Helper functions for benchmarks
@@ -285,9 +286,17 @@ runBenchmark('Collector', {
 
 // 8. Benchmark for utility functions
 runBenchmark('Utility functions', {
+    'deleteFromArray - small array': () => {
+        const arr = [1, 2, 3, 4, 5];
+        deleteFromArray(arr, 3);
+    },
     'quickDeleteFromArray - small array': () => {
         const arr = [1, 2, 3, 4, 5];
         quickDeleteFromArray(arr, 3);
+    },
+    'deleteFromArray - large array': () => {
+        const arr = Array(1000).fill(0).map((_, i) => i);
+        deleteFromArray(arr, 500);
     },
     'quickDeleteFromArray - large array': () => {
         const arr = Array(1000).fill(0).map((_, i) => i);
@@ -342,6 +351,34 @@ runBenchmark('Performance comparison at different loads', {
     }
 });
 
-// 10. Benchmark comparison with other implementations (simulation)
+// 10. Benchmark comparison between deleteFromArray and quickDeleteFromArray
+runBenchmark('Comparison between deleteFromArray and quickDeleteFromArray', {
+    'deleteFromArray - small array (10 elements)': () => {
+        const arr = Array(10).fill(0).map((_, i) => i);
+        deleteFromArray(arr, 5);
+    },
+    'quickDeleteFromArray - small array (10 elements)': () => {
+        const arr = Array(10).fill(0).map((_, i) => i);
+        quickDeleteFromArray(arr, 5);
+    },
+    'deleteFromArray - medium array (100 elements)': () => {
+        const arr = Array(100).fill(0).map((_, i) => i);
+        deleteFromArray(arr, 50);
+    },
+    'quickDeleteFromArray - medium array (100 elements)': () => {
+        const arr = Array(100).fill(0).map((_, i) => i);
+        quickDeleteFromArray(arr, 50);
+    },
+    'deleteFromArray - large array (10000 elements)': () => {
+        const arr = Array(10000).fill(0).map((_, i) => i);
+        deleteFromArray(arr, 5000);
+    },
+    'quickDeleteFromArray - large array (10000 elements)': () => {
+        const arr = Array(10000).fill(0).map((_, i) => i);
+        quickDeleteFromArray(arr, 5000);
+    }
+});
+
+// 11. Benchmark comparison with other implementations (simulation)
 console.log('\n# Comparison with other implementations (simulation)');
 console.log('For a real comparison, you need to add other libraries, such as RxJS');
