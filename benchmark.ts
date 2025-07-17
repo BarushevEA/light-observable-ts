@@ -8,7 +8,7 @@ import {
     quickDeleteFromArray
 } from './src/Libraries/Observables';
 
-// Вспомогательные функции для бенчмарков
+// Helper functions for benchmarks
 function runBenchmark(name: string, tests: { [key: string]: Function }) {
     console.log(`\n# ${name}`);
     const suite = new Benchmark.Suite();
@@ -27,8 +27,8 @@ function runBenchmark(name: string, tests: { [key: string]: Function }) {
         .run({async: false});
 }
 
-// 1. Бенчмарк создания Observable
-runBenchmark('Создание Observable', {
+// 1. Benchmark for creating Observable
+runBenchmark('Creating Observable', {
     'new Observable': () => {
         const obs = new Observable<number>(0);
     },
@@ -37,15 +37,15 @@ runBenchmark('Создание Observable', {
     }
 });
 
-// 2. Бенчмарк подписки на Observable
-runBenchmark('Подписка на Observable', {
-    'subscribe - один подписчик': () => {
+// 2. Benchmark for subscribing to Observable
+runBenchmark('Subscribing to Observable', {
+    'subscribe - one subscriber': () => {
         const obs = new Observable<number>(0);
         const sub = obs.subscribe((value?: number) => {
         });
         sub?.unsubscribe();
     },
-    'subscribe - 10 подписчиков': () => {
+    'subscribe - 10 subscribers': () => {
         const obs = new Observable<number>(0);
         const subs: ISubscriptionLike[] = [];
         for (let i = 0; i < 10; i++) {
@@ -59,20 +59,20 @@ runBenchmark('Подписка на Observable', {
     }
 });
 
-// 3. Бенчмарк метода next
-runBenchmark('Метод next', {
-    'next - без подписчиков': () => {
+// 3. Benchmark for next method
+runBenchmark('Next method', {
+    'next - no subscribers': () => {
         const obs = new Observable<number>(0);
         obs.next(1);
     },
-    'next - один подписчик': () => {
+    'next - one subscriber': () => {
         const obs = new Observable<number>(0);
         const sub = obs.subscribe((value?: number) => {
         });
         obs.next(1);
         sub?.unsubscribe();
     },
-    'next - 10 подписчиков': () => {
+    'next - 10 subscribers': () => {
         const obs = new Observable<number>(0);
         const subs: ISubscriptionLike[] = [];
         for (let i = 0; i < 10; i++) {
@@ -85,7 +85,7 @@ runBenchmark('Метод next', {
             subs[i].unsubscribe();
         }
     },
-    'next - 100 подписчиков': () => {
+    'next - 100 subscribers': () => {
         const obs = new Observable<number>(0);
         const subs: ISubscriptionLike[] = [];
         for (let i = 0; i < 100; i++) {
@@ -100,9 +100,9 @@ runBenchmark('Метод next', {
     }
 });
 
-// 4. Бенчмарк метода stream
-runBenchmark('Метод stream', {
-    'stream - 10 значений, 1 подписчик': () => {
+// 4. Benchmark for stream method
+runBenchmark('Stream method', {
+    'stream - 10 values, 1 subscriber': () => {
         const obs = new Observable<number>(0);
         const sub = obs.subscribe((value?: number) => {
         });
@@ -110,7 +110,7 @@ runBenchmark('Метод stream', {
         obs.stream(values);
         sub?.unsubscribe();
     },
-    'stream - 100 значений, 1 подписчик': () => {
+    'stream - 100 values, 1 subscriber': () => {
         const obs = new Observable<number>(0);
         const sub = obs.subscribe((value?: number) => {
         });
@@ -118,7 +118,7 @@ runBenchmark('Метод stream', {
         obs.stream(values);
         sub?.unsubscribe();
     },
-    'stream - 10 значений, 10 подписчиков': () => {
+    'stream - 10 values, 10 subscribers': () => {
         const obs = new Observable<number>(0);
         const subs: ISubscriptionLike[] = [];
         for (let i = 0; i < 10; i++) {
@@ -134,8 +134,8 @@ runBenchmark('Метод stream', {
     }
 });
 
-// 5. Бенчмарк pipe и фильтров
-runBenchmark('Pipe и фильтры', {
+// 5. Benchmark for pipe and filters
+runBenchmark('Pipe and filters', {
     'pipe.setOnce': () => {
         const obs = new Observable<number>(0);
         const pipeObj = obs.pipe();
@@ -146,7 +146,7 @@ runBenchmark('Pipe и фильтры', {
             obs.next(2); // Этот вызов не должен достичь подписчика
         }
     },
-    'pipe.refine - простое условие': () => {
+    'pipe.refine - simple condition': () => {
         const obs = new Observable<number>(0);
         const pipeObj = obs.pipe();
         if (pipeObj) {
@@ -156,7 +156,7 @@ runBenchmark('Pipe и фильтры', {
             sub?.unsubscribe();
         }
     },
-    'pipe.refine - сложное условие': () => {
+    'pipe.refine - complex condition': () => {
         const obs = new Observable<number>(0);
         const pipeObj = obs.pipe();
         if (pipeObj) {
@@ -169,7 +169,7 @@ runBenchmark('Pipe и фильтры', {
             sub?.unsubscribe();
         }
     },
-    'pipe.then - трансформация': () => {
+    'pipe.then - transformation': () => {
         const obs = new Observable<number>(0);
         const pipeObj = obs.pipe();
         if (pipeObj) {
@@ -181,7 +181,7 @@ runBenchmark('Pipe и фильтры', {
             sub?.unsubscribe();
         }
     },
-    'addFilter - простой фильтр': () => {
+    'addFilter - simple filter': () => {
         const obs = new Observable<number>(0);
         obs.addFilter().filter((value?: number) => value !== undefined && value > 0);
         const sub = obs.subscribe((value?: number) => {
@@ -191,9 +191,9 @@ runBenchmark('Pipe и фильтры', {
     }
 });
 
-// 6. Бенчмарк OrderedObservable
+// 6. Benchmark for OrderedObservable
 runBenchmark('OrderedObservable', {
-    'OrderedObservable - подписка и сортировка': () => {
+    'OrderedObservable - subscription and sorting': () => {
         const obs = new OrderedObservable<number>(0);
         const sub1 = obs.subscribe((value?: number) => {
         }) as IOrderedSubscriptionLike;
@@ -217,7 +217,7 @@ runBenchmark('OrderedObservable', {
             sub3.unsubscribe();
         }
     },
-    'OrderedObservable - изменение порядка сортировки': () => {
+    'OrderedObservable - changing sort order': () => {
         const obs = new OrderedObservable<number>(0);
         const sub1 = obs.subscribe((value?: number) => {
         });
@@ -239,9 +239,9 @@ runBenchmark('OrderedObservable', {
     }
 });
 
-// 7. Бенчмарк Collector
+// 7. Benchmark for Collector
 runBenchmark('Collector', {
-    'Collector - сбор и отписка': () => {
+    'Collector - collection and unsubscription': () => {
         const collector = new Collector();
         const obs = new Observable<number>(0);
 
@@ -259,7 +259,7 @@ runBenchmark('Collector', {
             collector.unsubscribeAll();
         }
     },
-    'Collector - индивидуальная отписка': () => {
+    'Collector - individual unsubscription': () => {
         const collector = new Collector();
         const obs = new Observable<number>(0);
 
@@ -283,31 +283,31 @@ runBenchmark('Collector', {
     }
 });
 
-// 8. Бенчмарк вспомогательных функций
-runBenchmark('Вспомогательные функции', {
-    'quickDeleteFromArray - маленький массив': () => {
+// 8. Benchmark for utility functions
+runBenchmark('Utility functions', {
+    'quickDeleteFromArray - small array': () => {
         const arr = [1, 2, 3, 4, 5];
         quickDeleteFromArray(arr, 3);
     },
-    'quickDeleteFromArray - большой массив': () => {
+    'quickDeleteFromArray - large array': () => {
         const arr = Array(1000).fill(0).map((_, i) => i);
         quickDeleteFromArray(arr, 500);
     },
-    'Array.splice - маленький массив': () => {
+    'Array.splice - small array': () => {
         const arr = [1, 2, 3, 4, 5];
         const index = arr.indexOf(3);
         if (index !== -1) arr.splice(index, 1);
     },
-    'Array.splice - большой массив': () => {
+    'Array.splice - large array': () => {
         const arr = Array(1000).fill(0).map((_, i) => i);
         const index = arr.indexOf(500);
         if (index !== -1) arr.splice(index, 1);
     }
 });
 
-// 9. Бенчмарк сравнения производительности при разных нагрузках
-runBenchmark('Сравнение производительности при разных нагрузках', {
-    'Observable - легкая нагрузка (10 операций)': () => {
+// 9. Benchmark for performance comparison at different loads
+runBenchmark('Performance comparison at different loads', {
+    'Observable - light load (10 operations)': () => {
         const obs = new Observable<number>(0);
         const sub = obs.subscribe((value?: number) => {
         });
@@ -318,7 +318,7 @@ runBenchmark('Сравнение производительности при р�
 
         sub?.unsubscribe();
     },
-    'Observable - средняя нагрузка (100 операций)': () => {
+    'Observable - medium load (100 operations)': () => {
         const obs = new Observable<number>(0);
         const sub = obs.subscribe((value?: number) => {
         });
@@ -329,7 +329,7 @@ runBenchmark('Сравнение производительности при р�
 
         sub?.unsubscribe();
     },
-    'Observable - тяжелая нагрузка (1000 операций)': () => {
+    'Observable - heavy load (1000 operations)': () => {
         const obs = new Observable<number>(0);
         const sub = obs.subscribe((value?: number) => {
         });
@@ -342,6 +342,6 @@ runBenchmark('Сравнение производительности при р�
     }
 });
 
-// 10. Бенчмарк сравнения с другими реализациями (имитация)
-console.log('\n# Сравнение с другими реализациями (имитация)');
-console.log('Для реального сравнения необходимо добавить другие библиотеки, например RxJS');
+// 10. Benchmark comparison with other implementations (simulation)
+console.log('\n# Comparison with other implementations (simulation)');
+console.log('For a real comparison, you need to add other libraries, such as RxJS');

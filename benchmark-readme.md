@@ -1,101 +1,89 @@
-# Бенчмарки для light-observable-ts
+# Benchmarks for light-observable-ts
 
-Этот проект содержит набор бенчмарков для измерения производительности библиотеки light-observable-ts. Бенчмарки разделены на несколько категорий для тестирования различных аспектов библиотеки.
+This project contains a set of benchmarks for measuring the performance of the light-observable-ts library. The benchmarks are divided into several categories to test different aspects of the library.
 
-## Установка зависимостей
+## Installing Dependencies
 
-Перед запуском бенчмарков необходимо установить зависимости:
+Before running the benchmarks, you need to install the dependencies:
 
 ```bash
 npm install --save-dev benchmark microtime
 ```
 
-Для запуска сравнительных бенчмарков с RxJS также необходимо установить:
+To run comparative benchmarks with RxJS, you also need to install:
 
 ```bash
 npm install --save-dev rxjs
 ```
 
-## Запуск бенчмарков
+## Running Benchmarks
 
-В проекте доступны следующие скрипты для запуска бенчмарков:
+The following scripts are available in the project to run benchmarks:
 
 ```bash
-# Запуск основных бенчмарков
+# Run the main benchmarks
 npm run benchmark
 
-# Запуск сравнительных бенчмарков с RxJS
+# Run comparative benchmarks with RxJS
 npm run benchmark:comparison
-
-# Запуск бенчмарков для тестирования оптимизаций
-npm run benchmark:optimizations
 ```
 
-## Описание бенчмарков
+## Benchmark Description
 
-### Основные бенчмарки (benchmark.ts)
+### Main Benchmarks (benchmark.ts)
 
-1. **Создание Observable** - измеряет скорость создания экземпляров Observable и OrderedObservable.
-2. **Подписка на Observable** - измеряет скорость подписки на Observable с разным количеством подписчиков.
-3. **Метод next** - измеряет скорость эмиссии значений с разным количеством подписчиков.
-4. **Метод stream** - измеряет скорость потоковой передачи массивов значений.
-5. **Pipe и фильтры** - измеряет производительность различных операций pipe и фильтрации.
-6. **OrderedObservable** - измеряет производительность операций с упорядоченными наблюдаемыми.
-7. **Collector** - измеряет производительность операций с коллектором подписок.
-8. **Вспомогательные функции** - сравнивает производительность различных вспомогательных функций.
-9. **Сравнение производительности при разных нагрузках** - измеряет производительность при различных уровнях нагрузки.
+1. **Creating Observable** - measures the speed of creating Observable and OrderedObservable instances.
+2. **Subscribing to Observable** - measures the speed of subscribing to Observable with different numbers of subscribers.
+3. **Next method** - measures the speed of emitting values with different numbers of subscribers.
+4. **Stream method** - measures the speed of streaming arrays of values.
+5. **Pipe and filters** - measures the performance of various pipe and filtering operations.
+6. **OrderedObservable** - measures the performance of operations with ordered observables.
+7. **Collector** - measures the performance of operations with the subscription collector.
+8. **Utility functions** - compares the performance of various utility functions.
+9. **Performance comparison at different loads** - measures performance at various load levels.
 
-### Сравнительные бенчмарки (benchmark-comparison.ts)
+### Comparative Benchmarks (benchmark-comparison.ts)
 
-Сравнивает производительность light-observable-ts с RxJS в следующих сценариях:
+Compares the performance of light-observable-ts with RxJS in the following scenarios:
 
-1. **Создание и подписка** - сравнивает скорость создания и подписки.
-2. **Эмиссия значений** - сравнивает скорость эмиссии 100 значений.
-3. **Фильтрация и трансформация** - сравнивает скорость фильтрации и трансформации значений.
+1. **Creation and subscription** - compares the speed of creation and subscription.
+2. **Value emission** - compares the speed of emitting 100 values.
+3. **Filtering and transformation** - compares the speed of filtering and transforming values.
 
-### Бенчмарки оптимизаций (benchmark-optimizations.ts)
+## Interpreting Results
 
-Тестирует потенциальные оптимизации библиотеки:
+After running the benchmarks, you will see the results in the console. For each test, the following will be shown:
 
-1. **quickDeleteFromArray** - сравнивает текущую и оптимизированную реализации.
-2. **OrderedObservable.sortByOrder** - сравнивает текущую реализацию с оптимизированной версией, использующей флаг needsResorting.
-3. **Collector.unsubscribeAll** - сравнивает текущую реализацию с оптимизированной версией, использующей обратный цикл for.
-4. **Обработка фильтров** - сравнивает текущую реализацию с оптимизированной версией, использующей ранний возврат.
+- Test name
+- Operations per second (ops/sec)
+- Measurement error (±)
+- Number of runs (runs sampled)
+- Fastest variant (Fastest is)
 
-## Интерпретация результатов
-
-После запуска бенчмарков вы увидите результаты в консоли. Для каждого теста будет показано:
-
-- Название теста
-- Количество операций в секунду (ops/sec)
-- Погрешность измерения (±)
-- Количество запусков (runs sampled)
-- Самый быстрый вариант (Fastest is)
-
-Пример вывода:
+Example output:
 
 ```
-# Создание Observable
+# Creating Observable
 new Observable x 1,234,567 ops/sec ±1.23% (98 runs sampled)
 new OrderedObservable x 987,654 ops/sec ±2.34% (95 runs sampled)
 Fastest is new Observable
 ```
 
-## Добавление новых бенчмарков
+## Adding New Benchmarks
 
-Для добавления новых бенчмарков можно использовать функцию `runBenchmark` из файла benchmark.ts:
+To add new benchmarks, you can use the `runBenchmark` function from the benchmark.ts file:
 
 ```typescript
-runBenchmark('Название бенчмарка', {
-  'Тест 1': () => {
-    // Код теста 1
+runBenchmark('Benchmark name', {
+  'Test 1': () => {
+    // Test 1 code
   },
-  'Тест 2': () => {
-    // Код теста 2
+  'Test 2': () => {
+    // Test 2 code
   }
 });
 ```
 
-## Советы по оптимизации
+## Optimization Tips
 
-На основе результатов бенчмарков можно выявить узкие места в производительности библиотеки и предложить оптимизации. Некоторые потенциальные оптимизации уже реализованы в файле benchmark-optimizations.ts.
+Based on the benchmark results, you can identify bottlenecks in the library's performance and suggest optimizations.

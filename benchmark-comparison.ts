@@ -3,20 +3,20 @@ import {Observable as LightObservable} from './src/Libraries/Observables';
 import {Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
-// Установите RxJS: npm install --save-dev rxjs
+// Install RxJS: npm install --save-dev rxjs
 
-console.log('# Сравнение light-observable-ts с RxJS');
+console.log('# Comparison of light-observable-ts with RxJS');
 
-// 1. Создание и подписка
+// 1. Creation and subscription
 const suite1 = new Benchmark.Suite();
 suite1
-    .add('light-observable - создание и подписка', () => {
+    .add('light-observable - creation and subscription', () => {
         const obs = new LightObservable<number>(0);
         const sub = obs.subscribe((value?: number) => {
         });
         sub?.unsubscribe();
     })
-    .add('RxJS - создание и подписка', () => {
+    .add('RxJS - creation and subscription', () => {
         const subject = new Subject<number>();
         const sub = subject.subscribe((value) => {
         });
