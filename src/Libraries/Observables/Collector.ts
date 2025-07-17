@@ -46,7 +46,7 @@ export class Collector implements ICollector {
      */
     unsubscribeAll(): void | null {
         if (this.killed) return;
-        while (this.arr.length > 0) this.unsubscribe(this.arr.pop());
+        for (;this.arr.length > 0;) this.unsubscribe(this.arr.pop());
     }
 
     /**
