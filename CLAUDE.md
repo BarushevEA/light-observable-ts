@@ -235,11 +235,14 @@ observable$.size();         // Get subscriber count
 
 | Operation | EVG Observable | RxJS | Advantage |
 |-----------|---------------|------|-----------|
-| Creation + subscription | 4.2M ops/sec | 2.8M ops/sec | **1.5x faster** |
-| Emit 100 values | 878K ops/sec | 203K ops/sec | **4.3x faster** |
-| Filter + transform | 291K ops/sec | 82K ops/sec | **3.5x faster** |
+| Creation + subscription | 4.26M ops/sec | 3.62M ops/sec | **1.2x faster** |
+| Emit 100 values | 1.09M ops/sec | 213K ops/sec | **5.1x faster** |
+| Filter + transform | 284K ops/sec | 97K ops/sec | **2.9x faster** |
+| 10 subscribers | 550K ops/sec | 331K ops/sec | **1.7x faster** |
+| 1000 subscribers | 3.4K ops/sec | 3.1K ops/sec | **1.1x faster** |
+| Large payload | 213K ops/sec | 103K ops/sec | **2.1x faster** |
 
-Key metrics: Observable creation ~54M ops/sec, `next()` with 1 subscriber ~3.6M ops/sec.
+Key metrics: Observable creation ~54M ops/sec, `next()` with 1 subscriber ~3.8M ops/sec.
 
 See `BENCHMARK_RESULTS.md` for full details.
 

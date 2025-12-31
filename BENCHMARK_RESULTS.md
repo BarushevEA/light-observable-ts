@@ -8,30 +8,97 @@ Full benchmark output for EVG Observable library.
 
 ## Comparison with RxJS
 
-Results averaged over 5 benchmark runs for statistical reliability.
+### Core Operations
 
 ```
-# Comparison of light-observable-ts with RxJS (average of 5 runs)
-light-observable - creation and subscription x 4,420,000 ops/sec
-RxJS - creation and subscription x 3,430,000 ops/sec
+light-observable - creation and subscription x 4,258,000 ops/sec
+RxJS - creation and subscription x 3,623,000 ops/sec
 Fastest is light-observable - creation and subscription
 
-light-observable - emit 100 values x 1,046,000 ops/sec
-RxJS - emit 100 values x 216,000 ops/sec
+light-observable - emit 100 values x 1,089,000 ops/sec
+RxJS - emit 100 values x 213,000 ops/sec
 Fastest is light-observable - emit 100 values
 
-light-observable - filter and transform x 292,000 ops/sec
+light-observable - filter and transform x 284,000 ops/sec
 RxJS - filter and transform x 97,000 ops/sec
 Fastest is light-observable - filter and transform
+```
+
+### Subscribers Scaling (10 / 100 / 1000 / 10000)
+
+```
+light-observable - 10 subscribers x 550,234 ops/sec
+RxJS - 10 subscribers x 330,806 ops/sec
+Fastest is light-observable - 10 subscribers
+
+light-observable - 100 subscribers x 49,693 ops/sec
+RxJS - 100 subscribers x 33,533 ops/sec
+Fastest is light-observable - 100 subscribers
+
+light-observable - 1000 subscribers x 3,396 ops/sec
+RxJS - 1000 subscribers x 3,102 ops/sec
+Fastest is light-observable - 1000 subscribers
+
+light-observable - 10000 subscribers x 103 ops/sec
+RxJS - 10000 subscribers x 93 ops/sec
+Fastest is light-observable - 10000 subscribers
+```
+
+### stream() vs next() Loop
+
+```
+light-observable - stream() batch x 579,115 ops/sec
+light-observable - next() loop x 621,618 ops/sec
+Fastest is light-observable - next() loop
+```
+
+### Chained Filters (5 filters)
+
+```
+light-observable - 5 chained filters x 108,435 ops/sec
+RxJS - 5 chained filters x 60,060 ops/sec
+Fastest is light-observable - 5 chained filters
+```
+
+### Large Payload (Complex Objects)
+
+```
+light-observable - large payload x 212,884 ops/sec
+RxJS - large payload x 103,206 ops/sec
+Fastest is light-observable - large payload
+```
+
+### Mass Unsubscribe (1000 subscribers)
+
+```
+light-observable - unsubscribe 1000 x 3,831 ops/sec
+RxJS - unsubscribe 1000 x 3,218 ops/sec
+Fastest is light-observable - unsubscribe 1000
+```
+
+### Switch/Case OR-Logic Filtering
+
+```
+light-observable - switch/case OR-logic x 273,227 ops/sec
+RxJS - filter with OR conditions x 138,112 ops/sec
+Fastest is light-observable - switch/case OR-logic
 ```
 
 ### Summary
 
 | Operation | EVG Observable | RxJS | Advantage |
 |-----------|---------------|------|-----------|
-| Creation + subscription | 4.42M ops/sec | 3.43M ops/sec | **1.29x faster** |
-| Emit 100 values | 1.05M ops/sec | 216K ops/sec | **4.84x faster** |
-| Filter + transform | 292K ops/sec | 97K ops/sec | **3.01x faster** |
+| Creation + subscription | 4.26M ops/sec | 3.62M ops/sec | **1.17x faster** |
+| Emit 100 values | 1.09M ops/sec | 213K ops/sec | **5.1x faster** |
+| Filter + transform | 284K ops/sec | 97K ops/sec | **2.9x faster** |
+| 10 subscribers | 550K ops/sec | 331K ops/sec | **1.7x faster** |
+| 100 subscribers | 50K ops/sec | 34K ops/sec | **1.5x faster** |
+| 1000 subscribers | 3.4K ops/sec | 3.1K ops/sec | **1.1x faster** |
+| 10000 subscribers | 103 ops/sec | 93 ops/sec | **1.1x faster** |
+| 5 chained filters | 108K ops/sec | 60K ops/sec | **1.8x faster** |
+| Large payload | 213K ops/sec | 103K ops/sec | **2.1x faster** |
+| Unsubscribe 1000 | 3.8K ops/sec | 3.2K ops/sec | **1.2x faster** |
+| switch/case OR-logic | 273K ops/sec | 138K ops/sec | **2.0x faster** |
 
 ---
 
@@ -160,9 +227,11 @@ Performance improvements after optimization pass:
 
 ## Key Takeaways
 
-1. **EVG Observable is 1.3x-4.8x faster than RxJS** in common operations
-2. **Emit 100 values is the biggest win** at 4.84x faster than RxJS
+1. **EVG Observable is 1.1x-5.1x faster than RxJS** across all tested operations
+2. **Emit 100 values is the biggest win** at 5.1x faster than RxJS
 3. **Observable creation is extremely fast** at ~55M ops/sec
-4. **Performance scales linearly** with subscriber count (expected behavior)
-5. **Heavy load improved 22%** after optimization (51.6K → 62.7K ops/sec)
-6. **`pipe.refine()` is now the fastest** pipe operation at ~3.1M ops/sec
+4. **Advantage decreases with subscriber count**: 1.7x (10 subs) → 1.1x (10000 subs)
+5. **Large payloads maintain 2.1x advantage** — no overhead for complex objects
+6. **Chained filters (1.8x) and OR-logic (2.0x)** show consistent performance wins
+7. **`next()` loop is slightly faster than `stream()`** — method call overhead
+8. **Heavy load improved 22%** after optimization (51.6K → 62.7K ops/sec)
