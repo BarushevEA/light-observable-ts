@@ -934,6 +934,60 @@ class ObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
+    @test 'destroy during emission (async cleanup)'() {
+        let errorCounter = 0;
+        const errorHandler = (errorData: any, errorMessage: any) => {
+            expect(false).to.be.equal(!!errorMessage);
+            errorCounter++;
+        };
+        const observable$ = new Observable<number>(0);
+        let callCount = 0;
+
+        // Listener that calls destroy during emission
+        const listener = (value: number) => {
+            callCount++;
+            if (value === 2) {
+                observable$.destroy(); // destroy while process=true
+            }
+        };
+
+        observable$.subscribe(listener, errorHandler);
+        expect(observable$.size()).to.be.equal(1);
+
+        observable$.next(1);
+        observable$.next(2); // This triggers destroy during emission
+        observable$.next(3); // Should not be processed (killed=true)
+
+        expect(callCount).to.be.equal(2);
+        expect(observable$.isDestroyed).to.be.equal(true);
+        expect(0).to.be.equal(errorCounter);
+
+        // Wait for Promise.resolve().then() to complete
+        return new Promise<void>(resolve => {
+            setTimeout(() => {
+                // @ts-ignore
+                expect(observable$.value).to.be.equal(null);
+                // @ts-ignore
+                expect(observable$.subs.length).to.be.equal(0);
+                resolve();
+            }, 0);
+        });
+    }
+
+    @test 'destroy called twice (idempotent)'() {
+        const observable$ = new Observable<number>(42);
+        observable$.subscribe((value: number) => {});
+
+        expect(observable$.isDestroyed).to.be.equal(false);
+
+        observable$.destroy();
+        expect(observable$.isDestroyed).to.be.equal(true);
+
+        // Second call should be no-op (line 162 branch)
+        observable$.destroy();
+        expect(observable$.isDestroyed).to.be.equal(true);
+    }
+
     @test 'defect field "observable" from subscribeObject'() {
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
