@@ -87,3 +87,29 @@ runBenchmark('Benchmark name', {
 ## Optimization Tips
 
 Based on the benchmark results, you can identify bottlenecks in the library's performance and suggest optimizations.
+
+## Latest Results
+
+### Comparison with RxJS
+
+| Operation | EVG Observable | RxJS | Advantage |
+|-----------|---------------|------|-----------|
+| Creation + subscription | 4.2M ops/sec | 2.8M ops/sec | **1.5x faster** |
+| Emit 100 values | 878K ops/sec | 203K ops/sec | **4.3x faster** |
+| Filter + transform | 291K ops/sec | 82K ops/sec | **3.5x faster** |
+
+### Key Performance Metrics
+
+| Operation | Performance |
+|-----------|-------------|
+| new Observable | 53.7M ops/sec |
+| new OrderedObservable | 13.7M ops/sec |
+| next() - no subscribers | 50M ops/sec |
+| next() - 1 subscriber | 3.6M ops/sec |
+| next() - 10 subscribers | 494K ops/sec |
+| next() - 100 subscribers | 48.6K ops/sec |
+| pipe.refine() | 2.8M ops/sec |
+| addFilter() | 3M ops/sec |
+| Collector operations | 1.2M ops/sec |
+
+See `BENCHMARK_RESULTS.md` for complete benchmark output.

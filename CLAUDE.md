@@ -170,6 +170,18 @@ observable$.getValue();     // Get current/last value
 observable$.size();         // Get subscriber count
 ```
 
+## Performance (vs RxJS)
+
+| Operation | EVG Observable | RxJS | Advantage |
+|-----------|---------------|------|-----------|
+| Creation + subscription | 4.2M ops/sec | 2.8M ops/sec | **1.5x faster** |
+| Emit 100 values | 878K ops/sec | 203K ops/sec | **4.3x faster** |
+| Filter + transform | 291K ops/sec | 82K ops/sec | **3.5x faster** |
+
+Key metrics: Observable creation ~54M ops/sec, `next()` with 1 subscriber ~3.6M ops/sec.
+
+See `BENCHMARK_RESULTS.md` for full details.
+
 ## Key Patterns
 
 - **Resource cleanup**: Always use `destroy()`, `unsubscribeAll()`, or `unsubscribe()` for lifecycle management
