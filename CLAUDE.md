@@ -6,29 +6,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Task Planning (CRITICAL)
 
-> **ОБЯЗАТЕЛЬНО** прочитать при ключевых словах: "новая задача", "создай план", "план выполнения", "начни задачу", "продолжи задачу", "статус задачи", "что сделано".
+> **MUST READ** on keywords: "new task", "create plan", "implementation plan", "start task", "continue task", "task status", "what's done".
 
-**Правила планирования:** [.config/claude/task_planning_rules_v3.md](.config/claude/task_planning_rules_v3.md)
+**Planning rules:** [.config/claude/task_planning_rules_v3.md](.config/claude/task_planning_rules_v3.md)
 
-**Активные задачи:** [tmp/active_tasks.md](tmp/active_tasks.md) — читать первым для контекста.
+**Active tasks:** [tmp/active_tasks.md](tmp/active_tasks.md) — read first for context.
 
-### Быстрый старт
+### Quick Start
 
-**Новая задача:**
+**New task:**
 ```bash
 mkdir -p tmp/{task-name}/history
-# Создать: start_here.md, implementation_plan_v1.md, history/history_v1.md
+# Create: start_here.md, implementation_plan_v1.md, history/history_v1.md
+# Update: tmp/active_tasks.md
 ```
 
-**Продолжение задачи:**
+**Continue task:**
 ```
-1. Читать tmp/{task-name}/start_here.md
-2. Перейти к текущему плану v{N}
-3. Проверить history — что уже сделано
-4. Обновлять history после каждого действия
+1. Read tmp/active_tasks.md
+2. Open tmp/{task-name}/start_here.md
+3. Go to current plan v{N}
+4. Check history — what's done
+5. Update history after each action
 ```
 
-**Подход не сработал → создать новую версию плана v{N+1}**
+**Approach didn't work → create new plan version v{N+1}**
 
 ---
 

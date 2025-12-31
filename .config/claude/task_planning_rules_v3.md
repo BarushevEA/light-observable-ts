@@ -1,74 +1,74 @@
 # Task Planning Rules v3 (Lightweight)
 
-> Адаптированная версия для небольших проектов без JIRA.
+> Adapted version for small projects without JIRA.
 
 ---
 
-## Когда создавать новую версию плана v{N+1}
+## When to Create New Plan Version v{N+1}
 
-| Триггер | Действие |
-|---------|----------|
-| Код **REVERTED** | → Создать v{N+1} |
-| Смена **библиотеки/подхода** | → Создать v{N+1} |
-| **Архитектурное** изменение | → Создать v{N+1} |
-| Подход **не сработал** | → Создать v{N+1} |
+| Trigger | Action |
+|---------|--------|
+| Code **REVERTED** | → Create v{N+1} |
+| **Library/approach** change | → Create v{N+1} |
+| **Architectural** change | → Create v{N+1} |
+| Approach **didn't work** | → Create v{N+1} |
 
-**НЕ использовать "фазы" внутри одного плана** — каждый новый подход = новая версия.
+**DO NOT use "phases" inside one plan** — each new approach = new version.
 
 ---
 
-## Структура папок
+## Folder Structure
 
 ```
 tmp/
-├── active_tasks.md               # Индекс активных задач (читать первым!)
+├── active_tasks.md               # Active tasks index (read first!)
 └── {task-name}/
-    ├── start_here.md             # Навигация + статус
-    ├── implementation_plan_v1.md # План v1
-    ├── implementation_plan_v2.md # План v2 (если нужен)
+    ├── start_here.md             # Navigation + status
+    ├── implementation_plan_v1.md # Plan v1
+    ├── implementation_plan_v2.md # Plan v2 (if needed)
     └── history/
-        ├── history_v1.md         # Лог выполнения v1
-        └── history_v2.md         # Лог выполнения v2
+        ├── history_v1.md         # Execution log v1
+        └── history_v2.md         # Execution log v2
 ```
 
-**Имя задачи**: осмысленное, например `optimize-array-deletion`, `add-throttle-operator`.
+**Task name**: meaningful, e.g. `optimize-array-deletion`, `add-throttle-operator`.
 
-**ВАЖНО:** При создании/завершении задачи — обновить `tmp/active_tasks.md`!
+**IMPORTANT:** When creating/completing a task — update `tmp/active_tasks.md`!
 
 ---
 
-## Шаблоны
+## Templates
 
 ### start_here.md
 
 ```markdown
 # {Task Name}
 
-**Создан:** {YYYY-MM-DD}
-**Статус:** {В работе / Завершён}
+**Created:** {YYYY-MM-DD}
+**Status:** {In Progress / Completed}
 
 ---
 
-## Цель (1-2 предложения)
-{Что нужно сделать}
+## Goal (1-2 sentences)
+{What needs to be done}
 
 ---
 
-## Текущий план
+## Current Plan
 
 ### ✅ [implementation_plan_v{N}.md](./implementation_plan_v{N}.md)
-- **Подход:** {Краткое описание}
-- **Оценка:** {N} часов
-- **История:** [history/history_v{N}.md](./history/history_v{N}.md)
+- **Approach:** {Brief description}
+- **Estimate:** {N} hours
+- **History:** [history/history_v{N}.md](./history/history_v{N}.md)
 
 ---
 
-## История версий
+## Version History
 
-| Версия | Подход | Статус | Причина смены |
-|--------|--------|--------|---------------|
-| v2 | {подход} | ✅ Текущий | — |
-| v1 | {подход} | ❌ Отклонён | {почему не сработало} |
+| Version | Approach | Status | Reason for change |
+|---------|----------|--------|-------------------|
+| v2 | {approach} | ✅ Current | — |
+| v1 | {approach} | ❌ Rejected | {why didn't work} |
 ```
 
 ---
@@ -76,46 +76,46 @@ tmp/
 ### implementation_plan_v{N}.md
 
 ```markdown
-# {Task Name}: План v{N}
+# {Task Name}: Plan v{N}
 
-**Создан:** {YYYY-MM-DD}
-**Статус:** {✅ ТЕКУЩИЙ / ❌ ОТКЛОНЁН}
-**История:** [history/history_v{N}.md](./history/history_v{N}.md)
+**Created:** {YYYY-MM-DD}
+**Status:** {✅ CURRENT / ❌ REJECTED}
+**History:** [history/history_v{N}.md](./history/history_v{N}.md)
 
 ---
 
-## Подход
-{Описание что и как делаем}
+## Approach
+{Description of what and how}
 
-## Почему этот подход
-{Обоснование выбора}
+## Why This Approach
+{Rationale for choice}
 
-## Шаги
-1. {Шаг 1}
-2. {Шаг 2}
-3. {Шаг 3}
+## Steps
+1. {Step 1}
+2. {Step 2}
+3. {Step 3}
 
-## Критерии успеха
-- [ ] {Критерий 1}
-- [ ] {Критерий 2}
+## Success Criteria
+- [ ] {Criterion 1}
+- [ ] {Criterion 2}
 
-## Оценка
-{N} часов
+## Estimate
+{N} hours
 
-## Риски
-- {Риск}: {Митигация}
+## Risks
+- {Risk}: {Mitigation}
 
-## Код/Примеры (если нужно)
+## Code/Examples (if needed)
 ```typescript
-// Пример реализации
+// Implementation example
 ```
 ```
 
-**Баннер для ОТКЛОНЁННОЙ версии:**
+**Banner for REJECTED version:**
 ```markdown
-> ❌ **ОТКЛОНЁН** — {причина}
+> ❌ **REJECTED** — {reason}
 >
-> ➡️ **Актуальный план:** [implementation_plan_v{N+1}.md](./implementation_plan_v{N+1}.md)
+> ➡️ **Current plan:** [implementation_plan_v{N+1}.md](./implementation_plan_v{N+1}.md)
 ```
 
 ---
@@ -123,138 +123,138 @@ tmp/
 ### history/history_v{N}.md
 
 ```markdown
-# История: План v{N}
+# History: Plan v{N}
 
-**План:** [../implementation_plan_v{N}.md](../implementation_plan_v{N}.md)
-**Начат:** {YYYY-MM-DD HH:MM}
-**Завершён:** {YYYY-MM-DD HH:MM}
-**Результат:** {✅ Успех / ❌ Отклонён}
-**Затрачено:** {N} часов
-
----
-
-## Лог выполнения
-
-| Время | Действие | Файл | Описание |
-|-------|----------|------|----------|
-| {HH:MM} | create | src/file.ts | Создан файл с реализацией |
-| {HH:MM} | modify | src/file.ts | Добавлен метод X |
-| {HH:MM} | test | — | Запущен бенчмарк: +15% |
-| {HH:MM} | fix | src/file.ts | Исправлен баг Y |
+**Plan:** [../implementation_plan_v{N}.md](../implementation_plan_v{N}.md)
+**Started:** {YYYY-MM-DD HH:MM}
+**Completed:** {YYYY-MM-DD HH:MM}
+**Result:** {✅ Success / ❌ Rejected}
+**Time spent:** {N} hours
 
 ---
 
-## Результаты бенчмарков (если применимо)
+## Execution Log
 
-| Метрика | До | После | Изменение |
-|---------|-----|-------|-----------|
+| Time | Action | File | Description |
+|------|--------|------|-------------|
+| {HH:MM} | create | src/file.ts | Created file with implementation |
+| {HH:MM} | modify | src/file.ts | Added method X |
+| {HH:MM} | test | — | Ran benchmark: +15% |
+| {HH:MM} | fix | src/file.ts | Fixed bug Y |
+
+---
+
+## Benchmark Results (if applicable)
+
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
 | ops/sec | 1M | 1.5M | +50% |
 
 ---
 
-## Проблемы и решения
+## Problems and Solutions
 
-### Проблема 1: {описание}
-- **Причина:** {почему возникла}
-- **Решение:** {что сделали}
+### Problem 1: {description}
+- **Cause:** {why it occurred}
+- **Solution:** {what was done}
 
 ---
 
-## Выводы
+## Conclusions
 
-- ✅ Что сработало: ...
-- ❌ Что не сработало: ...
-- 💡 На будущее: ...
+- ✅ What worked: ...
+- ❌ What didn't work: ...
+- 💡 For future: ...
 ```
 
 ---
 
-## Рабочий процесс
+## Workflow
 
-### Новая задача
+### New Task
 
 ```
 1. mkdir -p tmp/{task-name}/history
-2. Создать start_here.md
-3. Создать implementation_plan_v1.md
-4. Создать history/history_v1.md (пустой лог)
-5. Обновить tmp/active_tasks.md — добавить задачу
-6. Начать работу
+2. Create start_here.md
+3. Create implementation_plan_v1.md
+4. Create history/history_v1.md (empty log)
+5. Update tmp/active_tasks.md — add task
+6. Start work
 ```
 
-### Продолжение задачи
+### Continue Task
 
 ```
-1. Читать tmp/active_tasks.md — список активных задач
-2. Открыть tmp/{task-name}/start_here.md
-3. Перейти к текущему плану
-4. Проверить history — что уже сделано
-5. Продолжить работу
-6. Обновлять history после каждого логического действия
+1. Read tmp/active_tasks.md — list of active tasks
+2. Open tmp/{task-name}/start_here.md
+3. Go to current plan
+4. Check history — what's already done
+5. Continue work
+6. Update history after each logical action
 ```
 
-### Завершение задачи
+### Complete Task
 
 ```
-1. Финализировать history — итоги, выводы
-2. Обновить tmp/active_tasks.md — перенести в "Завершённые"
+1. Finalize history — results, conclusions
+2. Update tmp/active_tasks.md — move to "Completed"
 ```
 
-### Подход не сработал
+### Approach Didn't Work
 
 ```
-1. В history_v{N}.md записать результат и причину отказа
-2. В implementation_plan_v{N}.md добавить баннер ❌ ОТКЛОНЁН
-3. Создать implementation_plan_v{N+1}.md с новым подходом
-4. Создать history/history_v{N+1}.md
-5. Обновить start_here.md — новая текущая версия
+1. In history_v{N}.md record result and rejection reason
+2. In implementation_plan_v{N}.md add banner ❌ REJECTED
+3. Create implementation_plan_v{N+1}.md with new approach
+4. Create history/history_v{N+1}.md
+5. Update start_here.md — new current version
 ```
 
 ---
 
-## Что логировать в history
+## What to Log in History
 
-**Логировать:**
-- ✅ Файл создан/изменён
-- ✅ Тест написан/пройден
-- ✅ Бенчмарк запущен (с результатом)
-- ✅ Баг найден/исправлен
-- ✅ Решение принято (с обоснованием)
+**Log:**
+- ✅ File created/modified
+- ✅ Test written/passed
+- ✅ Benchmark run (with result)
+- ✅ Bug found/fixed
+- ✅ Decision made (with rationale)
 
-**НЕ логировать:**
-- ❌ Каждую строку кода
-- ❌ Промежуточные состояния отладки
-- ❌ Очевидные действия
+**DO NOT log:**
+- ❌ Every line of code
+- ❌ Intermediate debugging states
+- ❌ Obvious actions
 
 ---
 
-## Пример: Оптимизация deleteFromArray
+## Example: Optimizing deleteFromArray
 
 ```
 tmp/optimize-array-deletion/
 ├── start_here.md
-├── implementation_plan_v1.md  # Подход: Map вместо Array
-├── implementation_plan_v2.md  # Подход: кэширование индексов
-├── implementation_plan_v3.md  # Подход: quickDeleteFromArray ✅
+├── implementation_plan_v1.md  # Approach: Map instead of Array
+├── implementation_plan_v2.md  # Approach: index caching
+├── implementation_plan_v3.md  # Approach: quickDeleteFromArray ✅
 └── history/
-    ├── history_v1.md          # Результат: -5%, отклонён
-    ├── history_v2.md          # Результат: overhead, отклонён
-    └── history_v3.md          # Результат: +15%, принят
+    ├── history_v1.md          # Result: -5%, rejected
+    ├── history_v2.md          # Result: overhead, rejected
+    └── history_v3.md          # Result: +15%, accepted
 ```
 
-**start_here.md** показывает:
-- v1: Map → отклонён (хуже производительность)
-- v2: Кэширование → отклонён (overhead больше пользы)
-- v3: quickDeleteFromArray → ✅ текущий (+15% на больших массивах)
+**start_here.md** shows:
+- v1: Map → rejected (worse performance)
+- v2: Caching → rejected (overhead > benefit)
+- v3: quickDeleteFromArray → ✅ current (+15% on large arrays)
 
 ---
 
-**Версия:** 3.0
-**Создан:** 2025-12-31
-**Основан на:** task_planning_rules_v2.md
-**Изменения:**
-- Убраны JIRA references
-- Убраны QA/deployment/monitoring секции
-- Упрощены шаблоны
-- Добавлен практический пример
-- Русифицированы шаблоны
+**Version:** 3.0
+**Created:** 2025-12-31
+**Based on:** task_planning_rules_v2.md
+**Changes:**
+- Removed JIRA references
+- Removed QA/deployment/monitoring sections
+- Simplified templates
+- Added practical example
+- Added active_tasks.md index
