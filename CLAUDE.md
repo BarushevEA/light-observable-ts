@@ -6,6 +6,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 EVG Observable is a lightweight, high-performance Observable library for TypeScript/JavaScript designed as an alternative to RxJS. It focuses on simplicity, small bundle size, and efficient event management.
 
+### Design Philosophy
+
+- **Lightweight**: Zero runtime dependencies, minimal bundle size
+- **Performance**: Optimized for speed (see benchmarks comparing to RxJS)
+- **Simplicity**: Intuitive API without RxJS complexity
+- **Flexibility**: Multi-observable subscriptions, extended pipe chains, inbound/outbound filters
+
+### Data Flow
+
+```
+Value → Inbound Filters (addFilter/switch-case) → Observable → Pipe (refine/then/serialize) → Subscribers
+```
+
+1. **Inbound Filters**: Pre-process values before they enter the Observable (`addFilter()`, `switch()`)
+2. **Observable**: Stores current value, manages subscriber list
+3. **Pipe**: Transforms/filters outgoing values (`refine()`, `then<K>()`, `serialize()`)
+4. **Subscribers**: Receive processed values (can be listeners OR other Observables)
+
+### Key Capability: Observable-to-Observable Subscription
+
+Observables can subscribe to other Observables, enabling data flow networks:
+
+```typescript
+const source$ = new Observable<string>('');
+const target$ = new Observable<string>('');
+
+// target$ receives all emissions from source$
+source$.subscribe(target$);
+
+// With filtering via pipe
+source$.pipe().refine(condition).subscribe([target1$, target2$]);
+```
+
 ## Common Commands
 
 | Command | Purpose |
@@ -58,6 +91,83 @@ class ObservableUnitTest {
         expect(value).to.be.equal(expected);
     }
 }
+```
+
+## Pipe Methods (Critical Differences)
+
+### Auto-Unsubscribe Behavior
+
+| Method | Behavior | Auto-Unsubscribe |
+|--------|----------|------------------|
+| `setOnce()` | Receive one value then unsubscribe | Yes (after first value) |
+| `unsubscribeBy(condition)` | Receive values until condition is true | Yes (when condition returns true) |
+| `refine(condition)` | Filter values, only pass when true | No |
+
+### AND vs OR Logic
+
+**AND logic** (chained methods):
+```typescript
+.pipe().refine(cond1).refine(cond2)  // Both must be true
+.addFilter().filter(cond1).filter(cond2)  // Both must be true
+```
+
+**OR logic** (switch-case):
+```typescript
+.pipe().switch().case(cond1).case(cond2)  // First true wins
+.addFilter().switch().case(cond1).case(cond2)  // First true wins
+```
+
+### Data Transformation with `then<K>()`
+
+Transform data type in pipe chain:
+```typescript
+observable$
+    .pipe()
+    .refine(str => str.includes("2"))  // filter strings
+    .then<number>(str => str.length)   // transform to number
+    .refine(num => num > 4)            // filter numbers
+    .subscribe(listener);
+```
+
+### Batch Emission with `stream()`
+
+Send array elements one by one:
+```typescript
+observable$.stream([item1, item2, item3]);
+// Equivalent to: next(item1); next(item2); next(item3);
+```
+
+### JSON Serialization
+
+```typescript
+// Object → JSON string
+observable$.pipe().serialize().subscribe(jsonListener);
+
+// JSON string → Object
+observable$.pipe().deserialize<MyType>().subscribe(objectListener);
+```
+
+### Error Handling
+
+Subscribe with error handler as second argument:
+```typescript
+const subscriber = observable$.subscribe(
+    (value) => console.log(value),           // listener
+    (errorData, errorMessage) => {           // error handler
+        console.log('Error:', errorData, errorMessage);
+    }
+);
+```
+
+### Emission Control
+
+```typescript
+observable$.disable();      // Stop emitting to subscribers
+observable$.enable();       // Resume emitting
+console.log(observable$.isEnable);  // Check state
+
+observable$.getValue();     // Get current/last value
+observable$.size();         // Get subscriber count
 ```
 
 ## Key Patterns
