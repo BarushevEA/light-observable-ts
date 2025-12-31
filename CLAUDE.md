@@ -147,6 +147,13 @@ class ObservableUnitTest {
 }
 ```
 
+### Test Failure Policy (CRITICAL)
+
+When a test fails and reveals a potential bug in the library:
+1. **DO NOT** silently change/remove the test to make it pass
+2. **ASK THE USER**: "Test revealed a problem: [description]. Should I fix the library or is this expected behavior?"
+3. Only proceed after user confirms the action
+
 ## Pipe Methods (Critical Differences)
 
 ### Auto-Unsubscribe Behavior
