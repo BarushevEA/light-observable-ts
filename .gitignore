@@ -70,3 +70,6 @@ yarn.lock
 electron/package-lock.json
 
 .idea/
+
+# Task planning (temporary files)
+tmp/

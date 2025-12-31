@@ -2,6 +2,36 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+
+## Task Planning (CRITICAL)
+
+> **ОБЯЗАТЕЛЬНО** прочитать при ключевых словах: "новая задача", "создай план", "план выполнения", "начни задачу", "продолжи задачу", "статус задачи", "что сделано".
+
+**Правила планирования:** [.config/claude/task_planning_rules_v3.md](.config/claude/task_planning_rules_v3.md)
+
+**Активные задачи:** [tmp/active_tasks.md](tmp/active_tasks.md) — читать первым для контекста.
+
+### Быстрый старт
+
+**Новая задача:**
+```bash
+mkdir -p tmp/{task-name}/history
+# Создать: start_here.md, implementation_plan_v1.md, history/history_v1.md
+```
+
+**Продолжение задачи:**
+```
+1. Читать tmp/{task-name}/start_here.md
+2. Перейти к текущему плану v{N}
+3. Проверить history — что уже сделано
+4. Обновлять history после каждого действия
+```
+
+**Подход не сработал → создать новую версию плана v{N+1}**
+
+---
+
 ## Project Overview
 
 EVG Observable is a lightweight, high-performance Observable library for TypeScript/JavaScript designed as an alternative to RxJS. It focuses on simplicity, small bundle size, and efficient event management.
