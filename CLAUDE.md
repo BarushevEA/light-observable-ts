@@ -39,6 +39,28 @@ source$.subscribe(target$);
 source$.pipe().refine(condition).subscribe([target1$, target2$]);
 ```
 
+### Complex Stream Composition
+
+Library supports sophisticated reactive patterns with stream branching and multiple filter layers:
+
+```
+source$ ──┬── pipe().refine() ──→ subscribe([target1$, target2$])
+          │                            │           │
+          │                      addFilter()   addFilter()
+          │                       + pipe()      + pipe()
+          │                            │           │
+          │                            ▼           ▼
+          │                       listener1   listener2
+          │
+          └── pipe().switch().case() ──→ listener3
+```
+
+Key capabilities:
+- **Stream branching**: One source to multiple Observable targets
+- **Dual filtering**: Inbound (`addFilter`) + Outbound (`pipe`) on same Observable
+- **Batch filters**: `pushFilters()` / `pushRefiners()` for filter arrays
+- **Parallel pipelines**: Multiple `pipe()` chains from single source with different logic
+
 ## Common Commands
 
 | Command | Purpose |
