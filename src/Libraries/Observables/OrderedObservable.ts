@@ -7,7 +7,7 @@ import {
     ISubscribeGroup,
     ISubscriptionLike
 } from "./Types";
-import {deleteFromArray, sortAscending, sortDescending} from "./FunctionLibs";
+import {quickDeleteFromArray, sortAscending, sortDescending} from "./FunctionLibs";
 import {OrderedSubscribeObject} from "./OrderedSubscribeObject";
 
 /**
@@ -109,6 +109,6 @@ export class OrderedObservable<T>
             this.trash.push(listener);
             return;
         }
-        this.subs && !deleteFromArray(this.subs, listener);
+        this.subs && !quickDeleteFromArray(this.subs, listener);
     }
 }

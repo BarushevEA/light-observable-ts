@@ -133,11 +133,11 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
      */
     processValue<T>(value: T): void {
         const listener = this.listener;
-        if (!listener) return this.unsubscribe();
-        if (!this.observer) return;
-        if (this.paused) return;
+        if (!listener || !this.observer || this.paused) {
+            if (!listener) this.unsubscribe();
+            return;
+        }
         if (!this.piped) return listener(<any>value);
-
         return this.processChain(listener);
     }
 }

@@ -93,7 +93,8 @@ export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
         data.isBreak = false;
 
         try {
-            for (let i = 0; i < chain.length; i++) {
+            const len = chain.length;
+            for (let i = 0; i < len; i++) {
                 data.isAvailable = false;
                 chain[i](data);
                 if (!data.isAvailable) return response;

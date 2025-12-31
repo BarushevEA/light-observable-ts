@@ -162,7 +162,8 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     processChain(listener: IListener<T>): void {
         const chain = this.chain;
         const data = this.flow;
-        for (let i = 0; i < chain.length; i++) {
+        const len = chain.length;
+        for (let i = 0; i < len; i++) {
             data.isUnsubscribe = false;
             data.isAvailable = false;
 

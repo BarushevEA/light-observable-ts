@@ -94,12 +94,14 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     public next(value: T): void {
         if (this.killed) return;
         if (!this.enabled) return;
+        if (!this.subs.length) return;
         if (!this.filters.isEmpty && !this.filters.processChain(value).isOK) return;
 
         this.process = true;
         this.value = value;
 
-        for (let i = 0; i < this.subs.length; i++) this.subs[i].send(value);
+        const subsLength = this.subs.length;
+        for (let i = 0; i < subsLength; i++) this.subs[i].send(value);
 
         this.process = false;
         this.trash.length && this.clearTrash();
@@ -166,13 +168,10 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
             return;
         }
 
-        const timer = setInterval(() => {
-            if (this.process) return;
-
-            clearInterval(timer);
+        Promise.resolve().then(() => {
             this.value = <any>null;
             this.subs.length = 0;
-        }, 10);
+        });
     }
 
     /**
