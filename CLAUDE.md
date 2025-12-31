@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > **MUST READ** on keywords: "new task", "create plan", "implementation plan", "start task", "continue task", "task status", "what's done".
 
-**Planning rules:** [.config/claude/task_planning_rules_v3.md](.config/claude/task_planning_rules_v3.md)
+**Planning rules:** [.config/claude/task_planning_rules_v4.md](.config/claude/task_planning_rules_v4.md)
 
 **Active tasks:** [tmp/active_tasks.md](tmp/active_tasks.md) — read first for context.
 
