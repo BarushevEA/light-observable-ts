@@ -2829,4 +2829,227 @@ class ObservableUnitTest {
             .subscribe(listener);
         observable.next(json);
     }
+
+    // ==================== EDGE CASES ====================
+
+    @test 'unsubscribe during next() - trash logic'() {
+        const observable = new Observable<number>(0);
+        const received: number[] = [];
+        let sub1Called = 0;
+        let sub2Called = 0;
+
+        const sub1 = observable.subscribe((value) => {
+            sub1Called++;
+            received.push(value * 10);
+            // Отписываемся во время next()
+            if (value === 2) sub1.unsubscribe();
+        });
+
+        observable.subscribe((value) => {
+            sub2Called++;
+            received.push(value * 100);
+        });
+
+        expect(observable.size()).to.be.equal(2);
+
+        observable.next(1);
+        observable.next(2); // sub1 отпишется здесь
+        observable.next(3); // sub1 уже не получит
+
+        expect(sub1Called).to.be.equal(2); // получил 1 и 2
+        expect(sub2Called).to.be.equal(3); // получил 1, 2, 3
+        expect(observable.size()).to.be.equal(1);
+        expect(received).to.be.eql([10, 100, 20, 200, 300]);
+    }
+
+    @test 'multiple unsubscribe during single next()'() {
+        const observable = new Observable<number>(0);
+        const received: string[] = [];
+        const subs: any[] = [];
+
+        // Создаём 5 подписчиков
+        for (let i = 0; i < 5; i++) {
+            const sub = observable.subscribe((value) => {
+                received.push(`sub${i}:${value}`);
+                // Все нечётные отписываются при value=1
+                if (value === 1 && i % 2 === 1) {
+                    sub.unsubscribe();
+                }
+            });
+            subs.push(sub);
+        }
+
+        expect(observable.size()).to.be.equal(5);
+
+        observable.next(1); // sub1, sub3 отпишутся
+        expect(observable.size()).to.be.equal(3);
+
+        observable.next(2); // только sub0, sub2, sub4 получат
+        expect(received.filter(r => r.includes(':2')).length).to.be.equal(3);
+    }
+
+    @test 'pause and resume subscription'() {
+        const observable = new Observable<number>(0);
+        const received: number[] = [];
+
+        const sub = observable.pipe()!.subscribe((value) => {
+            received.push(value);
+        });
+
+        observable.next(1);
+        expect(received).to.be.eql([1]);
+
+        (<any>sub).pause();
+        observable.next(2);
+        observable.next(3);
+        expect(received).to.be.eql([1]); // не получил 2, 3
+
+        (<any>sub).resume();
+        observable.next(4);
+        expect(received).to.be.eql([1, 4]);
+    }
+
+    @test 'unSubscribe with null/undefined listener'() {
+        const observable = new Observable<number>(0);
+        observable.subscribe((v) => v);
+        expect(observable.size()).to.be.equal(1);
+
+        // Не должно падать
+        observable.unSubscribe(<any>null);
+        observable.unSubscribe(<any>undefined);
+
+        expect(observable.size()).to.be.equal(1);
+    }
+
+    @test 'size() returns 0 after destroy'() {
+        const observable = new Observable<number>(0);
+        observable.subscribe((v) => v);
+        observable.subscribe((v) => v);
+        expect(observable.size()).to.be.equal(2);
+
+        observable.destroy();
+        expect(observable.size()).to.be.equal(0);
+    }
+
+    @test 'deserialize invalid JSON triggers error handler'() {
+        const observable = new Observable<string>("");
+        let errorCaught = false;
+        let errorValue: any = null;
+
+        const errorHandler = (data: any, err: any) => {
+            errorCaught = true;
+            errorValue = data;
+        };
+
+        observable.pipe()!
+            .deserialize()
+            .subscribe((v) => {
+                // Не должен быть вызван
+                expect(true).to.be.equal(false);
+            }, errorHandler);
+
+        observable.next("invalid json {{{");
+
+        expect(errorCaught).to.be.equal(true);
+        expect(errorValue).to.be.equal("invalid json {{{");
+    }
+
+    @test 'filter blocks emission when returns false'() {
+        const observable = new Observable<number>(0);
+        const received: number[] = [];
+
+        observable.addFilter().filter((v) => v > 5);
+        observable.subscribe((v) => received.push(v));
+
+        observable.stream([1, 2, 3, 6, 7, 4, 8]);
+
+        expect(received).to.be.eql([6, 7, 8]);
+    }
+
+    @test 'addFilter without errorHandler uses default'() {
+        const observable = new Observable<number>(0);
+        const received: number[] = [];
+
+        // addFilter без errorHandler
+        observable.addFilter().filter((v) => v > 0);
+        observable.subscribe((v) => received.push(v));
+
+        observable.next(1);
+        observable.next(-1); // заблокирован фильтром
+        observable.next(2);
+
+        expect(received).to.be.eql([1, 2]);
+    }
+
+    @test 'subscriber unsubscribes itself on first call via setOnce in regular subscribe'() {
+        const observable = new Observable<number>(0);
+        const received: number[] = [];
+
+        // setOnce через pipe
+        observable.pipe()!.setOnce().subscribe((v) => received.push(v));
+
+        // Также обычный подписчик
+        observable.subscribe((v) => received.push(v * 10));
+
+        expect(observable.size()).to.be.equal(2);
+
+        observable.next(1);
+        expect(observable.size()).to.be.equal(1); // setOnce отписался
+        expect(received).to.be.eql([1, 10]);
+
+        observable.next(2);
+        expect(received).to.be.eql([1, 10, 20]); // только обычный получил
+    }
+
+    @test 'destroy during next() uses trash mechanism correctly'() {
+        const observable = new Observable<number>(0);
+        const received: number[] = [];
+
+        // Первый подписчик вызывает destroy во время next
+        observable.subscribe((v) => {
+            received.push(v * 10);
+            if (v === 2) observable.destroy();
+        });
+
+        // Второй подписчик должен получить значение до destroy
+        observable.subscribe((v) => {
+            received.push(v * 100);
+        });
+
+        observable.next(1);
+        expect(received).to.be.eql([10, 100]);
+
+        observable.next(2); // destroy вызывается после этого next
+        // Оба подписчика успевают получить значение
+        expect(received).to.be.eql([10, 100, 20, 200]);
+
+        observable.next(3); // killed, ничего не происходит
+        expect(received).to.be.eql([10, 100, 20, 200]);
+        expect(observable.isDestroyed).to.be.equal(true);
+    }
+
+    @test 'unsubscribeAll during next() is safe - uses deferred cleanup'() {
+        const observable = new Observable<number>(0);
+        let callCount = 0;
+
+        observable.subscribe((v) => {
+            callCount++;
+            if (v === 2) observable.unsubscribeAll();
+        });
+
+        observable.subscribe((v) => {
+            callCount++;
+        });
+
+        observable.next(1);
+        expect(callCount).to.be.equal(2);
+
+        observable.next(2); // unsubscribeAll вызывается, но отложенно
+        // Все подписчики успевают получить значение в этом цикле
+        expect(callCount).to.be.equal(4);
+
+        observable.next(3); // никто не получит - все отписаны
+        expect(callCount).to.be.equal(4);
+        expect(observable.size()).to.be.equal(0);
+    }
 }

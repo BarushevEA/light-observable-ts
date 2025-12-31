@@ -177,11 +177,18 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     /**
      * Unsubscribes from all active subscriptions by clearing the subscriptions list.
      * Prevents further operations if the instance has already been marked as killed.
+     * Safe to call during next() - uses deferred cleanup mechanism.
      *
      * @return {void} Does not return a value.
      */
     public unsubscribeAll(): void {
         if (this.killed) return;
+        if (this.process) {
+            // Defer removal until next() completes
+            const subs = this.subs;
+            for (let i = 0; i < subs.length; i++) this.trash.push(subs[i]);
+            return;
+        }
         this.subs.length = 0;
     }
 

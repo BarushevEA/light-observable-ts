@@ -2034,4 +2034,151 @@ class OrderedObservableUnitTest {
             .subscribe(listener);
         observable.next(json);
     }
+
+    // ==================== EDGE CASES ====================
+
+    @test 'sortByOrder after destroy returns false'() {
+        const observable = new OrderedObservable<number>(0);
+        observable.subscribe((v) => v);
+
+        expect(observable.sortByOrder()).to.be.equal(true);
+
+        observable.destroy();
+
+        expect(observable.sortByOrder()).to.be.equal(false);
+    }
+
+    @test 'setAscendingSort after destroy returns false'() {
+        const observable = new OrderedObservable<number>(0);
+        observable.subscribe((v) => v);
+
+        expect(observable.setAscendingSort()).to.be.equal(true);
+
+        observable.destroy();
+
+        expect(observable.setAscendingSort()).to.be.equal(false);
+    }
+
+    @test 'setDescendingSort after destroy returns false'() {
+        const observable = new OrderedObservable<number>(0);
+        observable.subscribe((v) => v);
+
+        expect(observable.setDescendingSort()).to.be.equal(true);
+
+        observable.destroy();
+
+        expect(observable.setDescendingSort()).to.be.equal(false);
+    }
+
+    @test 'set order on subscription after observable destroy'() {
+        const observable = new OrderedObservable<number>(0);
+        const sub = observable.subscribe((v) => v);
+
+        sub.order = 5;
+        expect(sub.order).to.be.equal(5);
+
+        observable.destroy();
+
+        // После destroy observable, установка order должна сбросить значение
+        sub.order = 10;
+        expect(sub.order).to.be.equal(undefined);
+    }
+
+    @test 'set order when observer is undefined'() {
+        const observable = new OrderedObservable<number>(0);
+        const sub = observable.subscribe((v) => v);
+
+        sub.order = 5;
+        expect(sub.order).to.be.equal(5);
+
+        // Отписываемся - observer становится null
+        sub.unsubscribe();
+
+        // После unsubscribe, установка order должна сбросить значение
+        sub.order = 10;
+        expect(sub.order).to.be.equal(undefined);
+    }
+
+    @test 'multiple subscribers with same order value'() {
+        const observable = new OrderedObservable<number>(0);
+        const received: string[] = [];
+
+        const sub1 = observable.subscribe((v) => received.push(`sub1:${v}`));
+        const sub2 = observable.subscribe((v) => received.push(`sub2:${v}`));
+        const sub3 = observable.subscribe((v) => received.push(`sub3:${v}`));
+
+        // Все имеют одинаковый order
+        sub1.order = 5;
+        sub2.order = 5;
+        sub3.order = 5;
+
+        observable.next(1);
+
+        // Все должны получить значение
+        expect(received.length).to.be.equal(3);
+        expect(received).to.include('sub1:1');
+        expect(received).to.include('sub2:1');
+        expect(received).to.include('sub3:1');
+    }
+
+    @test 'unsubscribe during next() in OrderedObservable - trash logic'() {
+        const observable = new OrderedObservable<number>(0);
+        const received: number[] = [];
+
+        const sub1 = observable.subscribe((value) => {
+            received.push(value * 10);
+            if (value === 2) sub1.unsubscribe();
+        });
+
+        observable.subscribe((value) => {
+            received.push(value * 100);
+        });
+
+        observable.next(1);
+        observable.next(2); // sub1 отпишется
+        observable.next(3);
+
+        expect(observable.size()).to.be.equal(1);
+        expect(received).to.be.eql([10, 100, 20, 200, 300]);
+    }
+
+    @test 'subscribe after destroy returns undefined'() {
+        const observable = new OrderedObservable<number>(0);
+        observable.destroy();
+
+        const sub = observable.subscribe((v) => v);
+        expect(sub).to.be.equal(undefined);
+    }
+
+    @test 'pipe after destroy returns undefined'() {
+        const observable = new OrderedObservable<number>(0);
+        observable.destroy();
+
+        const pipe = observable.pipe();
+        expect(pipe).to.be.equal(undefined);
+    }
+
+    @test 'changing sort direction preserves all subscribers'() {
+        const observable = new OrderedObservable<number>(0);
+        const received: string[] = [];
+
+        const sub1 = observable.subscribe((v) => received.push(`A:${v}`));
+        const sub2 = observable.subscribe((v) => received.push(`B:${v}`));
+        const sub3 = observable.subscribe((v) => received.push(`C:${v}`));
+
+        sub1.order = 1;
+        sub2.order = 2;
+        sub3.order = 3;
+
+        observable.setAscendingSort();
+        observable.next(1);
+
+        observable.setDescendingSort();
+        observable.next(2);
+
+        // Оба next должны дойти до всех 3 подписчиков
+        expect(received.filter(r => r.includes(':1')).length).to.be.equal(3);
+        expect(received.filter(r => r.includes(':2')).length).to.be.equal(3);
+        expect(observable.size()).to.be.equal(3);
+    }
 }
