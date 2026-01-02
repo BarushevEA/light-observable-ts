@@ -18,7 +18,7 @@ class OrderedObservableUnitTest {
 
     @test 'Observable is created'() {
         // @ts-ignore
-        expect(this.ORDERED_OBSERVABLE$.value).to.be.equal('');
+        expect(this.ORDERED_OBSERVABLE$._value).to.be.equal('');
         // @ts-ignore
         expect(this.ORDERED_OBSERVABLE$.subs).to.be.eql([]);
     }
@@ -744,7 +744,7 @@ class OrderedObservableUnitTest {
         this.ORDERED_OBSERVABLE$.destroy();
         expect(this.ORDERED_OBSERVABLE$.isDestroyed).to.be.equal(true);
         // @ts-ignore
-        expect(this.ORDERED_OBSERVABLE$.value).to.be.equal(null);
+        expect(this.ORDERED_OBSERVABLE$._value).to.be.equal(null);
         // @ts-ignore
         expect(this.ORDERED_OBSERVABLE$.subs.length).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);

@@ -36,13 +36,15 @@ import {FilterCollection} from "./FilterCollection";
  */
 export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     protected subs: ISubscribeObject<T>[] = [];
-    private enabled: boolean = true;
+    protected enabled: boolean = true;
     protected killed = false;
     protected process = false;
     protected trash: ISubscriptionLike[] = [];
-    private filters = new FilterCollection<T>();
+    protected filters = new FilterCollection<T>();
+    protected _value: T;
 
-    constructor(private value: T) {
+    constructor(value: T) {
+        this._value = value;
     }
 
     /**
@@ -98,7 +100,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
         if (!this.filters.isEmpty && !this.filters.processChain(value).isOK) return;
 
         this.process = true;
-        this.value = value;
+        this._value = value;
 
         const subsLength = this.subs.length;
         for (let i = 0; i < subsLength; i++) this.subs[i].send(value);
@@ -163,13 +165,13 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
         this.killed = true;
 
         if (!this.process) {
-            this.value = <any>null;
+            this._value = <any>null;
             this.subs.length = 0;
             return;
         }
 
         Promise.resolve().then(() => {
-            this.value = <any>null;
+            this._value = <any>null;
             this.subs.length = 0;
         });
     }
@@ -200,7 +202,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
      */
     public getValue(): T | undefined {
         if (this.killed) return undefined;
-        return this.value;
+        return this._value;
     }
 
     /**

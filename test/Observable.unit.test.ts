@@ -17,7 +17,7 @@ class ObservableUnitTest {
 
     @test 'Observable is created'() {
         // @ts-ignore
-        expect(this.OBSERVABLE$.value).to.be.equal('');
+        expect(this.OBSERVABLE$._value).to.be.equal('');
         // @ts-ignore
         expect(this.OBSERVABLE$.subs).to.be.eql([]);
     }
@@ -928,7 +928,7 @@ class ObservableUnitTest {
         this.OBSERVABLE$.destroy();
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
         // @ts-ignore
-        expect(this.OBSERVABLE$.value).to.be.equal(null);
+        expect(this.OBSERVABLE$._value).to.be.equal(null);
         // @ts-ignore
         expect(this.OBSERVABLE$.subs.length).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
@@ -966,7 +966,7 @@ class ObservableUnitTest {
         return new Promise<void>(resolve => {
             setTimeout(() => {
                 // @ts-ignore
-                expect(observable$.value).to.be.equal(null);
+                expect(observable$._value).to.be.equal(null);
                 // @ts-ignore
                 expect(observable$.subs.length).to.be.equal(0);
                 resolve();

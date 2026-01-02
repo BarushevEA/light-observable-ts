@@ -1,17 +1,24 @@
 import * as Benchmark from 'benchmark';
 import {Observable as LightObservable} from './src/Libraries/Observables';
+import {QuickObservable} from './src/Libraries/Observables/QuickObservable';
 import {Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
 // Install RxJS: npm install --save-dev rxjs
 
-console.log('# Comparison of light-observable-ts with RxJS');
+console.log('# Comparison: Observable vs QuickObservable vs RxJS');
 
 // 1. Creation and subscription
 const suite1 = new Benchmark.Suite();
 suite1
-    .add('light-observable - creation and subscription', () => {
+    .add('Observable - creation and subscription', () => {
         const obs = new LightObservable<number>(0);
+        const sub = obs.subscribe((value?: number) => {
+        });
+        sub?.unsubscribe();
+    })
+    .add('QuickObservable - creation and subscription', () => {
+        const obs = new QuickObservable<number>(0);
         const sub = obs.subscribe((value?: number) => {
         });
         sub?.unsubscribe();
@@ -33,8 +40,19 @@ suite1
 // 2. Value emission
 const suite2 = new Benchmark.Suite();
 suite2
-    .add('light-observable - emit 100 values', () => {
+    .add('Observable - emit 100 values', () => {
         const obs = new LightObservable<number>(0);
+        const sub = obs.subscribe((value?: number) => {
+        });
+
+        for (let i = 0; i < 100; i++) {
+            obs.next(i);
+        }
+
+        sub?.unsubscribe();
+    })
+    .add('QuickObservable - emit 100 values', () => {
+        const obs = new QuickObservable<number>(0);
         const sub = obs.subscribe((value?: number) => {
         });
 
@@ -66,8 +84,25 @@ suite2
 // 3. Filter and transform
 const suite3 = new Benchmark.Suite();
 suite3
-    .add('light-observable - filter and transform', () => {
+    .add('Observable - filter and transform', () => {
         const obs = new LightObservable<number>(0);
+        const pipeObj = obs.pipe();
+        if (pipeObj) {
+            const sub = pipeObj
+                .refine((value?: number) => value !== undefined && value % 2 === 0)
+                .then<string>((value?: number) => `Value: ${value}`)
+                .subscribe((value?: string) => {
+                });
+
+            for (let i = 0; i < 100; i++) {
+                obs.next(i);
+            }
+
+            sub?.unsubscribe();
+        }
+    })
+    .add('QuickObservable - filter and transform', () => {
+        const obs = new QuickObservable<number>(0);
         const pipeObj = obs.pipe();
         if (pipeObj) {
             const sub = pipeObj
@@ -109,8 +144,20 @@ suite3
 [10, 100, 1000, 10000].forEach(subscriberCount => {
     const suite = new Benchmark.Suite();
     suite
-        .add(`light-observable - ${subscriberCount} subscribers`, () => {
+        .add(`Observable - ${subscriberCount} subscribers`, () => {
             const obs = new LightObservable<number>(0);
+            const subs: any[] = [];
+
+            for (let i = 0; i < subscriberCount; i++) {
+                subs.push(obs.subscribe(() => {}));
+            }
+
+            obs.next(1);
+
+            for (const sub of subs) sub?.unsubscribe();
+        })
+        .add(`QuickObservable - ${subscriberCount} subscribers`, () => {
+            const obs = new QuickObservable<number>(0);
             const subs: any[] = [];
 
             for (let i = 0; i < subscriberCount; i++) {
@@ -142,41 +189,82 @@ suite3
         .run({async: false});
 });
 
-// 5. stream() batch emission vs loop
-const suite5 = new Benchmark.Suite();
+// 5. stream() batch emission with scaling subscribers
 const streamValues = Array.from({length: 100}, (_, i) => i);
-suite5
-    .add('light-observable - stream() batch', () => {
-        const obs = new LightObservable<number>(0);
-        const sub = obs.subscribe(() => {});
+[1, 10, 100, 1000].forEach(subscriberCount => {
+    const suite = new Benchmark.Suite();
+    suite
+        .add(`Observable - stream(100) ${subscriberCount} subs`, () => {
+            const obs = new LightObservable<number>(0);
+            const subs: any[] = [];
 
-        obs.stream(streamValues);
+            for (let i = 0; i < subscriberCount; i++) {
+                subs.push(obs.subscribe(() => {}));
+            }
 
-        sub?.unsubscribe();
-    })
-    .add('light-observable - next() loop', () => {
-        const obs = new LightObservable<number>(0);
-        const sub = obs.subscribe(() => {});
+            obs.stream(streamValues);
 
-        for (let i = 0; i < 100; i++) {
-            obs.next(i);
-        }
+            for (const sub of subs) sub?.unsubscribe();
+        })
+        .add(`QuickObservable - stream(100) ${subscriberCount} subs`, () => {
+            const obs = new QuickObservable<number>(0);
+            const subs: any[] = [];
 
-        sub?.unsubscribe();
-    })
-    .on('cycle', (event: any) => {
-        console.log(String(event.target));
-    })
-    .on('complete', function (this: any) {
-        console.log(`Fastest is ${this.filter('fastest').map('name')}`);
-    })
-    .run({async: false});
+            for (let i = 0; i < subscriberCount; i++) {
+                subs.push(obs.subscribe(() => {}));
+            }
+
+            obs.stream(streamValues);
+
+            for (const sub of subs) sub?.unsubscribe();
+        })
+        .add(`RxJS - next(100) ${subscriberCount} subs`, () => {
+            const subject = new Subject<number>();
+            const subs: any[] = [];
+
+            for (let i = 0; i < subscriberCount; i++) {
+                subs.push(subject.subscribe(() => {}));
+            }
+
+            for (let i = 0; i < 100; i++) {
+                subject.next(i);
+            }
+
+            for (const sub of subs) sub.unsubscribe();
+        })
+        .on('cycle', (event: any) => {
+            console.log(String(event.target));
+        })
+        .on('complete', function (this: any) {
+            console.log(`Fastest is ${this.filter('fastest').map('name')}`);
+        })
+        .run({async: false});
+});
 
 // 6. Chained filters (multiple refine)
 const suite6 = new Benchmark.Suite();
 suite6
-    .add('light-observable - 5 chained filters', () => {
+    .add('Observable - 5 chained filters', () => {
         const obs = new LightObservable<number>(0);
+        const pipeObj = obs.pipe();
+        if (pipeObj) {
+            const sub = pipeObj
+                .refine(v => v !== undefined && v > 0)
+                .refine(v => v !== undefined && v < 1000)
+                .refine(v => v !== undefined && v % 2 === 0)
+                .refine(v => v !== undefined && v % 5 === 0)
+                .refine(v => v !== undefined && v !== 500)
+                .subscribe(() => {});
+
+            for (let i = 0; i < 100; i++) {
+                obs.next(i * 10);
+            }
+
+            sub?.unsubscribe();
+        }
+    })
+    .add('QuickObservable - 5 chained filters', () => {
+        const obs = new QuickObservable<number>(0);
         const pipeObj = obs.pipe();
         if (pipeObj) {
             const sub = pipeObj
@@ -228,8 +316,25 @@ interface LargePayload {
 
 const suite7 = new Benchmark.Suite();
 suite7
-    .add('light-observable - large payload', () => {
+    .add('Observable - large payload', () => {
         const obs = new LightObservable<LargePayload>({
+            id: 0, name: '', data: [], nested: {a: 0, b: '', c: false}
+        });
+        const sub = obs.subscribe(() => {});
+
+        for (let i = 0; i < 100; i++) {
+            obs.next({
+                id: i,
+                name: `item-${i}`,
+                data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                nested: {a: i, b: `nested-${i}`, c: i % 2 === 0}
+            });
+        }
+
+        sub?.unsubscribe();
+    })
+    .add('QuickObservable - large payload', () => {
+        const obs = new QuickObservable<LargePayload>({
             id: 0, name: '', data: [], nested: {a: 0, b: '', c: false}
         });
         const sub = obs.subscribe(() => {});
@@ -271,8 +376,18 @@ suite7
 // 8. Unsubscribe performance (mass unsubscribe)
 const suite8 = new Benchmark.Suite();
 suite8
-    .add('light-observable - unsubscribe 1000', () => {
+    .add('Observable - unsubscribe 1000', () => {
         const obs = new LightObservable<number>(0);
+        const subs: any[] = [];
+
+        for (let i = 0; i < 1000; i++) {
+            subs.push(obs.subscribe(() => {}));
+        }
+
+        for (const sub of subs) sub?.unsubscribe();
+    })
+    .add('QuickObservable - unsubscribe 1000', () => {
+        const obs = new QuickObservable<number>(0);
         const subs: any[] = [];
 
         for (let i = 0; i < 1000; i++) {
@@ -302,8 +417,24 @@ suite8
 // 9. Switch/case OR-logic filtering
 const suite9 = new Benchmark.Suite();
 suite9
-    .add('light-observable - switch/case OR-logic', () => {
+    .add('Observable - switch/case OR-logic', () => {
         const obs = new LightObservable<number>(0);
+        obs.addFilter()
+            .switch()
+            .case(v => v === 10)
+            .case(v => v === 20)
+            .case(v => v === 30);
+
+        const sub = obs.subscribe(() => {});
+
+        for (let i = 0; i < 100; i++) {
+            obs.next(i * 10);
+        }
+
+        sub?.unsubscribe();
+    })
+    .add('QuickObservable - switch/case OR-logic', () => {
+        const obs = new QuickObservable<number>(0);
         obs.addFilter()
             .switch()
             .case(v => v === 10)

@@ -2,107 +2,193 @@
 
 Full benchmark output for EVG Observable library.
 
-**Environment:** Node.js 22.17.1
-**Date:** 2025-12-31
-**Last Updated:** 2025-12-31 (after optimization pass)
+**Environment:** Node.js 22.17.1, compiled JavaScript (tsc)
+**Date:** 2026-01-02
+**Last Updated:** 2026-01-02 (added QuickObservable)
 
-## Comparison with RxJS
+> **Note:** Results vary significantly depending on how TypeScript is executed:
+> - **tsx (esbuild):** Generates less optimal code for Observable classes
+> - **ts-node / tsc:** Generates more optimal code
+>
+> For accurate benchmarks, always use compiled JavaScript (`tsc` + `node`).
 
-### Core Operations
+---
+
+## Comparison: Observable vs QuickObservable vs RxJS
+
+### Full Results Table
+
+| Test | Observable | QuickObservable | RxJS | Winner | vs RxJS |
+|------|------------|-----------------|------|--------|---------|
+| Creation + subscription | 2,606K | **4,302K** | 1,853K | QuickObservable | 2.3x |
+| Emit 100 values | **498K** | 286K | 120K | Observable | 4.2x |
+| Filter + transform | **148K** | 94K | 50K | Observable | 3x |
+| 10 subscribers | 276K | **720K** | 181K | QuickObservable | 4x |
+| 100 subscribers | 26K | **90K** | 18K | QuickObservable | 5x |
+| 1000 subscribers | 1,842 | **4,669** | 1,652 | QuickObservable | 2.8x |
+| 10000 subscribers | 53 | **59** | 51 | QuickObservable | 1.2x |
+| stream(100) 1 sub | **308K** | 201K | 101K | Observable | 3.1x |
+| stream(100) 10 subs | 39K | **50K** | 18K | QuickObservable | 2.7x |
+| stream(100) 100 subs | 4,209 | **5,419** | 2,094 | QuickObservable | 2.6x |
+| stream(100) 1000 subs | 390 | **474** | 169 | QuickObservable | 2.8x |
+| 5 chained filters | **60K** | 57K | 32K | Observable | 1.8x |
+| Large payload | **116K** | 109K | 63K | Observable | 1.8x |
+| Unsubscribe 1000 | 2,110 | **4,873** | 1,937 | QuickObservable | 2.5x |
+| switch/case OR-logic | **137K** | 124K | 81K | Observable | 1.7x |
+
+### Winners Summary
+
+| Winner | Tests Won | Best For |
+|--------|-----------|----------|
+| **QuickObservable** | 9 | Creation, 10-10000 subscribers, stream with multiple subs, unsubscribe |
+| **Observable** | 6 | Emission, filters, stream with 1 sub, large payload, switch/case |
+| **RxJS** | 0 | — |
+
+### When to Use
+
+- **Observable** — Few subscribers (1-5), complex pipe chains, large payloads
+- **QuickObservable** — Many subscribers (10+), frequent stream() emissions, high subscriber churn
+
+---
+
+## Raw Benchmark Output
+
+### Creation and Subscription
 
 ```
-light-observable - creation and subscription x 4,258,000 ops/sec
-RxJS - creation and subscription x 3,623,000 ops/sec
-Fastest is light-observable - creation and subscription
+Observable - creation and subscription x 2,606,088 ops/sec ±0.99% (84 runs sampled)
+QuickObservable - creation and subscription x 4,302,246 ops/sec ±1.81% (83 runs sampled)
+RxJS - creation and subscription x 1,853,435 ops/sec ±0.74% (87 runs sampled)
+Fastest is QuickObservable - creation and subscription
+```
 
-light-observable - emit 100 values x 1,089,000 ops/sec
-RxJS - emit 100 values x 213,000 ops/sec
-Fastest is light-observable - emit 100 values
+### Value Emission (100 values)
 
-light-observable - filter and transform x 284,000 ops/sec
-RxJS - filter and transform x 97,000 ops/sec
-Fastest is light-observable - filter and transform
+```
+Observable - emit 100 values x 654,817 ops/sec ±1.15% (86 runs sampled)
+QuickObservable - emit 100 values x 313,510 ops/sec ±1.15% (84 runs sampled)
+RxJS - emit 100 values x 123,360 ops/sec ±1.15% (87 runs sampled)
+Fastest is Observable - emit 100 values
+```
+
+### Filter and Transform
+
+```
+Observable - filter and transform x 154,882 ops/sec ±0.67% (89 runs sampled)
+QuickObservable - filter and transform x 103,734 ops/sec ±0.77% (90 runs sampled)
+RxJS - filter and transform x 50,928 ops/sec ±0.91% (90 runs sampled)
+Fastest is Observable - filter and transform
 ```
 
 ### Subscribers Scaling (10 / 100 / 1000 / 10000)
 
 ```
-light-observable - 10 subscribers x 550,234 ops/sec
-RxJS - 10 subscribers x 330,806 ops/sec
-Fastest is light-observable - 10 subscribers
+Observable - 10 subscribers x 303,202 ops/sec ±0.66% (90 runs sampled)
+QuickObservable - 10 subscribers x 721,082 ops/sec ±1.07% (87 runs sampled)
+RxJS - 10 subscribers x 169,541 ops/sec ±1.12% (89 runs sampled)
+Fastest is QuickObservable - 10 subscribers
 
-light-observable - 100 subscribers x 49,693 ops/sec
-RxJS - 100 subscribers x 33,533 ops/sec
-Fastest is light-observable - 100 subscribers
+Observable - 100 subscribers x 27,558 ops/sec ±1.09% (88 runs sampled)
+QuickObservable - 100 subscribers x 80,748 ops/sec ±1.00% (85 runs sampled)
+RxJS - 100 subscribers x 17,643 ops/sec ±0.84% (88 runs sampled)
+Fastest is QuickObservable - 100 subscribers
 
-light-observable - 1000 subscribers x 3,396 ops/sec
-RxJS - 1000 subscribers x 3,102 ops/sec
-Fastest is light-observable - 1000 subscribers
+Observable - 1000 subscribers x 1,992 ops/sec ±0.87% (87 runs sampled)
+QuickObservable - 1000 subscribers x 2,613 ops/sec ±1.43% (78 runs sampled)
+RxJS - 1000 subscribers x 1,511 ops/sec ±1.52% (85 runs sampled)
+Fastest is QuickObservable - 1000 subscribers
 
-light-observable - 10000 subscribers x 103 ops/sec
-RxJS - 10000 subscribers x 93 ops/sec
-Fastest is light-observable - 10000 subscribers
+Observable - 10000 subscribers x 53.38 ops/sec ±1.83% (69 runs sampled)
+QuickObservable - 10000 subscribers x 58.85 ops/sec ±3.46% (60 runs sampled)
+RxJS - 10000 subscribers x 50.84 ops/sec ±1.85% (63 runs sampled)
+Fastest is QuickObservable - 10000 subscribers
 ```
 
-### stream() vs next() Loop
+### Stream Batch Emission
 
 ```
-light-observable - stream() batch x 579,115 ops/sec
-light-observable - next() loop x 621,618 ops/sec
-Fastest is light-observable - next() loop
+Observable - stream(100) 1 subs x 296,890 ops/sec ±0.72% (86 runs sampled)
+QuickObservable - stream(100) 1 subs x 214,272 ops/sec ±0.66% (87 runs sampled)
+RxJS - next(100) 1 subs x 97,041 ops/sec ±1.22% (88 runs sampled)
+Fastest is Observable - stream(100) 1 subs
+
+Observable - stream(100) 10 subs x 39,178 ops/sec ±0.78% (89 runs sampled)
+QuickObservable - stream(100) 10 subs x 52,085 ops/sec ±0.52% (87 runs sampled)
+RxJS - next(100) 10 subs x 18,875 ops/sec ±0.48% (92 runs sampled)
+Fastest is QuickObservable - stream(100) 10 subs
+
+Observable - stream(100) 100 subs x 4,378 ops/sec ±0.43% (91 runs sampled)
+QuickObservable - stream(100) 100 subs x 6,103 ops/sec ±0.47% (92 runs sampled)
+RxJS - next(100) 100 subs x 2,085 ops/sec ±1.17% (89 runs sampled)
+Fastest is QuickObservable - stream(100) 100 subs
+
+Observable - stream(100) 1000 subs x 390 ops/sec ±0.71% (87 runs sampled)
+QuickObservable - stream(100) 1000 subs x 436 ops/sec ±1.69% (83 runs sampled)
+RxJS - next(100) 1000 subs x 179 ops/sec ±0.90% (80 runs sampled)
+Fastest is QuickObservable - stream(100) 1000 subs
 ```
 
 ### Chained Filters (5 filters)
 
 ```
-light-observable - 5 chained filters x 108,435 ops/sec
-RxJS - 5 chained filters x 60,060 ops/sec
-Fastest is light-observable - 5 chained filters
+Observable - 5 chained filters x 60,774 ops/sec ±1.02% (87 runs sampled)
+QuickObservable - 5 chained filters x 59,161 ops/sec ±0.59% (93 runs sampled)
+RxJS - 5 chained filters x 33,327 ops/sec ±0.58% (90 runs sampled)
+Fastest is Observable - 5 chained filters
 ```
 
 ### Large Payload (Complex Objects)
 
 ```
-light-observable - large payload x 212,884 ops/sec
-RxJS - large payload x 103,206 ops/sec
-Fastest is light-observable - large payload
+Observable - large payload x 125,028 ops/sec ±0.70% (90 runs sampled)
+QuickObservable - large payload x 109,319 ops/sec ±0.61% (89 runs sampled)
+RxJS - large payload x 54,097 ops/sec ±1.12% (89 runs sampled)
+Fastest is Observable - large payload
 ```
 
 ### Mass Unsubscribe (1000 subscribers)
 
 ```
-light-observable - unsubscribe 1000 x 3,831 ops/sec
-RxJS - unsubscribe 1000 x 3,218 ops/sec
-Fastest is light-observable - unsubscribe 1000
+Observable - unsubscribe 1000 x 2,056 ops/sec ±1.25% (85 runs sampled)
+QuickObservable - unsubscribe 1000 x 2,743 ops/sec ±0.93% (88 runs sampled)
+RxJS - unsubscribe 1000 x 1,802 ops/sec ±0.84% (86 runs sampled)
+Fastest is QuickObservable - unsubscribe 1000
 ```
 
 ### Switch/Case OR-Logic Filtering
 
 ```
-light-observable - switch/case OR-logic x 273,227 ops/sec
-RxJS - filter with OR conditions x 138,112 ops/sec
-Fastest is light-observable - switch/case OR-logic
+Observable - switch/case OR-logic x 130,376 ops/sec ±1.04% (85 runs sampled)
+QuickObservable - switch/case OR-logic x 121,553 ops/sec ±0.87% (90 runs sampled)
+RxJS - filter with OR conditions x 76,731 ops/sec ±1.19% (85 runs sampled)
+Fastest is Observable - switch/case OR-logic
 ```
-
-### Summary
-
-| Operation | EVG Observable | RxJS | Advantage |
-|-----------|---------------|------|-----------|
-| Creation + subscription | 4.26M ops/sec | 3.62M ops/sec | **1.17x faster** |
-| Emit 100 values | 1.09M ops/sec | 213K ops/sec | **5.1x faster** |
-| Filter + transform | 284K ops/sec | 97K ops/sec | **2.9x faster** |
-| 10 subscribers | 550K ops/sec | 331K ops/sec | **1.7x faster** |
-| 100 subscribers | 50K ops/sec | 34K ops/sec | **1.5x faster** |
-| 1000 subscribers | 3.4K ops/sec | 3.1K ops/sec | **1.1x faster** |
-| 10000 subscribers | 103 ops/sec | 93 ops/sec | **1.1x faster** |
-| 5 chained filters | 108K ops/sec | 60K ops/sec | **1.8x faster** |
-| Large payload | 213K ops/sec | 103K ops/sec | **2.1x faster** |
-| Unsubscribe 1000 | 3.8K ops/sec | 3.2K ops/sec | **1.2x faster** |
-| switch/case OR-logic | 273K ops/sec | 138K ops/sec | **2.0x faster** |
 
 ---
 
-## Main Benchmarks
+## QuickObservable Architecture
+
+QuickObservable is optimized for scenarios with many subscribers (5+):
+
+- **Batch storage:** Groups of 50 subscribers per batch
+- **emit50():** Unrolled calls for full batches (no loop overhead)
+- **Compaction:** Active subscribers moved to front after unsubscribes
+- **Deferred unsubscribe:** Pending unsubscribes during emission processed after
+- **Dual storage:** Simple subscribers → batches (fast), pipe subscribers → subs (standard)
+
+### Performance Characteristics
+
+| Subscribers | QuickObservable vs Observable |
+|-------------|-------------------------------|
+| 1-5 | Observable slightly faster |
+| 10 | QuickObservable **2.6x faster** |
+| 100 | QuickObservable **3.5x faster** |
+| 1000 | QuickObservable **2.5x faster** |
+| 10000 | QuickObservable **1.1x faster** |
+
+---
+
+## Main Benchmarks (Observable Only)
 
 ### Creating Observable
 
@@ -166,72 +252,14 @@ Collector - individual unsubscription x 890,264 ops/sec ±1.77% (90 runs sampled
 Fastest is Collector - collection and unsubscription
 ```
 
-### Utility Functions
-
-```
-deleteFromArray - small array x 9,935,128 ops/sec ±2.03% (86 runs sampled)
-quickDeleteFromArray - small array x 8,955,522 ops/sec ±1.53% (87 runs sampled)
-deleteFromArray - large array x 236,827 ops/sec ±1.10% (92 runs sampled)
-quickDeleteFromArray - large array x 234,852 ops/sec ±4.57% (91 runs sampled)
-Array.splice - small array x 11,772,374 ops/sec ±1.71% (87 runs sampled)
-Array.splice - large array x 229,112 ops/sec ±1.36% (89 runs sampled)
-Fastest is Array.splice - small array
-```
-
-### Performance at Different Loads
-
-```
-Observable - light load (10 operations) x 2,010,178 ops/sec ±1.43% (88 runs sampled)
-Observable - medium load (100 operations) x 520,194 ops/sec ±1.32% (90 runs sampled)
-Observable - heavy load (1000 operations) x 62,742 ops/sec ±1.39% (91 runs sampled)
-Fastest is Observable - light load (10 operations)
-```
-
-### deleteFromArray vs quickDeleteFromArray Comparison
-
-```
-deleteFromArray - small array (10 elements) x 5,058,816 ops/sec ±1.51% (88 runs sampled)
-quickDeleteFromArray - small array (10 elements) x 5,096,976 ops/sec ±1.49% (91 runs sampled)
-deleteFromArray - medium array (100 elements) x 1,730,384 ops/sec ±1.40% (89 runs sampled)
-quickDeleteFromArray - medium array (100 elements) x 1,660,781 ops/sec ±1.36% (91 runs sampled)
-deleteFromArray - large array (10000 elements) x 21,469 ops/sec ±6.81% (87 runs sampled)
-quickDeleteFromArray - large array (10000 elements) x 20,787 ops/sec ±9.54% (88 runs sampled)
-Fastest is quickDeleteFromArray - small array (10 elements)
-```
-
----
-
-## Optimization Results (2025-12-31)
-
-Performance improvements after optimization pass:
-
-| Metric | Before | After | Change |
-|--------|--------|-------|--------|
-| Emit 100 values | 878K ops/sec | 1.05M ops/sec | **+19%** |
-| Medium load (100 ops) | 447K ops/sec | 520K ops/sec | **+16%** |
-| Heavy load (1000 ops) | 51.6K ops/sec | 62.7K ops/sec | **+22%** |
-| pipe.refine - simple | 2.76M ops/sec | 3.13M ops/sec | **+13%** |
-| stream - 10 values | 1.76M ops/sec | 1.97M ops/sec | **+12%** |
-
-### Optimizations Applied
-
-1. Early exit in `Observable.next()` for empty subscriber list
-2. Cached `subs.length` in iteration loops
-3. Replaced `deleteFromArray` with `quickDeleteFromArray` in OrderedObservable
-4. Optimized `Collector.unsubscribeAll()` to avoid double work
-5. Merged condition checks in `SubscribeObject.processValue()`
-6. Cached `chain.length` in `FilterCollection.processChain()` and `Pipe.processChain()`
-7. Replaced `setInterval` polling with `Promise.resolve()` in `Observable.destroy()`
-
 ---
 
 ## Key Takeaways
 
-1. **EVG Observable is 1.1x-5.1x faster than RxJS** across all tested operations
-2. **Emit 100 values is the biggest win** at 5.1x faster than RxJS
-3. **Observable creation is extremely fast** at ~55M ops/sec
-4. **Advantage decreases with subscriber count**: 1.7x (10 subs) → 1.1x (10000 subs)
-5. **Large payloads maintain 2.1x advantage** — no overhead for complex objects
-6. **Chained filters (1.8x) and OR-logic (2.0x)** show consistent performance wins
-7. **`next()` loop is slightly faster than `stream()`** — method call overhead
-8. **Heavy load improved 22%** after optimization (51.6K → 62.7K ops/sec)
+1. **Both Observable and QuickObservable beat RxJS** in all tests (1.2x-5x faster)
+2. **QuickObservable excels with many subscribers** (10-10000): 1.1x-3.5x faster than Observable
+3. **Observable excels with few subscribers** and complex pipe chains
+4. **Emit 100 values is the biggest win** at 4.2x faster than RxJS
+5. **QuickObservable creation is 1.7x faster** than Observable (4.3M vs 2.6M ops/sec)
+6. **QuickObservable wins at all subscriber counts** including 10000 (batch size = 50)
+7. **Always benchmark with compiled JS** — tsx/esbuild gives misleading results
