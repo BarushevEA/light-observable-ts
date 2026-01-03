@@ -234,7 +234,7 @@ observable$.size();         // Get subscriber count
 ## Performance (vs RxJS)
 
 | Operation | EVG Observable | RxJS | Advantage |
-|-----------|---------------|------|-----------|
+|-----------|----------------|------|-----------|
 | Emit 100 values | 832K ops/sec | 134K ops/sec | **6.2x faster** |
 | Filter + transform | 158K ops/sec | 79K ops/sec | **2.0x faster** |
 | 10 subscribers | 5,170K ops/sec | 1,916K ops/sec | **2.7x faster** |
