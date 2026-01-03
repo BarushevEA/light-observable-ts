@@ -102,8 +102,9 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
         this.process = true;
         this._value = value;
 
-        const subsLength = this.subs.length;
-        for (let i = 0; i < subsLength; i++) this.subs[i].send(value);
+        const subs = this.subs;
+        const len = subs.length;
+        for (let i = 0; i < len; i++) subs[i].send(value);
 
         this.process = false;
         this.trash.length && this.clearTrash();

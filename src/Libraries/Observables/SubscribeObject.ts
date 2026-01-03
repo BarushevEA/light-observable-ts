@@ -78,10 +78,28 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
      * @return {void} Does not return a value.
      */
     send(value: T): void {
+        const listener = this.listener;
+        if (!listener) {
+            this.unsubscribe();
+            return;
+        }
+        if (!this.observer || this.paused) return;
+
+        // Быстрый путь (без pipe)
+        if (!this.piped) {
+            try {
+                listener(value);
+            } catch (err) {
+                this.errorHandler(value, err);
+            }
+            return;
+        }
+
+        // Медленный путь (с pipe)
         try {
             this.flow.payload = value;
             this.flow.isBreak = false;
-            this.processValue(value);
+            this.processChain(listener);
         } catch (err) {
             this.errorHandler(value, err);
         }
@@ -124,20 +142,4 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
         this._order = value;
     }
 
-    /**
-     * Processes a given value by invoking the listener with the value or
-     * executing additional processing based on the state of the instance.
-     *
-     * @param {T} value - The value to be processed.
-     * @return {void} This method does not return any value.
-     */
-    processValue<T>(value: T): void {
-        const listener = this.listener;
-        if (!listener || !this.observer || this.paused) {
-            if (!listener) this.unsubscribe();
-            return;
-        }
-        if (!this.piped) return listener(<any>value);
-        return this.processChain(listener);
-    }
 }

@@ -3052,4 +3052,170 @@ class ObservableUnitTest {
         expect(callCount).to.be.equal(4);
         expect(observable.size()).to.be.equal(0);
     }
+
+    @test 'many subscribers (100)'() {
+        const observable = new Observable<string>('');
+        const values: number[] = [];
+
+        for (let i = 0; i < 100; i++) {
+            const idx = i;
+            observable.subscribe((value: string) => {
+                values.push(idx);
+            });
+        }
+
+        expect(observable.size()).to.be.equal(100);
+
+        observable.next('test');
+
+        expect(values.length).to.be.equal(100);
+        for (let i = 0; i < 100; i++) {
+            expect(values[i]).to.be.equal(i);
+        }
+    }
+
+    @test 'error in subscriber does not break emission to others'() {
+        const observable = new Observable<number>(0);
+        let callCount = 0;
+        let errorCaught = false;
+
+        observable.subscribe(
+            (value: number) => {
+                throw new Error('Test error');
+            },
+            (err: any, msg: string) => {
+                errorCaught = true;
+            }
+        );
+
+        observable.subscribe((value: number) => {
+            callCount++;
+        });
+
+        observable.next(42);
+
+        expect(errorCaught).to.be.equal(true);
+        expect(callCount).to.be.equal(1); // second subscriber still called
+    }
+
+    @test 'advanced usage: filters, pipes, switch/case, observable-to-observable'() {
+        // Constants
+        const HAIR = { BLOND: "BLOND", BLACK: "BLACK", BROWN: "BROWN" };
+        const GENDER = { MAN: "MAN", WOMAN: "WOMAN" };
+        const MAJOR = { DOCTOR: "DOCTOR", DRIVER: "DRIVER", CHILD: "CHILD" };
+
+        // Person class
+        class Person {
+            constructor(
+                public name: string,
+                public age: number,
+                public gender: string,
+                public major: string,
+                public hairColor: string
+            ) {}
+        }
+
+        // Create Observables
+        const personal$ = new Observable<Person | null>(null);
+        const men$ = new Observable<Person | null>(null);
+        const women$ = new Observable<Person | null>(null);
+
+        // Define filters
+        const youngAgeFilter = (person: Person | null) => person !== null && person.age > 17;
+        const oldAgeFilter = (person: Person | null) => person !== null && person.age < 60;
+        const menFilter = (person: Person | null) => person !== null && person.gender === GENDER.MAN;
+        const womenFilter = (person: Person | null) => person !== null && person.gender === GENDER.WOMAN;
+        const blondFilter = (person: Person | null) => person !== null && person.hairColor === HAIR.BLOND;
+        const blackFilter = (person: Person | null) => person !== null && person.hairColor === HAIR.BLACK;
+
+        const personValidationFilters = [
+            (person: Person | null) => !!person,
+            (person: Person | null) => person !== null && "name" in person,
+            (person: Person | null) => person !== null && "age" in person,
+            (person: Person | null) => person !== null && "gender" in person,
+            (person: Person | null) => person !== null && "major" in person,
+            (person: Person | null) => person !== null && "hairColor" in person,
+        ];
+
+        // Collect results
+        const menReadyToWork: string[] = [];
+        const womenReadyToWork: string[] = [];
+        const blondAndBlackPeople: string[] = [];
+
+        // Apply filters to men$ and women$
+        men$.addFilter()
+            .pushFilters(personValidationFilters)
+            .filter(menFilter);
+
+        women$.addFilter()
+            .pushFilters(personValidationFilters)
+            .filter(womenFilter);
+
+        // Subscribe callbacks
+        men$.pipe()!
+            .pushRefiners(personValidationFilters)
+            .subscribe((worker: Person | null) => {
+                if (worker) menReadyToWork.push(`${worker.name} ${worker.age} ${worker.major}`);
+            });
+
+        women$.pipe()!
+            .pushRefiners(personValidationFilters)
+            .subscribe((worker: Person | null) => {
+                if (worker) womenReadyToWork.push(`${worker.name} ${worker.age} ${worker.major}`);
+            });
+
+        // Stream by age filters to men$/women$
+        personal$.pipe()!
+            .refine(youngAgeFilter)
+            .refine(oldAgeFilter)
+            .subscribe([men$, women$]);
+
+        // Stream by hair color
+        personal$.pipe()!
+            .switch()
+            .case(blackFilter)
+            .case(blondFilter)
+            .subscribe((person: Person | null) => {
+                if (person) blondAndBlackPeople.push(`${person.name} ${person.age} ${person.hairColor}`);
+            });
+
+        // Stream people
+        personal$.stream([
+            new Person('Alex', 35, GENDER.MAN, MAJOR.DOCTOR, HAIR.BLOND),
+            new Person('John', 45, GENDER.MAN, MAJOR.DRIVER, HAIR.BLACK),
+            new Person('Alice', 30, GENDER.WOMAN, MAJOR.DOCTOR, HAIR.BROWN),
+            new Person('Sophia', 36, GENDER.WOMAN, MAJOR.DRIVER, HAIR.BLOND),
+            new Person('Matthew', 15, GENDER.MAN, MAJOR.CHILD, HAIR.BROWN),
+            new Person('Emily', 17, GENDER.WOMAN, MAJOR.CHILD, HAIR.BLACK),
+            new Person('James', 40, GENDER.MAN, MAJOR.DOCTOR, HAIR.BLOND),
+            new Person('Emma', 35, GENDER.WOMAN, MAJOR.DRIVER, HAIR.BROWN),
+            new Person('Michael', 15, GENDER.MAN, MAJOR.CHILD, HAIR.BLACK),
+            new Person('Olivia', 16, GENDER.WOMAN, MAJOR.CHILD, HAIR.BLOND)
+        ]);
+
+        // Verify men ready to work (age 18-59, gender MAN)
+        expect(menReadyToWork).to.deep.equal([
+            'Alex 35 DOCTOR',
+            'John 45 DRIVER',
+            'James 40 DOCTOR'
+        ]);
+
+        // Verify women ready to work (age 18-59, gender WOMAN)
+        expect(womenReadyToWork).to.deep.equal([
+            'Alice 30 DOCTOR',
+            'Sophia 36 DRIVER',
+            'Emma 35 DRIVER'
+        ]);
+
+        // Verify blond and black hair people (all ages)
+        expect(blondAndBlackPeople).to.deep.equal([
+            'Alex 35 BLOND',
+            'John 45 BLACK',
+            'Sophia 36 BLOND',
+            'Emily 17 BLACK',
+            'James 40 BLOND',
+            'Michael 15 BLACK',
+            'Olivia 16 BLOND'
+        ]);
+    }
 }
