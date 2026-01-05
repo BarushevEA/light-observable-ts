@@ -85,7 +85,7 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
         }
         if (!this.observer || this.paused) return;
 
-        // Быстрый путь (без pipe)
+        // Fast path (no pipe)
         if (!this.piped) {
             try {
                 listener(value);
@@ -95,7 +95,7 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
             return;
         }
 
-        // Медленный путь (с pipe)
+        // Slow path (with pipe)
         try {
             this.flow.payload = value;
             this.flow.isBreak = false;

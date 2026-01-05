@@ -2079,7 +2079,7 @@ class OrderedObservableUnitTest {
 
         observable.destroy();
 
-        // После destroy observable, установка order должна сбросить значение
+        // After destroy, setting order should reset the value
         sub.order = 10;
         expect(sub.order).to.be.equal(undefined);
     }
@@ -2091,10 +2091,10 @@ class OrderedObservableUnitTest {
         sub.order = 5;
         expect(sub.order).to.be.equal(5);
 
-        // Отписываемся - observer становится null
+        // Unsubscribe - observer becomes null
         sub.unsubscribe();
 
-        // После unsubscribe, установка order должна сбросить значение
+        // After unsubscribe, setting order should reset the value
         sub.order = 10;
         expect(sub.order).to.be.equal(undefined);
     }
@@ -2107,14 +2107,14 @@ class OrderedObservableUnitTest {
         const sub2 = observable.subscribe((v) => received.push(`sub2:${v}`));
         const sub3 = observable.subscribe((v) => received.push(`sub3:${v}`));
 
-        // Все имеют одинаковый order
+        // All have the same order
         sub1.order = 5;
         sub2.order = 5;
         sub3.order = 5;
 
         observable.next(1);
 
-        // Все должны получить значение
+        // All should receive the value
         expect(received.length).to.be.equal(3);
         expect(received).to.include('sub1:1');
         expect(received).to.include('sub2:1');
@@ -2135,7 +2135,7 @@ class OrderedObservableUnitTest {
         });
 
         observable.next(1);
-        observable.next(2); // sub1 отпишется
+        observable.next(2); // sub1 will unsubscribe
         observable.next(3);
 
         expect(observable.size()).to.be.equal(1);
@@ -2176,7 +2176,7 @@ class OrderedObservableUnitTest {
         observable.setDescendingSort();
         observable.next(2);
 
-        // Оба next должны дойти до всех 3 подписчиков
+        // Both next calls should reach all 3 subscribers
         expect(received.filter(r => r.includes(':1')).length).to.be.equal(3);
         expect(received.filter(r => r.includes(':2')).length).to.be.equal(3);
         expect(observable.size()).to.be.equal(3);

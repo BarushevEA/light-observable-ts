@@ -2841,7 +2841,7 @@ class ObservableUnitTest {
         const sub1 = observable.subscribe((value) => {
             sub1Called++;
             received.push(value * 10);
-            // Отписываемся во время next()
+            // Unsubscribe during next()
             if (value === 2) sub1.unsubscribe();
         });
 
@@ -2853,11 +2853,11 @@ class ObservableUnitTest {
         expect(observable.size()).to.be.equal(2);
 
         observable.next(1);
-        observable.next(2); // sub1 отпишется здесь
-        observable.next(3); // sub1 уже не получит
+        observable.next(2); // sub1 unsubscribes here
+        observable.next(3); // sub1 won't receive this
 
-        expect(sub1Called).to.be.equal(2); // получил 1 и 2
-        expect(sub2Called).to.be.equal(3); // получил 1, 2, 3
+        expect(sub1Called).to.be.equal(2); // received 1 and 2
+        expect(sub2Called).to.be.equal(3); // received 1, 2, 3
         expect(observable.size()).to.be.equal(1);
         expect(received).to.be.eql([10, 100, 20, 200, 300]);
     }
@@ -2867,11 +2867,11 @@ class ObservableUnitTest {
         const received: string[] = [];
         const subs: any[] = [];
 
-        // Создаём 5 подписчиков
+        // Create 5 subscribers
         for (let i = 0; i < 5; i++) {
             const sub = observable.subscribe((value) => {
                 received.push(`sub${i}:${value}`);
-                // Все нечётные отписываются при value=1
+                // All odd subscribers unsubscribe when value=1
                 if (value === 1 && i % 2 === 1) {
                     sub.unsubscribe();
                 }
@@ -2881,10 +2881,10 @@ class ObservableUnitTest {
 
         expect(observable.size()).to.be.equal(5);
 
-        observable.next(1); // sub1, sub3 отпишутся
+        observable.next(1); // sub1, sub3 will unsubscribe
         expect(observable.size()).to.be.equal(3);
 
-        observable.next(2); // только sub0, sub2, sub4 получат
+        observable.next(2); // only sub0, sub2, sub4 will receive
         expect(received.filter(r => r.includes(':2')).length).to.be.equal(3);
     }
 
@@ -2902,7 +2902,7 @@ class ObservableUnitTest {
         (<any>sub).pause();
         observable.next(2);
         observable.next(3);
-        expect(received).to.be.eql([1]); // не получил 2, 3
+        expect(received).to.be.eql([1]); // didn't receive 2, 3
 
         (<any>sub).resume();
         observable.next(4);
@@ -2914,7 +2914,7 @@ class ObservableUnitTest {
         observable.subscribe((v) => v);
         expect(observable.size()).to.be.equal(1);
 
-        // Не должно падать
+        // Should not throw
         observable.unSubscribe(<any>null);
         observable.unSubscribe(<any>undefined);
 
@@ -2944,7 +2944,7 @@ class ObservableUnitTest {
         observable.pipe()!
             .deserialize()
             .subscribe((v) => {
-                // Не должен быть вызван
+                // Should not be called
                 expect(true).to.be.equal(false);
             }, errorHandler);
 
@@ -2970,12 +2970,12 @@ class ObservableUnitTest {
         const observable = new Observable<number>(0);
         const received: number[] = [];
 
-        // addFilter без errorHandler
+        // addFilter without errorHandler
         observable.addFilter().filter((v) => v > 0);
         observable.subscribe((v) => received.push(v));
 
         observable.next(1);
-        observable.next(-1); // заблокирован фильтром
+        observable.next(-1); // blocked by filter
         observable.next(2);
 
         expect(received).to.be.eql([1, 2]);
@@ -2985,33 +2985,33 @@ class ObservableUnitTest {
         const observable = new Observable<number>(0);
         const received: number[] = [];
 
-        // setOnce через pipe
+        // setOnce via pipe
         observable.pipe()!.setOnce().subscribe((v) => received.push(v));
 
-        // Также обычный подписчик
+        // Also regular subscriber
         observable.subscribe((v) => received.push(v * 10));
 
         expect(observable.size()).to.be.equal(2);
 
         observable.next(1);
-        expect(observable.size()).to.be.equal(1); // setOnce отписался
+        expect(observable.size()).to.be.equal(1); // setOnce unsubscribed
         expect(received).to.be.eql([1, 10]);
 
         observable.next(2);
-        expect(received).to.be.eql([1, 10, 20]); // только обычный получил
+        expect(received).to.be.eql([1, 10, 20]); // only regular subscriber received
     }
 
     @test 'destroy during next() uses trash mechanism correctly'() {
         const observable = new Observable<number>(0);
         const received: number[] = [];
 
-        // Первый подписчик вызывает destroy во время next
+        // First subscriber calls destroy during next
         observable.subscribe((v) => {
             received.push(v * 10);
             if (v === 2) observable.destroy();
         });
 
-        // Второй подписчик должен получить значение до destroy
+        // Second subscriber should receive value before destroy
         observable.subscribe((v) => {
             received.push(v * 100);
         });
@@ -3019,11 +3019,11 @@ class ObservableUnitTest {
         observable.next(1);
         expect(received).to.be.eql([10, 100]);
 
-        observable.next(2); // destroy вызывается после этого next
-        // Оба подписчика успевают получить значение
+        observable.next(2); // destroy is called after this next
+        // Both subscribers receive the value
         expect(received).to.be.eql([10, 100, 20, 200]);
 
-        observable.next(3); // killed, ничего не происходит
+        observable.next(3); // killed, nothing happens
         expect(received).to.be.eql([10, 100, 20, 200]);
         expect(observable.isDestroyed).to.be.equal(true);
     }
@@ -3044,11 +3044,11 @@ class ObservableUnitTest {
         observable.next(1);
         expect(callCount).to.be.equal(2);
 
-        observable.next(2); // unsubscribeAll вызывается, но отложенно
-        // Все подписчики успевают получить значение в этом цикле
+        observable.next(2); // unsubscribeAll is called, but deferred
+        // All subscribers receive the value in this cycle
         expect(callCount).to.be.equal(4);
 
-        observable.next(3); // никто не получит - все отписаны
+        observable.next(3); // no one receives - all unsubscribed
         expect(callCount).to.be.equal(4);
         expect(observable.size()).to.be.equal(0);
     }
