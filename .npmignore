@@ -12,10 +12,8 @@ test/
 *.ts
 !*.d.ts
 
-# Benchmarks and development
-benchmark*
-benchmark-readme.md
-BENCHMARK_RESULTS.md
+# Benchmarks
+benchmarks/
 
 # Build and test config
 .mocharc.json

@@ -11,8 +11,9 @@
     "test": "nyc ./node_modules/.bin/_mocha 'test/**/*.test.ts'",
     "remove": "rm -rf ./src/Libraries; rm -rf ./test; rm .mocharc.json; rm .nyrc.json; rm register.js; rm tsconfig.json",
     "build": "tsc --declaration; npm run remove",
-    "benchmark": "ts-node benchmark.ts",
-    "benchmark:comparison": "ts-node benchmark-comparison.ts"
+    "benchmark": "ts-node benchmarks/benchmark.ts",
+    "benchmark:comparison": "ts-node benchmarks/benchmark-comparison.ts",
+    "benchmark:browser": "ts-node benchmarks/benchmark-browser-bundle.ts"
   },
   "repository": {
     "type": "git",

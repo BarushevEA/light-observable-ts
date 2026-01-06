@@ -1,5 +1,5 @@
 import * as Benchmark from 'benchmark';
-import {Observable as LightObservable} from './src/Libraries/Observables';
+import {Observable as LightObservable} from '../src/Libraries/Observables';
 import {Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 

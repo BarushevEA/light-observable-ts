@@ -7,7 +7,7 @@ import {
     OrderedObservable,
     quickDeleteFromArray,
     deleteFromArray
-} from './src/Libraries/Observables';
+} from '../src/Libraries/Observables';
 
 // Helper functions for benchmarks
 function runBenchmark(name: string, tests: { [key: string]: Function }) {
