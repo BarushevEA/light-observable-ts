@@ -1,6 +1,5 @@
-import {PipeSwitchCase} from "./Pipe";
-import {FilterSwitchCase} from "./FilterCollection";
-
+import { PipeSwitchCase } from "./Pipe";
+import { FilterSwitchCase } from "./FilterCollection";
 /**
  * Defines a callback function type that can be invoked with an optional value of type `T`.
  * The function can perform any operation and optionally return a value of any type.
@@ -10,7 +9,6 @@ import {FilterSwitchCase} from "./FilterCollection";
  * @returns {any} - The return type of the callback function is not specified and can be of any type.
  */
 export type ICallback<T> = (value?: T) => any;
-
 /**
  * Represents a callback function to handle error scenarios.
  *
@@ -22,7 +20,6 @@ export type ICallback<T> = (value?: T) => any;
  * @param {any} errorMessage - A descriptive message providing details about the error.
  */
 export type IErrorCallback = (errorData: any, errorMessage: any) => void;
-
 /**
  * Represents a contract for subscribing to a data stream or event source.
  *
@@ -37,7 +34,6 @@ export type IErrorCallback = (errorData: any, errorMessage: any) => void;
 export type ISubscribe<T> = {
     subscribe(listener: ISubscribeGroup<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
 };
-
 /**
  * Represents a listener interface that extends the functionality of `ICallback`.
  * This type is designed to handle events, callbacks, or notifications with a specific type `T`.
@@ -46,7 +42,6 @@ export type ISubscribe<T> = {
  * @template T - The type of data that the listener will handle.
  */
 export type IListener<T> = ICallback<T>;
-
 /**
  * IDestroy represents an interface for objects that can be destroyed to release resources.
  * It provides a method to perform the destroy operation and a property to indicate if the object is already destroyed.
@@ -59,7 +54,6 @@ export type IDestroy = {
     destroy(): void;
     isDestroyed: boolean;
 };
-
 /**
  * Represents an order with a specific numerical value.
  * Defines a structure to hold the order information as a numeric value.
@@ -67,7 +61,6 @@ export type IDestroy = {
 export type IOrder = {
     order: number;
 };
-
 /**
  * Represents a generic switch interface.
  *
@@ -79,7 +72,6 @@ export type IOrder = {
 export type ISwitch<T> = {
     switch(): PipeSwitchCase<T>;
 };
-
 /**
  * Represents an interface for an ordered switch mechanism that evaluates
  * conditions in a specific sequence and invokes the corresponding logic.
@@ -93,7 +85,6 @@ export type ISwitch<T> = {
 export type IOrderedSwitch<T> = {
     switch(): PipeSwitchCase<T>;
 };
-
 /**
  * Represents an interface defining a contract for a one-time settable subscription mechanism.
  *
@@ -105,7 +96,6 @@ export type IOrderedSwitch<T> = {
 export type IOnce<T> = {
     setOnce(): ISubscribe<T>;
 };
-
 /**
  * Represents an interface that ensures an ordered item can be set only once.
  *
@@ -114,7 +104,6 @@ export type IOnce<T> = {
 export type IOrderedOnce<T> = {
     setOnce(): IOrderedSubscribe<T>;
 };
-
 /**
  * Interface representing an observable value that can be updated by emitting a new value.
  *
@@ -123,7 +112,6 @@ export type IOrderedOnce<T> = {
 export type ISetObservableValue = {
     next(value: any): void;
 };
-
 /**
  * Represents a subscription-like object which provides a mechanism to release resources or
  * cancelable operations when they are no longer needed.
@@ -134,7 +122,6 @@ export type ISetObservableValue = {
 export type ISubscriptionLike = {
     unsubscribe(): void;
 };
-
 /**
  * Represents a composite interface that combines multiple functionalities for handling events, transformations, and subscriptions in a generic way.
  *
@@ -148,15 +135,7 @@ export type ISubscriptionLike = {
  * @property {ISerialisation} Includes methods for serializing and deserializing data structures.
  * @property {ISubscribe<T>} Implements standard subscription management functionalities.
  */
-export type ISetup<T> =
-    IUnsubscribeByPositive<T> &
-    IEmitByPositive<T> &
-    IOnce<T> &
-    ISwitch<T> &
-    ITransform<T> &
-    ISerialisation &
-    ISubscribe<T>;
-
+export type ISetup<T> = IUnsubscribeByPositive<T> & IEmitByPositive<T> & IOnce<T> & ISwitch<T> & ITransform<T> & ISerialisation & ISubscribe<T>;
 /**
  * Represents an ordered setup configuration that combines multiple ordered operations
  * related to subscribing, emitting, transforming, serializing, and other functionalities.
@@ -174,15 +153,7 @@ export type ISetup<T> =
  *
  * @template T The type of the data to be handled by the ordered setup.
  */
-export type IOrderedSetup<T> =
-    IOrderedUnsubscribeByPositive<T> &
-    IOrderedEmitByPositive<T> &
-    IOrderedOnce<T> &
-    IOrderedSwitch<T> &
-    IOrderedTransform<T> &
-    IOrderedSerialisation &
-    IOrderedSubscribe<T>;
-
+export type IOrderedSetup<T> = IOrderedUnsubscribeByPositive<T> & IOrderedEmitByPositive<T> & IOrderedOnce<T> & IOrderedSwitch<T> & IOrderedTransform<T> & IOrderedSerialisation & IOrderedSubscribe<T>;
 /**
  * Represents a composite type that combines several interfaces to define
  * the behavior and properties of a subscription object with extended
@@ -196,13 +167,7 @@ export type IOrderedSetup<T> =
  * @extends ISend<T> Includes sending data functionality with type T.
  * @extends ISetup<T> Incorporates setup or initialization procedures with type T.
  */
-export type ISubscribeObject<T> =
-    ISubscriptionLike &
-    IPause &
-    IOrder &
-    ISend<T> &
-    ISetup<T>;
-
+export type ISubscribeObject<T> = ISubscriptionLike & IPause & IOrder & ISend<T> & ISetup<T>;
 /**
  * Represents a counter interface for subscriptions.
  * An ISubscribeCounter instance provides methods to query the size
@@ -211,7 +176,6 @@ export type ISubscribeObject<T> =
 export type ISubscribeCounter = {
     size(): number;
 };
-
 /**
  * Interface representing a subscriber that can hold a value and has a subscription mechanism.
  * Combines the functionalities of value retrieval and subscription handling.
@@ -226,13 +190,10 @@ export type ISubscribeCounter = {
  *
  * @extends ISubscribe
  */
-export type ISubscriber<T> =
-    {
-        getValue(): T | undefined,
-        isEnable: boolean
-    } &
-    ISubscribe<T>;
-
+export type ISubscriber<T> = {
+    getValue(): T | undefined;
+    isEnable: boolean;
+} & ISubscribe<T>;
 /**
  * An interface representing an Observer with extended functionalities for managing subscriptions,
  * controlling observability, and interacting with subscriber-related behavior.
@@ -250,19 +211,12 @@ export type ISubscriber<T> =
  * @property {function(): void} disable - Temporarily disables the observer, preventing it from notifying subscribers.
  * @property {function(): void} enable - Re-enables the observer, allowing it to notify subscribers.
  */
-export type IObserver<T> =
-    ISetObservableValue &
-    ISubscriber<T> &
-    IDestroy &
-    ISubscribeCounter &
-    IObservablePipe<T> &
-    {
-        unSubscribe(subscriber: ISubscriptionLike): void,
-        unsubscribeAll(): void,
-        disable(): void,
-        enable(): void,
-    };
-
+export type IObserver<T> = ISetObservableValue & ISubscriber<T> & IDestroy & ISubscribeCounter & IObservablePipe<T> & {
+    unSubscribe(subscriber: ISubscriptionLike): void;
+    unsubscribeAll(): void;
+    disable(): void;
+    enable(): void;
+};
 /**
  * Represents a generic stream interface for processing arrays of type T.
  *
@@ -274,8 +228,7 @@ export type IObserver<T> =
  */
 export type IStream<T> = {
     stream(value: T[]): void;
-}
-
+};
 /**
  * Represents an interface for pausing and resuming operations.
  *
@@ -290,7 +243,6 @@ export type IPause = {
     pause(): void;
     resume(): void;
 };
-
 /**
  * Represents an observable pipe, which provides a mechanism to transform or manipulate a stream of data.
  *
@@ -302,9 +254,8 @@ export type IPause = {
  *                              Returns an `ISetup<T>` instance or `undefined` if no setup is performed.
  */
 export type IObservablePipe<T> = {
-    pipe(): ISetup<T> | undefined
+    pipe(): ISetup<T> | undefined;
 };
-
 /**
  * Represents an interface for an ordered observable pipe.
  *
@@ -316,9 +267,8 @@ export type IObservablePipe<T> = {
  *                                     otherwise undefined.
  */
 export type IOrderedObservablePipe<T> = {
-    pipe(): ISetup<T> | undefined
+    pipe(): ISetup<T> | undefined;
 };
-
 /**
  * Interface ISend represents a contract for sending a value of a generic type.
  *
@@ -330,7 +280,6 @@ export type IOrderedObservablePipe<T> = {
 export type ISend<T> = {
     send(value: T): void;
 };
-
 /**
  * Represents an interface that provides a method for unsubscribing actions based on a
  * specified negative condition defined by a callback function.
@@ -348,7 +297,6 @@ export type ISend<T> = {
 export type IUnsubscribeByNegative<T> = {
     unsubscribeByNegative(condition: ICallback<T>): ISetup<T>;
 };
-
 /**
  * Represents an interface that provides a mechanism to unsubscribe using a negative condition.
  *
@@ -362,7 +310,6 @@ export type IUnsubscribeByNegative<T> = {
 export type IOrderedUnsubscribeByNegative<T> = {
     unsubscribeByNegative(condition: ICallback<T>): IOrderedSetup<T>;
 };
-
 /**
  * Represents a generic type that allows for unsubscribing based on a given condition.
  *
@@ -385,7 +332,6 @@ export type IOrderedUnsubscribeByNegative<T> = {
 export type IUnsubscribeByPositive<T> = {
     unsubscribeBy(condition: ICallback<T>): ISetup<T>;
 };
-
 /**
  * Represents an interface for managing ordered unsubscription using a provided condition.
  *
@@ -398,7 +344,6 @@ export type IUnsubscribeByPositive<T> = {
 export type IOrderedUnsubscribeByPositive<T> = {
     unsubscribeBy(condition: ICallback<T>): ISetup<T>;
 };
-
 /**
  * Represents a type for an object that allows emitting events based on a negative condition.
  *
@@ -410,7 +355,6 @@ export type IOrderedUnsubscribeByPositive<T> = {
 export type IEmitByNegative<T> = {
     emitByNegative(condition: ICallback<T>): ISetup<T>;
 };
-
 /**
  * Represents an interface for handling ordered emissions based on a negative condition.
  *
@@ -432,7 +376,6 @@ export type IEmitByNegative<T> = {
 export type IOrderedEmitByNegative<T> = {
     emitByNegative(condition: ICallback<T>): IOrderedSetup<T>;
 };
-
 /**
  * Represents a type that facilitates the refinement of conditions or rules and manages setting up these refinements.
  *
@@ -447,7 +390,6 @@ export type IEmitByPositive<T> = {
     refine(condition: ICallback<T>): ISetup<T>;
     pushRefiners(conditions: ICallback<T>[]): ISetup<T>;
 };
-
 /**
  * Represents a transformation interface that defines a chainable method to apply transformations to a value
  * using a provided callback function and returning a setup structure for further transformations.
@@ -463,7 +405,6 @@ export type IEmitByPositive<T> = {
 export type ITransform<T> = {
     then<K>(condition: ICallback<T>): ISetup<K>;
 };
-
 /**
  * ISerialisation interface defines the structure for objects responsible for
  * handling the serialization and deserialization of data.
@@ -478,7 +419,6 @@ export type ISerialisation = {
     serialize(): ISetup<string>;
     deserialize<K>(): ISetup<K>;
 };
-
 /**
  * A type that represents an ordered operation which processes and refines
  * elements for a positive outcome. This is achieved through the use of
@@ -497,7 +437,6 @@ export type IOrderedEmitByPositive<T> = {
     refine(condition: ICallback<any>): ISetup<T>;
     pushRefiners(conditions: ICallback<any>[]): ISetup<T>;
 };
-
 /**
  * Represents an interface for an ordered transformation sequence applied to a data type `T`.
  *
@@ -506,7 +445,6 @@ export type IOrderedEmitByPositive<T> = {
 export type IOrderedTransform<T> = {
     then<K>(condition: ICallback<T>): ISetup<K>;
 };
-
 /**
  * Represents an interface for ordered serialization and deserialization operations.
  * Useful for implementing structured serialization mechanisms that maintain a specific order.
@@ -521,7 +459,6 @@ export type IOrderedSerialisation = {
     serialize(): ISetup<string>;
     deserialize<K>(): ISetup<K>;
 };
-
 /**
  * Defines a structure for an object that provides a mechanism to emit a match based on a given condition.
  *
@@ -530,7 +467,6 @@ export type IOrderedSerialisation = {
 export type IEmitMatchCondition<T> = {
     emitMatch(condition: ICallback<any>): ISetup<T>;
 };
-
 /**
  * Represents a condition for emitting a match in a specific order.
  * The match condition is defined by the provided callback and
@@ -544,7 +480,6 @@ export type IEmitMatchCondition<T> = {
 export type IOrderedEmitMatchCondition<T> = {
     emitMatch(condition: ICallback<any>): IOrderedSetup<T>;
 };
-
 /**
  * ICollector is an interface that combines IDestroy and ISubscribeCounter interfaces,
  * providing additional functionality for managing subscriptions.
@@ -558,15 +493,11 @@ export type IOrderedEmitMatchCondition<T> = {
  * - unsubscribe(subscriptionLike): Unsubscribes a single subscription-like object that the collector is managing.
  * - unsubscribeAll(): Unsubscribes all subscription-like objects managed by the collector.
  */
-export type ICollector =
-    IDestroy &
-    ISubscribeCounter &
-    {
-        collect(...subscriptionLikeList: ISubscriptionLike[]): void;
-        unsubscribe(subscriptionLike: ISubscriptionLike): void;
-        unsubscribeAll(): void;
-    };
-
+export type ICollector = IDestroy & ISubscribeCounter & {
+    collect(...subscriptionLikeList: ISubscriptionLike[]): void;
+    unsubscribe(subscriptionLike: ISubscriptionLike): void;
+    unsubscribeAll(): void;
+};
 /**
  * IOrderedObservable is a type definition that represents an object with the ability
  * to determine whether elements are sorted in a specific order.
@@ -581,7 +512,6 @@ export type ICollector =
 export type IOrderedObservable = {
     sortByOrder(): boolean;
 };
-
 /**
  * Represents a type that combines the behavior of an observer, an ordered observable, and an ordered observable pipe.
  * This interface is generic and accepts a type parameter `T`, which specifies the data type it operates on.
@@ -594,7 +524,6 @@ export type IOrderedObservable = {
  * Use this interface when working with structures that need ordered observation and transformation capabilities.
  */
 export type IOrdered<T> = IObserver<T> & IOrderedObservable & IOrderedObservablePipe<T>;
-
 /**
  * A type that combines the features of `ISubscriptionLike` and `IOrder`.
  * Represents a subscription-like object that also implements ordering properties or methods.
@@ -605,7 +534,6 @@ export type IOrdered<T> = IObserver<T> & IOrderedObservable & IOrderedObservable
  * It inherits all the characteristics and requirements of both `ISubscriptionLike` and `IOrder`.
  */
 export type IOrderedSubscriptionLike = (ISubscriptionLike & IOrder);
-
 /**
  * Represents an interface for an ordered subscription mechanism.
  *
@@ -628,7 +556,6 @@ export type IOrderedSubscriptionLike = (ISubscriptionLike & IOrder);
 export type IOrderedSubscribe<T> = {
     subscribe(listener: IListener<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike;
 };
-
 /**
  * Represents a container for a chain of elements.
  *
@@ -640,8 +567,7 @@ export type IOrderedSubscribe<T> = {
  */
 export type IChainContainer = {
     chain: any[];
-}
-
+};
 /**
  * Represents the payload structure used within a pipe system.
  *
@@ -655,7 +581,12 @@ export type IChainContainer = {
  * - isAvailable: A boolean specifying whether the payload is available for processing.
  * - payload: A flexible property designed to hold any data intended to be carried through the pipe.
  */
-export type IPipePayload = { isBreak: boolean, isUnsubscribe: boolean, isAvailable: boolean, payload: any };
+export type IPipePayload = {
+    isBreak: boolean;
+    isUnsubscribe: boolean;
+    isAvailable: boolean;
+    payload: any;
+};
 /**
  * Represents a callback function interface for handling chain-related operations.
  * This function is typically invoked with a payload to perform specific operations
@@ -693,10 +624,7 @@ export type ICombinedSubscriber<T> = IListener<T> | ISetObservableValue;
  *
  * @template T The type of data that the subscriber(s) will handle.
  */
-export type ISubscribeGroup<T> =
-    ICombinedSubscriber<T> |
-    ICombinedSubscriber<T>[];
-
+export type ISubscribeGroup<T> = ICombinedSubscriber<T> | ICombinedSubscriber<T>[];
 /**
  * Represents an interface for adding a filter to a specific setup or configuration.
  *
@@ -704,7 +632,7 @@ export type ISubscribeGroup<T> =
  */
 export type IAddFilter<T> = {
     addFilter(): IFilterSetup<T>;
-}
+};
 /**
  * Represents a setup for filtering that combines the functionality of IFilter and IFilterSwitch interfaces.
  * This type is parameterized with a generic type T, which determines the type of data it operates on.
@@ -716,7 +644,6 @@ export type IAddFilter<T> = {
  * @template T The type of the items to be filtered by the setup.
  */
 export type IFilterSetup<T> = IFilter<T> & IFilterSwitch<T>;
-
 /**
  * Represents a generic filtering interface that applies conditions to a data set.
  *
@@ -734,7 +661,6 @@ export type IFilter<T> = {
     filter(condition: ICallback<any>): IFilterSetup<T>;
     pushFilters(conditions: ICallback<any>[]): IFilterSetup<T>;
 };
-
 /**
  * Interface representing a filter switch mechanism.
  *
@@ -747,7 +673,6 @@ export type IFilter<T> = {
 export type IFilterSwitch<T> = {
     switch(): FilterSwitchCase<T>;
 };
-
 /**
  * Represents a filtering construct that allows chaining of conditional cases.
  * Utilized to sequentially apply multiple conditions for filtering items.
@@ -758,7 +683,6 @@ export type IFilterCase<T> = {
     case(condition: ICallback<any>): IFilterCase<T>;
     pushCases(conditions: ICallback<any>[]): IFilterCase<T>;
 };
-
 /**
  * Represents the structure of a filter payload that includes the state of a break, availability, and additional payload.
  *
@@ -767,8 +691,11 @@ export type IFilterCase<T> = {
  * @property {boolean} isAvailable Indicates whether the current state is available.
  * @property {any} payload Holds additional data associated with the filter payload.
  */
-export type IFilterPayload = { isBreak: boolean, isAvailable: boolean, payload: any };
-
+export type IFilterPayload = {
+    isBreak: boolean;
+    isAvailable: boolean;
+    payload: any;
+};
 /**
  * Represents a callback function that is invoked during a filter chain operation.
  *
@@ -782,7 +709,6 @@ export type IFilterPayload = { isBreak: boolean, isAvailable: boolean, payload: 
  * @param {IFilterPayload} data - The payload data to be processed by the callback during the filter chain execution.
  */
 export type IFilterChainCallback = (data: IFilterPayload) => void;
-
 /**
  * Represents the response format for a filtering operation.
  *

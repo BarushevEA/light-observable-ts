@@ -1,15 +1,5 @@
-import {Observable} from "./Observable";
-import {
-    IErrorCallback,
-    IOrdered,
-    IOrderedSetup,
-    IOrderedSubscriptionLike,
-    ISubscribeGroup,
-    ISubscriptionLike
-} from "./Types";
-import {quickDeleteFromArray, sortAscending, sortDescending} from "./FunctionLibs";
-import {OrderedSubscribeObject} from "./OrderedSubscribeObject";
-
+import { Observable } from "./Observable";
+import { IErrorCallback, IOrdered, IOrderedSetup, IOrderedSubscriptionLike, ISubscribeGroup, ISubscriptionLike } from "./Types";
 /**
  * Represents an observable data structure that maintains elements in a specific order and provides
  * methods to manipulate and subscribe to its elements.
@@ -22,8 +12,7 @@ import {OrderedSubscribeObject} from "./OrderedSubscribeObject";
  * @extends Observable<T>
  * @implements IOrdered<T>
  */
-export class OrderedObservable<T>
-    extends Observable<T> implements IOrdered<T> {
+export declare class OrderedObservable<T> extends Observable<T> implements IOrdered<T> {
     /**
      * Represents the direction in which sorting should occur.
      * The value is expected to indicate whether the sorting
@@ -33,39 +22,25 @@ export class OrderedObservable<T>
      * - `sortAscending`: Sorting in ascending order.
      * - `sortDescending`: Sorting in descending order.
      */
-    private sortDirection = sortAscending;
-
+    private sortDirection;
     /**
      * Sets the sorting order to ascending and applies the sorting.
      *
      * @return {boolean} Returns true if the sorting operation is successful, otherwise false.
      */
-    public setAscendingSort(): boolean {
-        this.sortDirection = sortAscending;
-        return this.sortByOrder();
-    }
-
+    setAscendingSort(): boolean;
     /**
      * Sets the sorting order to descending and updates the sort configuration.
      *
      * @return {boolean} Returns `true` if the sorting operation is configured and applied successfully, otherwise returns `false`.
      */
-    public setDescendingSort(): boolean {
-        this.sortDirection = sortDescending;
-        return this.sortByOrder();
-    }
-
+    setDescendingSort(): boolean;
     /**
      * Sorts the `subs` array based on the specified sort direction if the object is not in a "killed" state.
      *
      * @return {boolean} Returns true if the sorting was performed, false if the object is in a "killed" state.
      */
-    sortByOrder(): boolean {
-        if (this.killed) return false;
-        this.subs.sort(this.sortDirection);
-        return true;
-    }
-
+    sortByOrder(): boolean;
     /**
      * Subscribes a listener to this instance with an optional error handler.
      *
@@ -73,13 +48,7 @@ export class OrderedObservable<T>
      * @param {IErrorCallback} [errorHandler] - An optional handler to process errors during execution.
      * @return {IOrderedSubscriptionLike | undefined} Returns an instance of IOrderedSubscriptionLike if the listener is valid; otherwise, returns undefined.
      */
-    subscribe(listener: ISubscribeGroup<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike | undefined {
-        if (!this.isListener(listener)) return undefined;
-        const subscribeObject = new OrderedSubscribeObject(this, false);
-        this.addObserver(<any>subscribeObject, listener, errorHandler);
-        return subscribeObject;
-    }
-
+    subscribe(listener: ISubscribeGroup<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike | undefined;
     /**
      * Creates and returns an instance of `OrderedSubscribeObject` tied to the current object,
      * facilitating ordered subscription setup. If the instance is marked as killed, it returns undefined.
@@ -87,13 +56,7 @@ export class OrderedObservable<T>
      * @return {IOrderedSetup<T> | undefined} An instance of `OrderedSubscribeObject` for subscription setup,
      *         or undefined if the operation is not allowed.
      */
-    pipe(): IOrderedSetup<T> | undefined {
-        if (this.killed) return undefined;
-        const subscribeObject = new OrderedSubscribeObject(this, true);
-        this.subs.push(<any>subscribeObject);
-        return subscribeObject;
-    }
-
+    pipe(): IOrderedSetup<T> | undefined;
     /**
      * Removes a previously subscribed listener from the subscription list,
      * preventing it from receiving further updates. If the system is in a
@@ -103,12 +66,5 @@ export class OrderedObservable<T>
      * @param {ISubscriptionLike} listener - The subscription listener to be unsubscribed or handled accordingly.
      * @return {void} Does not return any value.
      */
-    public unSubscribe(listener: ISubscriptionLike): void {
-        if (this.killed) return;
-        if (this.process && listener) {
-            this.trash.push(listener);
-            return;
-        }
-        this.subs && !quickDeleteFromArray(this.subs, listener);
-    }
+    unSubscribe(listener: ISubscriptionLike): void;
 }

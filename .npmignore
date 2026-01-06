@@ -1,0 +1,36 @@
+# Development and config files
+.claude/
+.config/
+.github/
+.idea/
+.nyc_output/
+tmp/
+
+# Source files (keep only compiled output)
+src/Libraries/
+test/
+*.ts
+!*.d.ts
+
+# Benchmarks and development
+benchmark*.ts
+benchmark-readme.md
+BENCHMARK_RESULTS.md
+src/outLib/benchmark*.js
+src/outLib/benchmark*.d.ts
+
+# Build and test config
+.mocharc.json
+.nycrc.json
+register.js
+tsconfig.json
+coverage/
+
+# Documentation (keep only essential)
+CLAUDE.md
+
+# Misc
+*.log
+*.tgz
+node_modules/
+repo/
