@@ -8,6 +8,7 @@ EVG Observable - is a light library for simple use.
 
 ## Navigation
 
+- [EVG Observable vs RxJS](#evg-observable-vs-rxjs)
 - [What is EVG Observable?](#what-is-evg-observable)
 - [Installation](#installation)
     - [Node.js](#nodejs)
@@ -28,6 +29,45 @@ EVG Observable - is a light library for simple use.
     - [Ordered observable subscriber](#ordered-observable-subscriber)
     - [Collector](#collector-1)
 - [License](#license)
+
+## EVG Observable vs RxJS
+
+| Metric | EVG Observable | RxJS |
+|--------|----------------|------|
+| **Bundle size** | **6.4 kB** | 88 kB |
+| **Size advantage** | **13.75x smaller** | - |
+| **Operations** | ~40 | 100+ |
+| **Performance** | **2-6x faster** | baseline |
+
+### Performance Comparison (Bundle vs Bundle)
+
+| Test | EVG Observable | RxJS | Advantage |
+|------|----------------|------|-----------|
+| Emit 100 values | 1,548K ops/sec | 240K ops/sec | **6.4x faster** |
+| Filter + transform | 353K ops/sec | 164K ops/sec | **2.1x faster** |
+| 10 subscribers | 9,078K ops/sec | 2,900K ops/sec | **3.1x faster** |
+| 100 subscribers | 1,245K ops/sec | 336K ops/sec | **3.7x faster** |
+| 1000 subscribers | 122K ops/sec | 33K ops/sec | **3.7x faster** |
+| Large payload | 865K ops/sec | 199K ops/sec | **4.3x faster** |
+
+### EVG Observable Advantages
+
+- **Dual filtering system** - Inbound (`addFilter`) + Outbound (`pipe`) filters
+- **OR-logic in pipes** - `switch().case()` for branching logic
+- **OR-logic in inbound filters** - `addFilter().switch().case()`
+- **Observable-to-Observable subscription** - Direct subscription without adapters
+- **OrderedObservable** - Subscribers with emission order control (not in RxJS)
+- **Batch emission** - `stream()` method for array processing
+- **Collector** - Convenient subscription management
+- **Clean code organization** - Simple, readable module structure
+
+### When to use RxJS instead
+
+RxJS is better when you need specialized operators like `debounceTime`, `throttleTime`, `switchMap`, `mergeMap`, `combineLatest`, `withLatestFrom`, or schedulers for async control.
+
+**For 80% of reactive programming tasks, EVG Observable provides sufficient functionality with significant performance and size benefits.**
+
+---
 
 ## What is EVG Observable?
 

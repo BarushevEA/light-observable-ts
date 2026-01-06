@@ -13,7 +13,8 @@
     "build": "tsc --declaration; npm run remove",
     "benchmark": "ts-node benchmarks/benchmark.ts",
     "benchmark:comparison": "ts-node benchmarks/benchmark-comparison.ts",
-    "benchmark:browser": "ts-node benchmarks/benchmark-browser-bundle.ts"
+    "benchmark:browser": "ts-node benchmarks/benchmark-browser-bundle.ts",
+    "benchmark:bundles": "ts-node benchmarks/benchmark-bundles.ts"
   },
   "repository": {
     "type": "git",
