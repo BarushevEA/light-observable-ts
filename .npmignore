@@ -32,4 +32,3 @@ CLAUDE.md
 *.log
 *.tgz
 node_modules/
-repo/
