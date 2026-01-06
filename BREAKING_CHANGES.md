@@ -1,6 +1,6 @@
 # Breaking Changes - Performance Optimizations Branch
 
-## Version 2.15.0 (feature/performance-optimizations)
+## Version 2.15.0
 
 ### Internal Field Renaming
 
