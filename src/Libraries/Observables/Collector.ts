@@ -1,5 +1,5 @@
 import {ICollector, ISubscriptionLike} from "./Types";
-import {quickDeleteFromArray} from "./FunctionLibs";
+import {deleteFromArray} from "./FunctionLibs";
 
 /**
  * The Collector class is responsible for managing a collection of resources or subscription-like objects
@@ -35,7 +35,7 @@ export class Collector implements ICollector {
     unsubscribe(subscriptionLike: ISubscriptionLike | undefined): void {
         if (this.killed) return;
         subscriptionLike?.unsubscribe();
-        quickDeleteFromArray(this.arr, subscriptionLike);
+        deleteFromArray(this.arr, subscriptionLike);
     }
 
     /**

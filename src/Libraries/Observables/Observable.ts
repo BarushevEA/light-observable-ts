@@ -9,7 +9,7 @@ import {
     ISubscribeObject,
     ISubscriptionLike
 } from "./Types";
-import {quickDeleteFromArray} from "./FunctionLibs";
+import {deleteFromArray} from "./FunctionLibs";
 import {SubscribeObject} from "./SubscribeObject";
 import {FilterCollection} from "./FilterCollection";
 
@@ -150,7 +150,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
             this.trash.push(listener);
             return;
         }
-        this.subs && !quickDeleteFromArray(this.subs, listener);
+        this.subs && !deleteFromArray(this.subs, listener);
     }
 
     /**
