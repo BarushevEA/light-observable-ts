@@ -1,8 +1,9 @@
 {
   "name": "evg_observable",
-  "version": "2.15.0",
+  "version": "2.15.1",
   "description": "Alternative fast and light library version - observable.",
-  "main": "src/outLib/index.js",
+  "main": "src/outLib/src/Libraries/Observables/index.js",
+  "types": "src/outLib/src/Libraries/Observables/index.d.ts",
   "directories": {
     "test": "test"
   },
