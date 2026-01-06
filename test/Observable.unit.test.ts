@@ -16,10 +16,8 @@ class ObservableUnitTest {
     }
 
     @test 'Observable is created'() {
-        // @ts-ignore
-        expect(this.OBSERVABLE$._value).to.be.equal('');
-        // @ts-ignore
-        expect(this.OBSERVABLE$.subs).to.be.eql([]);
+        expect(this.OBSERVABLE$.getValue()).to.be.equal('');
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
     }
 
     @test 'Add one subscriber'() {
@@ -30,12 +28,6 @@ class ObservableUnitTest {
         };
         const subscribeObject = this.OBSERVABLE$.subscribe((value: string) => console.log(value), errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
-        // // @ts-ignore
-        // const once = subscribeObject.once;
-        // // @ts-ignore
-        // expect(once.isOnce).to.be.equal(false);
-        // // @ts-ignore
-        // expect(once.isFinished).to.be.equal(false);
         expect(0).to.be.equal(errorCounter);
         subscribeObject.unsubscribe();
     }
@@ -203,10 +195,6 @@ class ObservableUnitTest {
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
-        // @ts-ignore
-        // expect(subscribeObject.once.isOnce).to.be.equal(true);
-        // @ts-ignore
-        // expect(subscribeObject.once.isFinished).to.be.equal(true);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
         subscribeObject.unsubscribe();
@@ -249,11 +237,7 @@ class ObservableUnitTest {
             .setOnce()
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
-        // @ts-ignore
-        // expect(subscribeObject.once.isOnce).to.be.equal(true);
         for (; counter < 10; counter++) this.OBSERVABLE$.next(str[counter]);
-        // @ts-ignore
-        // expect(subscribeObject.once.isFinished).to.be.equal(true);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
         subscribeObject.unsubscribe();
@@ -370,8 +354,6 @@ class ObservableUnitTest {
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
-        // @ts-ignore
-        // expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
         subscribeObject.unsubscribe();
@@ -392,8 +374,6 @@ class ObservableUnitTest {
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
-        // @ts-ignore
-        // expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
         subscribeObject.unsubscribe();
@@ -414,8 +394,6 @@ class ObservableUnitTest {
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
-        // @ts-ignore
-        // expect(subscribeObject.unsubscribeByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
         subscribeObject.unsubscribe();
@@ -439,8 +417,6 @@ class ObservableUnitTest {
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
-        // @ts-ignore
-        // expect(subscribeObject.unsubscribeByNegativeCondition).to.be.equal(null);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
         subscribeObject.unsubscribe();
@@ -599,8 +575,6 @@ class ObservableUnitTest {
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
-        // @ts-ignore
-        // expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
         subscribeObject.unsubscribe();
@@ -621,8 +595,6 @@ class ObservableUnitTest {
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
-        // @ts-ignore
-        // expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
         subscribeObject.unsubscribe();
@@ -649,8 +621,6 @@ class ObservableUnitTest {
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
-        // @ts-ignore
-        // expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
         subscribeObject.unsubscribe();
@@ -677,8 +647,6 @@ class ObservableUnitTest {
         for (; counter < 10; counter++) {
             this.OBSERVABLE$.next(str[counter]);
         }
-        // @ts-ignore
-        // expect(subscribeObject.emitByPositiveCondition).to.be.equal(condition);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         expect(0).to.be.equal(errorCounter);
         subscribeObject.unsubscribe();
@@ -927,10 +895,8 @@ class ObservableUnitTest {
         expect(accumulatorStr).to.be.equal('012389');
         this.OBSERVABLE$.destroy();
         expect(this.OBSERVABLE$.isDestroyed).to.be.equal(true);
-        // @ts-ignore
-        expect(this.OBSERVABLE$._value).to.be.equal(null);
-        // @ts-ignore
-        expect(this.OBSERVABLE$.subs.length).to.be.equal(0);
+        expect(this.OBSERVABLE$.getValue()).to.be.undefined;
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
         expect(0).to.be.equal(errorCounter);
     }
 
@@ -965,10 +931,8 @@ class ObservableUnitTest {
         // Wait for Promise.resolve().then() to complete
         return new Promise<void>(resolve => {
             setTimeout(() => {
-                // @ts-ignore
-                expect(observable$._value).to.be.equal(null);
-                // @ts-ignore
-                expect(observable$.subs.length).to.be.equal(0);
+                expect(observable$.getValue()).to.be.undefined;
+                expect(observable$.size()).to.be.equal(0);
                 resolve();
             }, 0);
         });
@@ -998,8 +962,7 @@ class ObservableUnitTest {
             expect(value).to.be.equal('ERROR WAY');
         };
         const subscribeObject = this.OBSERVABLE$.subscribe(listener, errorHandler);
-        // @ts-ignore
-        subscribeObject.observer = 0;
+        (subscribeObject as any).observer = 0;
         this.OBSERVABLE$.next('some data');
         expect(0).to.be.equal(errorCounter);
     }
@@ -1014,8 +977,7 @@ class ObservableUnitTest {
             expect(value).to.be.equal('ERROR DATA');
         };
         const subscribeObject = this.OBSERVABLE$.subscribe(listener, errorHandler);
-        // @ts-ignore
-        subscribeObject.listener = 0;
+        (subscribeObject as any).listener = 0;
         this.OBSERVABLE$.next('VALID DATA');
         expect(0).to.be.equal(errorCounter);
     }
