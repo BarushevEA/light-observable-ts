@@ -76,9 +76,10 @@ Comparison with lightweight libraries in the same weight category (observable-fn
 | Metric | EVG Observable | observable-fns |
 |--------|----------------|----------------|
 | **Weekly downloads** | Growing | 67K |
-| **Bundle size** | 6.4 kB | ~4 kB |
+| **Bundle size (minified)** | 6.3 kB | 10.8 kB |
+| **Implementation** | Original architecture | zen-observable re-implementation |
 | **Dependencies** | 0 | 0 |
-| **Architecture** | True hot observables | Cold observables (zen-observable based) |
+| **Architecture** | True hot observables | Cold observables (zen-observable API) |
 
 ### Performance Comparison: Emissions
 
