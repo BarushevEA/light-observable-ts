@@ -69,6 +69,56 @@ RxJS is better when you need specialized operators like `debounceTime`, `throttl
 
 ---
 
+## EVG Observable vs Lightweight Competitors
+
+Comparison with lightweight libraries in the same weight category (observable-fns):
+
+| Metric | EVG Observable | observable-fns |
+|--------|----------------|----------------|
+| **Weekly downloads** | Growing | 67K |
+| **Bundle size** | 6.4 kB | ~4 kB |
+| **Dependencies** | 0 | 0 |
+| **Architecture** | True hot observables | Cold observables (zen-observable based) |
+
+### Performance Comparison: Emissions
+
+Basic emission performance across different subscriber counts:
+
+| Scenario | EVG Observable | observable-fns | Advantage |
+|----------|----------------|----------------|-----------|
+| 1 emit × 1 subscriber | 57.2M ops/sec | 37.0M | **1.5x faster** |
+| 1 emit × 10 subscribers | 17.1M ops/sec | 6.4M | **2.7x faster** |
+| 1 emit × 100 subscribers | 2.1M ops/sec | 736K | **2.9x faster** |
+| 1 emit × 1000 subscribers | 207K ops/sec | 73K | **2.8x faster** |
+| 1 emit × 10000 subscribers | 18.7K ops/sec | 7.1K | **2.6x faster** |
+| 100 emit × 1 subscriber | 1.2M ops/sec | 560K | **2.1x faster** |
+| 100 emit × 100 subscribers | 21.6K ops/sec | 7.6K | **2.8x faster** |
+| 1000 emit × 1000 subscribers | 215 ops/sec | 77 | **2.8x faster** |
+| Large payload (complex objects) | 815K ops/sec | 557K | **1.5x faster** |
+| Observable creation | 54.5M ops/sec | 17.9M | **3.0x faster** |
+
+**Key Insights:**
+- EVG Observable is consistently **1.5x-3.0x faster** across all emission scenarios
+- Performance advantage remains stable from 1 to 10,000 subscribers
+- Both libraries scale well for basic emission patterns
+- EVG Observable's true hot observable architecture provides better performance for multi-subscriber scenarios
+
+**When to choose EVG Observable:**
+- Real-time data broadcasting (WebSocket, server events)
+- Multiple active subscribers (2+)
+- Performance-critical applications
+- Hot observable patterns (subjects, event emitters)
+
+**When to consider observable-fns:**
+- Single subscriber scenarios
+- Cold observable patterns (HTTP requests, async operations)
+- Prefer functional programming style
+- Need async filter/map handlers
+
+*Full benchmark results including filter chains and transformations available in [benchmarks/benchmark-readme.md](./benchmarks/benchmark-readme.md)*
+
+---
+
 ## What is EVG Observable?
 
 EVG Observable is a robust, lightweight library designed for handling asynchronous events. What sets it apart is its

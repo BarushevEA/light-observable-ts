@@ -13,6 +13,7 @@
     "build": "tsc --declaration; npm run remove",
     "benchmark": "ts-node benchmarks/benchmark.ts",
     "benchmark:comparison": "ts-node benchmarks/benchmark-comparison.ts",
+    "benchmark:competitors": "ts-node benchmarks/benchmark-competitors.ts",
     "benchmark:browser": "ts-node benchmarks/benchmark-browser-bundle.ts",
     "benchmark:bundles": "ts-node benchmarks/benchmark-bundles.ts"
   },
@@ -35,6 +36,7 @@
     "microtime": "^3.1.1",
     "mocha": "^11.7.5",
     "nyc": "^17.1.0",
+    "observable-fns": "^0.6.1",
     "rxjs": "^7.8.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.4.5"
