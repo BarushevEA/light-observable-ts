@@ -15,7 +15,12 @@
     "benchmark:comparison": "ts-node benchmarks/benchmark-comparison.ts",
     "benchmark:competitors": "ts-node benchmarks/benchmark-competitors.ts",
     "benchmark:browser": "ts-node benchmarks/benchmark-browser-bundle.ts",
-    "benchmark:bundles": "ts-node benchmarks/benchmark-bundles.ts"
+    "benchmark:bundles": "ts-node benchmarks/benchmark-bundles.ts",
+    "benchmark:patterns": "ts-node benchmarks/benchmark-subscription-patterns.ts",
+    "benchmark:patterns-edge": "ts-node benchmarks/benchmark-patterns-edge-cases.ts",
+    "benchmark:patterns-clean": "ts-node benchmarks/benchmark-patterns-clean.ts",
+    "benchmark:patterns-final": "ts-node benchmarks/benchmark-patterns-fixed.ts",
+    "benchmark:patterns-vs-competitors": "ts-node benchmarks/benchmark-patterns-vs-competitors.ts"
   },
   "repository": {
     "type": "git",
