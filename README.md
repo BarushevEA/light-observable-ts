@@ -41,8 +41,8 @@ EVG Observable - is a light library for simple use.
 
 | Metric | EVG Observable | RxJS |
 |--------|----------------|------|
-| **Bundle size** | **6.4 kB** | 88 kB |
-| **Size advantage** | **13.75x smaller** | - |
+| **Bundle size** | **7.2 kB** | 88 kB |
+| **Size advantage** | **12.2x smaller** | - |
 | **Operations** | ~40 | 100+ |
 | **Performance** | **2-7x faster** | baseline |
 
@@ -103,7 +103,7 @@ Comparison with lightweight libraries in the same weight category (observable-fn
 | Metric | EVG Observable | observable-fns |
 |--------|----------------|----------------|
 | **Weekly downloads** | Growing | 67K |
-| **Bundle size (minified)** | 6.3 kB | 10.8 kB |
+| **Bundle size (minified)** | 7.2 kB | 10.8 kB |
 | **Implementation** | Original architecture | zen-observable re-implementation |
 | **Dependencies** | 0 | 0 |
 | **Architecture** | True hot observables | Cold observables (zen-observable API) |
