@@ -51,8 +51,8 @@ subscriberCounts.forEach(subscriberCount => {
     const obsFns = multicast(obsFnsSubject); // CRITICAL: wrap in multicast for hot observable
 
     const lightPipe = obsLight.pipe()!
-        .refine((v?: number) => v !== undefined && v % 2 === 0)
-        .then<string>((v?: number) => `Value: ${v}`);
+        .and((v?: number) => v !== undefined && v % 2 === 0)
+        .map<string>((v?: number) => `Value: ${v}`);
 
     const fnsPipe = obsFns
         .filter(v => v % 2 === 0)
@@ -169,11 +169,11 @@ subscriberCounts.forEach(subscriberCount => {
     const obsFns = multicast(obsFnsSubject); // CRITICAL: wrap in multicast for hot observable
 
     const lightPipe = obsLight.pipe()!
-        .refine(v => v !== undefined && v > 0)
-        .refine(v => v !== undefined && v < 1000)
-        .refine(v => v !== undefined && v % 2 === 0)
-        .refine(v => v !== undefined && v % 5 === 0)
-        .refine(v => v !== undefined && v !== 500);
+        .and(v => v !== undefined && v > 0)
+        .and(v => v !== undefined && v < 1000)
+        .and(v => v !== undefined && v % 2 === 0)
+        .and(v => v !== undefined && v % 5 === 0)
+        .and(v => v !== undefined && v !== 500);
 
     const fnsPipe = obsFns
         .filter(v => v > 0)

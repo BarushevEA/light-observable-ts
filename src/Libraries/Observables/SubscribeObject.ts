@@ -91,15 +91,17 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
         if (Array.isArray(listener)) {
             for (let i = 0; i < listener.length; i++) {
                 this.listeners.push(listener[i]);
-                this.errorHandlers!.push(
-                    errorHandler && Array.isArray(errorHandler) ? errorHandler[i] : errorHandler || this.errorHandler
-                );
+                const handler: IErrorCallback = (errorHandler && Array.isArray(errorHandler))
+                    ? errorHandler[i]
+                    : (errorHandler as IErrorCallback || this.errorHandler);
+                this.errorHandlers!.push(handler);
             }
         } else {
             this.listeners.push(listener);
-            this.errorHandlers!.push(
-                errorHandler && !Array.isArray(errorHandler) ? errorHandler : this.errorHandler
-            );
+            const handler: IErrorCallback = (errorHandler && !Array.isArray(errorHandler))
+                ? errorHandler
+                : this.errorHandler;
+            this.errorHandlers!.push(handler);
         }
 
         return this as any as IGroupSubscription<T>;

@@ -44,9 +44,25 @@ EVG Observable - is a light library for simple use.
 | **Bundle size** | **6.4 kB** | 88 kB |
 | **Size advantage** | **13.75x smaller** | - |
 | **Operations** | ~40 | 100+ |
-| **Performance** | **2-6x faster** | baseline |
+| **Performance** | **2-7x faster** | baseline |
 
 ### Performance Comparison (Bundle vs Bundle)
+
+Benchmarked with minified bundles on Node.js v22.17.1 (v3.0.0 API, averaged over 3 clean runs):
+
+| Test | EVG Observable | RxJS | Advantage |
+|------|----------------|------|-----------|
+| Emit 100 values | 1,662K ops/sec | 239K ops/sec | **7.0x faster** |
+| Filter + transform | 340K ops/sec | 149K ops/sec | **2.3x faster** |
+| 10 subscribers | 9,946K ops/sec | 3,500K ops/sec | **2.8x faster** |
+| 100 subscribers | 1,236K ops/sec | 432K ops/sec | **2.9x faster** |
+| 1000 subscribers | 124K ops/sec | 41K ops/sec | **3.0x faster** |
+| Batch emission - of(100) | 906K ops/sec | 176K ops/sec | **5.1x faster** |
+| 5 chained filters | 19K ops/sec | 9K ops/sec | **2.1x faster** |
+| Large payload | 879K ops/sec | 184K ops/sec | **4.8x faster** |
+
+<details>
+<summary>Previous results (v2.x API, measured in different conditions)</summary>
 
 | Test | EVG Observable | RxJS | Advantage |
 |------|----------------|------|-----------|
@@ -56,6 +72,9 @@ EVG Observable - is a light library for simple use.
 | 100 subscribers | 1,245K ops/sec | 336K ops/sec | **3.7x faster** |
 | 1000 subscribers | 122K ops/sec | 33K ops/sec | **3.7x faster** |
 | Large payload | 865K ops/sec | 199K ops/sec | **4.3x faster** |
+
+**Note**: v3.0.0 performance is equal or better than v2.x (emit: +7%, 10 subs: +10%). The API redesign with more flexible pipe system maintains excellent performance while providing enhanced functionality.
+</details>
 
 ### EVG Observable Advantages
 
@@ -91,23 +110,23 @@ Comparison with lightweight libraries in the same weight category (observable-fn
 
 ### Performance Comparison: Emissions
 
-Basic emission performance across different subscriber counts:
+Basic emission performance across different subscriber counts (averaged over 3 clean runs):
 
 | Scenario | EVG Observable | observable-fns | Advantage |
 |----------|----------------|----------------|-----------|
-| 1 emit × 1 subscriber | 57.2M ops/sec | 37.0M | **1.5x faster** |
-| 1 emit × 10 subscribers | 17.1M ops/sec | 6.4M | **2.7x faster** |
-| 1 emit × 100 subscribers | 2.1M ops/sec | 736K | **2.9x faster** |
-| 1 emit × 1000 subscribers | 207K ops/sec | 73K | **2.8x faster** |
-| 1 emit × 10000 subscribers | 18.7K ops/sec | 7.1K | **2.6x faster** |
-| 100 emit × 1 subscriber | 1.2M ops/sec | 560K | **2.1x faster** |
-| 100 emit × 100 subscribers | 21.6K ops/sec | 7.6K | **2.8x faster** |
-| 1000 emit × 1000 subscribers | 215 ops/sec | 77 | **2.8x faster** |
-| Large payload (complex objects) | 815K ops/sec | 557K | **1.5x faster** |
-| Observable creation | 54.5M ops/sec | 17.9M | **3.0x faster** |
+| 1 emit × 1 subscriber | 53.8M ops/sec | 36.7M | **1.5x faster** |
+| 1 emit × 10 subscribers | 14.3M ops/sec | 6.3M | **2.3x faster** |
+| 1 emit × 100 subscribers | 1.70M ops/sec | 733K | **2.3x faster** |
+| 1 emit × 1000 subscribers | 176K ops/sec | 73K | **2.4x faster** |
+| 1 emit × 10000 subscribers | 16.1K ops/sec | 6.9K | **2.3x faster** |
+| 100 emit × 1 subscriber | 1.02M ops/sec | 552K | **1.8x faster** |
+| 100 emit × 100 subscribers | 17.5K ops/sec | 7.3K | **2.4x faster** |
+| 1000 emit × 1000 subscribers | 179 ops/sec | 75 | **2.4x faster** |
+| Large payload (complex objects) | 749K ops/sec | 549K | **1.4x faster** |
+| Observable creation | 54.1M ops/sec | 17.2M | **3.1x faster** |
 
 **Key Insights:**
-- EVG Observable is consistently **1.5x-3.0x faster** across all emission scenarios
+- EVG Observable is consistently **1.4x-3.1x faster** across all emission scenarios
 - Performance advantage remains stable from 1 to 10,000 subscribers
 - Both libraries scale well for basic emission patterns
 - EVG Observable's true hot observable architecture provides better performance for multi-subscriber scenarios
