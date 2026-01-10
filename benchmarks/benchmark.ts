@@ -108,7 +108,7 @@ runBenchmark('Stream method', {
         const sub = obs.subscribe((value?: number) => {
         });
         const values = Array(10).fill(0).map((_, i) => i);
-        obs.stream(values);
+        obs.of(values);
         sub?.unsubscribe();
     },
     'stream - 100 values, 1 subscriber': () => {
@@ -116,7 +116,7 @@ runBenchmark('Stream method', {
         const sub = obs.subscribe((value?: number) => {
         });
         const values = Array(100).fill(0).map((_, i) => i);
-        obs.stream(values);
+        obs.of(values);
         sub?.unsubscribe();
     },
     'stream - 10 values, 10 subscribers': () => {
@@ -128,7 +128,7 @@ runBenchmark('Stream method', {
             if (sub) subs.push(sub);
         }
         const values = Array(10).fill(0).map((_, i) => i);
-        obs.stream(values);
+        obs.of(values);
         for (let i = 0; i < subs.length; i++) {
             subs[i].unsubscribe();
         }
@@ -141,7 +141,7 @@ runBenchmark('Pipe and filters', {
         const obs = new Observable<number>(0);
         const pipeObj = obs.pipe();
         if (pipeObj) {
-            const sub = pipeObj.setOnce().subscribe((value?: number) => {
+            const sub = pipeObj.once().subscribe((value?: number) => {
             });
             obs.next(1);
             obs.next(2); // Этот вызов не должен достичь подписчика
@@ -151,7 +151,7 @@ runBenchmark('Pipe and filters', {
         const obs = new Observable<number>(0);
         const pipeObj = obs.pipe();
         if (pipeObj) {
-            const sub = pipeObj.refine((value?: number) => value !== undefined && value > 0).subscribe((value?: number) => {
+            const sub = pipeObj.and((value?: number) => value !== undefined && value > 0).subscribe((value?: number) => {
             });
             obs.next(1);
             sub?.unsubscribe();
@@ -162,8 +162,8 @@ runBenchmark('Pipe and filters', {
         const pipeObj = obs.pipe();
         if (pipeObj) {
             const sub = pipeObj
-                .refine((value?: number) => value !== undefined && value > 0)
-                .refine((value?: number) => value !== undefined && value % 2 === 0)
+                .and((value?: number) => value !== undefined && value > 0)
+                .and((value?: number) => value !== undefined && value % 2 === 0)
                 .subscribe((value?: number) => {
                 });
             obs.next(2);
@@ -175,7 +175,7 @@ runBenchmark('Pipe and filters', {
         const pipeObj = obs.pipe();
         if (pipeObj) {
             const sub = pipeObj
-                .then<string>((value?: number) => `Value: ${value}`)
+                .map<string>((value?: number) => `Value: ${value}`)
                 .subscribe((value?: string) => {
                 });
             obs.next(1);
@@ -184,7 +184,7 @@ runBenchmark('Pipe and filters', {
     },
     'addFilter - simple filter': () => {
         const obs = new Observable<number>(0);
-        obs.addFilter().filter((value?: number) => value !== undefined && value > 0);
+        obs.addFilter().and((value?: number) => value !== undefined && value > 0);
         const sub = obs.subscribe((value?: number) => {
         });
         obs.next(1);
@@ -228,10 +228,10 @@ runBenchmark('OrderedObservable', {
         });
 
         // Изменение порядка сортировки
-        obs.setDescendingSort();
+        obs.descendingSort();
         obs.next(1);
 
-        obs.setAscendingSort();
+        obs.ascendingSort();
         obs.next(2);
 
         sub1?.unsubscribe();

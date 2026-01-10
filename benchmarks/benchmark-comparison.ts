@@ -38,8 +38,8 @@ console.log('# (Creation excluded from measurements)\n');
     const obsRxJS = new Subject<number>();
 
     obsLight.pipe()!
-        .refine((v?: number) => v !== undefined && v % 2 === 0)
-        .then<string>((v?: number) => `Value: ${v}`)
+        .and((v?: number) => v !== undefined && v % 2 === 0)
+        .map<string>((v?: number) => `Value: ${v}`)
         .subscribe(() => {});
 
     obsRxJS.pipe(
@@ -103,7 +103,7 @@ const streamValues = Array.from({length: 100}, (_, i) => i);
 
     new Benchmark.Suite()
         .add(`Observable - stream(100) ${subscriberCount} subs`, () => {
-            obsLight.stream(streamValues);
+            obsLight.of(streamValues);
         })
         .add(`RxJS - next(100) ${subscriberCount} subs`, () => {
             for (let i = 0; i < 100; i++) obsRxJS.next(i);
@@ -123,11 +123,11 @@ const streamValues = Array.from({length: 100}, (_, i) => i);
     const obsRxJS = new Subject<number>();
 
     obsLight.pipe()!
-        .refine(v => v !== undefined && v > 0)
-        .refine(v => v !== undefined && v < 1000)
-        .refine(v => v !== undefined && v % 2 === 0)
-        .refine(v => v !== undefined && v % 5 === 0)
-        .refine(v => v !== undefined && v !== 500)
+        .and(v => v !== undefined && v > 0)
+        .and(v => v !== undefined && v < 1000)
+        .and(v => v !== undefined && v % 2 === 0)
+        .and(v => v !== undefined && v % 5 === 0)
+        .and(v => v !== undefined && v !== 500)
         .subscribe(() => {});
 
     obsRxJS.pipe(
@@ -237,10 +237,10 @@ interface LargePayload {
     const obsRxJS = new Subject<number>();
 
     obsLight.addFilter()
-        .switch()
-        .case(v => v === 10)
-        .case(v => v === 20)
-        .case(v => v === 30);
+        .choice()
+        .or(v => v === 10)
+        .or(v => v === 20)
+        .or(v => v === 30);
     obsLight.subscribe(() => {});
 
     obsRxJS.pipe(
