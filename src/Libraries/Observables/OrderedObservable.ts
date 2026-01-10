@@ -87,8 +87,8 @@ export class OrderedObservable<T>
      * @return {IOrderedSetup<T> | undefined} An instance of `OrderedSubscribeObject` for subscription setup,
      *         or undefined if the operation is not allowed.
      */
-    pipe(): IOrderedSetup<T> | undefined {
-        if (this.killed) return undefined;
+    pipe(): IOrderedSetup<T> {
+        if (this.killed) return <any>undefined;
         const subscribeObject = new OrderedSubscribeObject(this, true);
         this.subs.push(<any>subscribeObject);
         return subscribeObject;

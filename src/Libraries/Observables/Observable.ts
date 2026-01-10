@@ -264,8 +264,8 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
      *
      * @return {ISetup<T> | undefined} The created SubscribeObject wrapped in an ISetup<T> interface if the instance is active, otherwise undefined.
      */
-    pipe(): ISetup<T> | undefined {
-        if (this.killed) return undefined;
+    pipe(): ISetup<T>  {
+        if (this.killed) return <any>undefined;
         const subscribeObject = new SubscribeObject(this, true);
         this.subs.push(subscribeObject);
         return subscribeObject;
