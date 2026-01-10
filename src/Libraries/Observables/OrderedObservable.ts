@@ -40,7 +40,7 @@ export class OrderedObservable<T>
      *
      * @return {boolean} Returns true if the sorting operation is successful, otherwise false.
      */
-    public setAscendingSort(): boolean {
+    public ascendingSort(): boolean {
         this.sortDirection = sortAscending;
         return this.sortByOrder();
     }
@@ -50,7 +50,7 @@ export class OrderedObservable<T>
      *
      * @return {boolean} Returns `true` if the sorting operation is configured and applied successfully, otherwise returns `false`.
      */
-    public setDescendingSort(): boolean {
+    public descendingSort(): boolean {
         this.sortDirection = sortDescending;
         return this.sortByOrder();
     }

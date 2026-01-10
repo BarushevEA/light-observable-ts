@@ -44,36 +44,36 @@ export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
     }
 
     /**
-     * Filters the data based on the given condition.
+     * Applies an AND-logic filter condition to the data.
      *
      * @param {ICallback<any>} condition - A callback function that determines whether a data item should be included.
      *                                      Should return a truthy value to include the item.
      * @return {IFilterSetup<T>} - The updated filter setup after applying the condition.
      */
-    filter(condition: ICallback<any>): IFilterSetup<T> {
+    and(condition: ICallback<any>): IFilterSetup<T> {
         return this.push(
             (data: IFilterPayload): void => condition(data.payload) && (data.isAvailable = true) as any
         );
     }
 
     /**
-     * Adds an array of filter conditions to the current filter setup.
+     * Applies multiple AND-logic filter conditions (all must pass).
      *
      * @param {ICallback<any>[]} conditions - An array of callback functions representing filter conditions.
      * @return {IFilterSetup<T>} The updated filter setup instance.
      */
-    pushFilters(conditions: ICallback<any>[]): IFilterSetup<T> {
+    allOf(conditions: ICallback<any>[]): IFilterSetup<T> {
         if (!Array.isArray(conditions)) return this;
-        for (let i = 0; i < conditions.length; i++) this.filter(conditions[i]);
+        for (let i = 0; i < conditions.length; i++) this.and(conditions[i]);
         return this;
     }
 
     /**
-     * Creates and returns a new instance of the `FilterSwitchCase` class to handle switch case logic with the current context.
+     * Creates and returns a new instance of the `FilterSwitchCase` class for OR-logic branching.
      *
      * @return {FilterSwitchCase<T>} A new instance of `FilterSwitchCase` initialized with the current context.
      */
-    switch(): FilterSwitchCase<T> {
+    choice(): FilterSwitchCase<T> {
         return new FilterSwitchCase<T>(this);
     }
 

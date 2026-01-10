@@ -191,7 +191,7 @@ class ObservableUnitTest {
         const listener = (value: string) => expect(value).to.be.equal(str);
         const subscribeObject = this.OBSERVABLE$
             .pipe()
-            .setOnce()
+            .once()
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
@@ -211,7 +211,7 @@ class ObservableUnitTest {
         const listener2 = (value: string) => tmpArr.push('listener2:' + value);
         this.OBSERVABLE$
             .pipe()
-            .setOnce()
+            .once()
             .subscribe(listener1, errorHandler);
         this.OBSERVABLE$.subscribe(listener2, errorHandler);
         this.OBSERVABLE$.next('a');
@@ -234,7 +234,7 @@ class ObservableUnitTest {
 
         const subscribeObject = this.OBSERVABLE$
             .pipe()
-            .setOnce()
+            .once()
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) this.OBSERVABLE$.next(str[counter]);
@@ -571,7 +571,7 @@ class ObservableUnitTest {
         const condition = () => true;
         const subscribeObject = this.OBSERVABLE$
             .pipe()
-            .refine(condition)
+            .and(condition)
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
@@ -591,7 +591,7 @@ class ObservableUnitTest {
         const condition = () => false;
         const subscribeObject = this.OBSERVABLE$
             .pipe()
-            .refine(condition)
+            .and(condition)
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         this.OBSERVABLE$.next(str);
@@ -615,7 +615,7 @@ class ObservableUnitTest {
         const condition = () => counter > 4;
         const subscribeObject = this.OBSERVABLE$
             .pipe()
-            .refine(condition)
+            .and(condition)
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
@@ -641,7 +641,7 @@ class ObservableUnitTest {
         const condition = () => counter < 5;
         const subscribeObject = this.OBSERVABLE$
             .pipe()
-            .refine(condition)
+            .and(condition)
             .subscribe(listener, errorHandler);
         expect(this.OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
@@ -663,7 +663,7 @@ class ObservableUnitTest {
         const listener = (value: string) => dataArr.push(value);
         this.OBSERVABLE$
             .pipe()
-            .refine(undefined)
+            .and(undefined)
             .subscribe(listener, errorHandler);
         this.OBSERVABLE$.next(str);
         expect([]).to.be.eql(dataArr);
@@ -1173,7 +1173,7 @@ class ObservableUnitTest {
         const listener2 = (value: string) => dataArr.push(value);
         this.OBSERVABLE$
             .pipe()
-            .refine(() => {
+            .and(() => {
                 throw new Error('CONDITION ERROR');
             })
             .subscribe(listener1, errorHandler);
@@ -1228,7 +1228,7 @@ class ObservableUnitTest {
             accum.push(data);
         };
         this.OBSERVABLE$.subscribe(listener1, errorHandler);
-        this.OBSERVABLE$.stream(streamArr);
+        this.OBSERVABLE$.of(streamArr);
         expect(streamArr).to.be.deep.equal(accum);
         expect(10).to.be.equal(counter);
     }
@@ -1248,9 +1248,9 @@ class ObservableUnitTest {
         };
         this.OBSERVABLE$
             .pipe()
-            .refine((data) => +data < 2)
+            .and((data) => +data < 2)
             .subscribe(listener1, errorHandler);
-        this.OBSERVABLE$.stream(streamArr);
+        this.OBSERVABLE$.of(streamArr);
         expect(['1', '1', '1']).to.be.deep.equal(accum);
         expect(3).to.be.equal(counter);
     }
@@ -1269,7 +1269,7 @@ class ObservableUnitTest {
             accum.push(data);
         };
         this.OBSERVABLE$.subscribe(listener1, errorHandler);
-        this.OBSERVABLE$.stream(streamArr);
+        this.OBSERVABLE$.of(streamArr);
         expect(streamArr).to.be.deep.equal(accum);
         expect(5).to.be.equal(counter);
     }
@@ -1288,7 +1288,7 @@ class ObservableUnitTest {
             accum.push(data);
         };
         this.OBSERVABLE$.subscribe(listener1, errorHandler);
-        this.OBSERVABLE$.stream(streamArr);
+        this.OBSERVABLE$.of(streamArr);
         expect(streamArr).to.be.deep.equal(accum);
         expect(1).to.be.equal(counter);
     }
@@ -1307,7 +1307,7 @@ class ObservableUnitTest {
             accum.push(data);
         };
         this.OBSERVABLE$.subscribe(listener1, errorHandler);
-        this.OBSERVABLE$.stream(streamArr);
+        this.OBSERVABLE$.of(streamArr);
         expect(streamArr).to.be.deep.equal(accum);
         expect(0).to.be.equal(counter);
     }
@@ -1327,7 +1327,7 @@ class ObservableUnitTest {
         };
         this.OBSERVABLE$.subscribe(listener1, errorHandler);
         this.OBSERVABLE$.destroy();
-        this.OBSERVABLE$.stream(streamArr);
+        this.OBSERVABLE$.of(streamArr);
         expect([]).to.be.deep.equal(accum);
         expect(0).to.be.equal(counter);
         expect(true).to.be.equal(this.OBSERVABLE$.isDestroyed);
@@ -1349,13 +1349,13 @@ class ObservableUnitTest {
         };
         this.OBSERVABLE$.subscribe(listener1, errorHandler);
         this.OBSERVABLE$.disable();
-        this.OBSERVABLE$.stream(streamArr);
+        this.OBSERVABLE$.of(streamArr);
         expect([]).to.be.deep.equal(accum);
         expect(0).to.be.equal(counter);
         expect(false).to.be.equal(this.OBSERVABLE$.isEnable);
         expect(1).to.be.equal(this.OBSERVABLE$.size());
         this.OBSERVABLE$.enable();
-        this.OBSERVABLE$.stream(streamArr);
+        this.OBSERVABLE$.of(streamArr);
         expect(streamArr).to.be.deep.equal(accum);
         expect(3).to.be.equal(counter);
         expect(true).to.be.equal(this.OBSERVABLE$.isEnable);
@@ -1376,9 +1376,9 @@ class ObservableUnitTest {
             if (counter === 2) expect("22325").to.be.equal(data);
         };
         this.OBSERVABLE$.pipe()
-            .refine(data => data.length === 5)
-            .refine(data => data[2] === "3")
-            .refine(data => data[4] === "5")
+            .and(data => data.length === 5)
+            .and(data => data[2] === "3")
+            .and(data => data[4] === "5")
             .subscribe(listener1, errorHandler);
 
         this.OBSERVABLE$.next("11315");
@@ -1466,8 +1466,8 @@ class ObservableUnitTest {
             if (counter === 1) expect("1234").to.be.equal(data);
         };
         this.OBSERVABLE$.pipe()
-            .refine(data => data.length < 5)
-            .setOnce()
+            .and(data => data.length < 5)
+            .once()
             .subscribe(listener1, errorHandler);
 
         this.OBSERVABLE$.next("11315");
@@ -1552,7 +1552,7 @@ class ObservableUnitTest {
     //     };
     //     this.OBSERVABLE$.pipe()
     //         .emitMatch(() => "11315")
-    //         .setOnce()
+    //         .once()
     //         .subscribe(listener1, errorHandler);
     //
     //     this.OBSERVABLE$.next("11315");
@@ -1584,7 +1584,7 @@ class ObservableUnitTest {
         };
         this.OBSERVABLE$.pipe()
             .unsubscribeBy(data => data === "11")
-            .refine((str) => str === "11315")
+            .and((str) => str === "11315")
             .subscribe(listener1, errorHandler);
 
         this.OBSERVABLE$.next("11315");
@@ -1736,10 +1736,10 @@ class ObservableUnitTest {
         observable2.subscribe(listener2, errorHandler);
 
         this.OBSERVABLE$.pipe()
-            .refine((str) => str === 'test1')
+            .and((str) => str === 'test1')
             .subscribe(observable1, errorHandler);
         this.OBSERVABLE$.pipe()
-            .refine((str) => str === 'test2')
+            .and((str) => str === 'test2')
             .subscribe(observable2, errorHandler);
         this.OBSERVABLE$.subscribe(listener3, errorHandler);
 
@@ -1774,10 +1774,10 @@ class ObservableUnitTest {
             if (counter === 4) expect("333").to.be.equal(data);
         };
         this.OBSERVABLE$.pipe()
-            .switch()
-            .case(data => data === "111")
-            .case(data => data === "222")
-            .case(data => data === "333")
+            .choice()
+            .or(data => data === "111")
+            .or(data => data === "222")
+            .or(data => data === "333")
             .subscribe(listener1, errorHandler);
 
         this.OBSERVABLE$.next("111");
@@ -1838,13 +1838,13 @@ class ObservableUnitTest {
         };
 
         observable$.pipe()
-            .refine(manFilter)
-            .switch()
-            .case(person => person.age > 17 && person.age < 60)
-            .case(person => person.major === MAJOR.FARMER)
+            .and(manFilter)
+            .choice()
+            .or(person => person.age > 17 && person.age < 60)
+            .or(person => person.major === MAJOR.FARMER)
             .subscribe(manListener);
 
-        observable$.stream([
+        observable$.of([
             new Person("Andrey", 16, GENDER.MAN, MAJOR.CHILD),
             new Person("Irog", 6, GENDER.MAN, MAJOR.CHILD),
             new Person("Dasha", 18, GENDER.WOMAN, MAJOR.FARMER),
@@ -1893,19 +1893,19 @@ class ObservableUnitTest {
         const observable3 = new Observable("");
 
         observable1.pipe()
-            .refine((str) => str === "111")
+            .and((str) => str === "111")
             .subscribe(listener1);
 
         observable2.pipe()
-            .refine((str) => str === "222")
+            .and((str) => str === "222")
             .subscribe(listener2);
 
         observable3.pipe()
-            .refine((str) => str === "333")
+            .and((str) => str === "333")
             .subscribe(listener3);
 
         this.OBSERVABLE$.pipe()
-            .refine(data => data.length > 2)
+            .and(data => data.length > 2)
             .subscribe([
                 globalCounter,
                 observable1,
@@ -1913,7 +1913,7 @@ class ObservableUnitTest {
                 observable3
             ], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "1",
             "111",
@@ -1952,12 +1952,12 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.addFilter(errorHandler)
-            .filter(str => str === "0");
+            .and(str => str === "0");
         targetObservable$.subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "1",
             "0",
@@ -1994,13 +1994,13 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.addFilter(errorHandler)
-            .filter(str => str.length > 1)
-            .filter(str => str.includes("0"));
+            .and(str => str.length > 1)
+            .and(str => str.includes("0"));
         targetObservable$.subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "10",
             "1",
             "0",
@@ -2039,16 +2039,16 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.addFilter(errorHandler)
-            .filter(str => str.length > 1)
-            .filter(str => str.includes("0"))
-            .switch()
-            .case(str => str === "011")
-            .case(str => str === "111100011");
+            .and(str => str.length > 1)
+            .and(str => str.includes("0"))
+            .choice()
+            .or(str => str === "011")
+            .or(str => str === "111100011");
         targetObservable$.subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "10",
             "1",
             "0",
@@ -2090,14 +2090,14 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.addFilter(errorHandler)
-            .switch()
-            .case(str => str === "011")
-            .case(str => str === "111100011");
+            .choice()
+            .or(str => str === "011")
+            .or(str => str === "111100011");
         targetObservable$.subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "10",
             "1",
             "0",
@@ -2134,14 +2134,14 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.addFilter()
-            .switch()
-            .case(str => str === "011")
-            .case(str => str === "111100011");
+            .choice()
+            .or(str => str === "011")
+            .or(str => str === "111100011");
         targetObservable$.subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$]);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "10",
             "1",
             "0",
@@ -2182,9 +2182,9 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.addFilter(errorHandler)
-            .switch()
-            .case(str => str === "011")
-            .case(str => {
+            .choice()
+            .or(str => str === "011")
+            .or(str => {
                 console.log(str === "111100011");
                 throw new Error("This is an error message");
             });
@@ -2192,7 +2192,7 @@ class ObservableUnitTest {
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "10",
             "1",
             "0",
@@ -2228,9 +2228,9 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.addFilter()
-            .switch()
-            .case(str => str === "011")
-            .case(str => {
+            .choice()
+            .or(str => str === "011")
+            .or(str => {
                 console.log(str === "111100011");
                 throw new Error("This is an error message");
             });
@@ -2238,7 +2238,7 @@ class ObservableUnitTest {
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$]);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "10",
             "1",
             "0",
@@ -2275,8 +2275,8 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.addFilter(errorHandler)
-            .filter(str => str.includes("1"))
-            .pushFilters([
+            .and(str => str.includes("1"))
+            .allOf([
                 str => str.includes("2"),
                 str => str.length < 5,
             ]);
@@ -2284,7 +2284,7 @@ class ObservableUnitTest {
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "12",
             "123",
@@ -2319,14 +2319,14 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.addFilter(errorHandler)
-            .filter(str => str.includes("1"))
-            .pushFilters(<any>"10")
-            .filter(str => str.includes("5"));
+            .and(str => str.includes("1"))
+            .allOf(<any>"10")
+            .and(str => str.includes("5"));
         targetObservable$.subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "12",
             "123",
@@ -2361,17 +2361,17 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.addFilter(errorHandler)
-            .switch()
-            .pushCases([
+            .choice()
+            .anyOf([
                 str => str.includes("2"),
                 str => str.includes("5"),
             ])
-            .case(str => str.includes("7"));
+            .or(str => str.includes("7"));
         targetObservable$.subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "2",
             "3",
@@ -2410,15 +2410,15 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.addFilter(errorHandler)
-            .switch()
-            .case(str => str.includes("7"))
-            .pushCases(<any>10)
-            .case(str => str.includes("6"));
+            .choice()
+            .or(str => str.includes("7"))
+            .anyOf(<any>10)
+            .or(str => str.includes("6"));
         targetObservable$.subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "2",
             "3",
@@ -2458,8 +2458,8 @@ class ObservableUnitTest {
         const targetObservable$ = new Observable("");
         targetObservable$
             .pipe()
-            .refine(str => str.includes("1"))
-            .pushRefiners([
+            .and(str => str.includes("1"))
+            .allOf([
                 str => str.includes("2"),
                 str => str.length < 5,
             ])
@@ -2467,7 +2467,7 @@ class ObservableUnitTest {
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "12",
             "123",
@@ -2502,14 +2502,14 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.pipe()
-            .refine(str => str.includes("1"))
-            .pushRefiners(<any>"10")
-            .refine(str => str.includes("5"))
+            .and(str => str.includes("1"))
+            .allOf(<any>"10")
+            .and(str => str.includes("5"))
             .subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "12",
             "123",
@@ -2544,17 +2544,17 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.pipe()
-            .switch()
-            .pushCases([
+            .choice()
+            .anyOf([
                 str => str.includes("2"),
                 str => str.includes("5"),
             ])
-            .case(str => str.includes("7"))
+            .or(str => str.includes("7"))
             .subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "2",
             "3",
@@ -2593,15 +2593,15 @@ class ObservableUnitTest {
         };
         const targetObservable$ = new Observable("");
         targetObservable$.pipe()
-            .switch()
-            .case(str => str.includes("7"))
-            .pushCases(<any>10)
-            .case(str => str.includes("6"))
+            .choice()
+            .or(str => str.includes("7"))
+            .anyOf(<any>10)
+            .or(str => str.includes("6"))
             .subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "2",
             "3",
@@ -2641,14 +2641,14 @@ class ObservableUnitTest {
         const targetObservable$ = new Observable("");
         targetObservable$
             .pipe()
-            .refine(str => str.includes("2"))
-            .then<number>(str => str.length)
-            .refine(num => num > 3)
+            .and(str => str.includes("2"))
+            .map<number>(str => str.length)
+            .and(num => num > 3)
             .subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "12",
             "123",
@@ -2685,15 +2685,15 @@ class ObservableUnitTest {
         const targetObservable$ = new Observable("");
         targetObservable$
             .pipe()
-            .refine(str => str.includes("2"))
-            .then<number>(str => str.length)
-            .refine(num => num > 4)
-            .setOnce()
+            .and(str => str.includes("2"))
+            .map<number>(str => str.length)
+            .and(num => num > 4)
+            .once()
             .subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "12",
             "123",
@@ -2730,16 +2730,16 @@ class ObservableUnitTest {
         const targetObservable$ = new Observable("");
         targetObservable$
             .pipe()
-            .refine(str => str.includes("2"))
-            .then<number>(str => str.length)
-            .refine(num => num > 4)
-            .then<number>(num => num * 2)
-            .setOnce()
+            .and(str => str.includes("2"))
+            .map<number>(str => str.length)
+            .and(num => num > 4)
+            .map<number>(num => num * 2)
+            .once()
             .subscribe(targetListener);
 
         this.OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.OBSERVABLE$.stream([
+        this.OBSERVABLE$.of([
             "1",
             "12",
             "123",
@@ -2771,7 +2771,7 @@ class ObservableUnitTest {
         const observable = new Observable<{ x: number, y: number }>(null);
         observable
             .pipe()
-            .serialize()
+            .toJson()
             .subscribe(listener);
         observable.next(rawObject);
     }
@@ -2787,7 +2787,7 @@ class ObservableUnitTest {
         const observable = new Observable<string>("");
         observable
             .pipe()
-            .deserialize<{ x: number, y: number }>()
+            .fromJson<{ x: number, y: number }>()
             .subscribe(listener);
         observable.next(json);
     }
@@ -2904,7 +2904,7 @@ class ObservableUnitTest {
         };
 
         observable.pipe()!
-            .deserialize()
+            .fromJson()
             .subscribe((v) => {
                 // Should not be called
                 expect(true).to.be.equal(false);
@@ -2920,10 +2920,10 @@ class ObservableUnitTest {
         const observable = new Observable<number>(0);
         const received: number[] = [];
 
-        observable.addFilter().filter((v) => v > 5);
+        observable.addFilter().and((v) => v > 5);
         observable.subscribe((v) => received.push(v));
 
-        observable.stream([1, 2, 3, 6, 7, 4, 8]);
+        observable.of([1, 2, 3, 6, 7, 4, 8]);
 
         expect(received).to.be.eql([6, 7, 8]);
     }
@@ -2933,7 +2933,7 @@ class ObservableUnitTest {
         const received: number[] = [];
 
         // addFilter without errorHandler
-        observable.addFilter().filter((v) => v > 0);
+        observable.addFilter().and((v) => v > 0);
         observable.subscribe((v) => received.push(v));
 
         observable.next(1);
@@ -2948,7 +2948,7 @@ class ObservableUnitTest {
         const received: number[] = [];
 
         // setOnce via pipe
-        observable.pipe()!.setOnce().subscribe((v) => received.push(v));
+        observable.pipe()!.once().subscribe((v) => received.push(v));
 
         // Also regular subscriber
         observable.subscribe((v) => received.push(v * 10));
@@ -3106,43 +3106,43 @@ class ObservableUnitTest {
 
         // Apply filters to men$ and women$
         men$.addFilter()
-            .pushFilters(personValidationFilters)
-            .filter(menFilter);
+            .allOf(personValidationFilters)
+            .and(menFilter);
 
         women$.addFilter()
-            .pushFilters(personValidationFilters)
-            .filter(womenFilter);
+            .allOf(personValidationFilters)
+            .and(womenFilter);
 
         // Subscribe callbacks
         men$.pipe()!
-            .pushRefiners(personValidationFilters)
+            .allOf(personValidationFilters)
             .subscribe((worker: Person | null) => {
                 if (worker) menReadyToWork.push(`${worker.name} ${worker.age} ${worker.major}`);
             });
 
         women$.pipe()!
-            .pushRefiners(personValidationFilters)
+            .allOf(personValidationFilters)
             .subscribe((worker: Person | null) => {
                 if (worker) womenReadyToWork.push(`${worker.name} ${worker.age} ${worker.major}`);
             });
 
         // Stream by age filters to men$/women$
         personal$.pipe()!
-            .refine(youngAgeFilter)
-            .refine(oldAgeFilter)
+            .and(youngAgeFilter)
+            .and(oldAgeFilter)
             .subscribe([men$, women$]);
 
         // Stream by hair color
         personal$.pipe()!
-            .switch()
-            .case(blackFilter)
-            .case(blondFilter)
+            .choice()
+            .or(blackFilter)
+            .or(blondFilter)
             .subscribe((person: Person | null) => {
                 if (person) blondAndBlackPeople.push(`${person.name} ${person.age} ${person.hairColor}`);
             });
 
         // Stream people
-        personal$.stream([
+        personal$.of([
             new Person('Alex', 35, GENDER.MAN, MAJOR.DOCTOR, HAIR.BLOND),
             new Person('John', 45, GENDER.MAN, MAJOR.DRIVER, HAIR.BLACK),
             new Person('Alice', 30, GENDER.WOMAN, MAJOR.DOCTOR, HAIR.BROWN),
@@ -3179,5 +3179,294 @@ class ObservableUnitTest {
             'Michael 15 BLACK',
             'Olivia 16 BLOND'
         ]);
+    }
+
+    @test 'in() should emit object entries as {key, value} pairs'() {
+        const received: Array<{key: string, value: number}> = [];
+        const obj = {a: 1, b: 2, c: 3};
+
+        this.OBSERVABLE$.subscribe((pair: any) => received.push(pair));
+        this.OBSERVABLE$.in(obj);
+
+        expect(received.length).to.be.equal(3);
+        expect(received).to.deep.include({key: 'a', value: 1});
+        expect(received).to.deep.include({key: 'b', value: 2});
+        expect(received).to.deep.include({key: 'c', value: 3});
+    }
+
+    @test 'in() should handle empty objects'() {
+        const received: any[] = [];
+        const obj = {};
+
+        this.OBSERVABLE$.subscribe((pair: any) => received.push(pair));
+        this.OBSERVABLE$.in(obj);
+
+        expect(received.length).to.be.equal(0);
+    }
+
+    @test 'in() should work with pipe transformations'() {
+        const received: string[] = [];
+        const obj = {name: 'Alice', age: '30', city: 'NYC'};
+
+        this.OBSERVABLE$.pipe()
+            .and((pair: any) => pair.value.length > 2)
+            .subscribe((pair: any) => received.push(`${pair.key}:${pair.value}`));
+
+        this.OBSERVABLE$.in(obj);
+
+        expect(received.length).to.be.equal(2);
+        expect(received).to.include('name:Alice');
+        expect(received).to.include('city:NYC');
+    }
+
+    @test 'in() should not emit when disabled'() {
+        const received: any[] = [];
+        const obj = {x: 10, y: 20};
+
+        this.OBSERVABLE$.subscribe((pair: any) => received.push(pair));
+        this.OBSERVABLE$.disable();
+        this.OBSERVABLE$.in(obj);
+
+        expect(received.length).to.be.equal(0);
+    }
+
+    @test 'in() should respect hasOwnProperty check'() {
+        const received: any[] = [];
+        const obj = Object.create({inherited: 'value'});
+        obj.own = 'ownValue';
+
+        this.OBSERVABLE$.subscribe((pair: any) => received.push(pair));
+        this.OBSERVABLE$.in(obj);
+
+        expect(received.length).to.be.equal(1);
+        expect(received[0]).to.deep.equal({key: 'own', value: 'ownValue'});
+    }
+
+    @test 'in() should work with numeric keys'() {
+        const received: any[] = [];
+        const obj: Record<number, string> = {1: 'one', 2: 'two', 3: 'three'};
+
+        this.OBSERVABLE$.subscribe((pair: any) => received.push(pair));
+        this.OBSERVABLE$.in(obj);
+
+        expect(received.length).to.be.equal(3);
+        expect(received).to.deep.include({key: '1', value: 'one'});
+    }
+
+    @test 'group() should allow adding multiple listeners'() {
+        const received1: string[] = [];
+        const received2: string[] = [];
+        const received3: string[] = [];
+
+        const group = this.OBSERVABLE$.pipe()
+            .and((x: any) => x.length > 1)
+            .group();
+
+        group.add((x: any) => received1.push(x));
+        group.add((x: any) => received2.push(x));
+        group.add((x: any) => received3.push(x));
+
+        this.OBSERVABLE$.next('a');
+        this.OBSERVABLE$.next('ab');
+        this.OBSERVABLE$.next('abc');
+
+        expect(received1).to.deep.equal(['ab', 'abc']);
+        expect(received2).to.deep.equal(['ab', 'abc']);
+        expect(received3).to.deep.equal(['ab', 'abc']);
+    }
+
+    @test 'group() should share single pipe execution'() {
+        let pipeExecutions = 0;
+        const received1: number[] = [];
+        const received2: number[] = [];
+
+        const group = this.OBSERVABLE$.pipe()
+            .and((x: any) => {
+                pipeExecutions++;
+                return x > 5;
+            })
+            .group();
+
+        group.add((x: any) => received1.push(x));
+        group.add((x: any) => received2.push(x));
+
+        this.OBSERVABLE$.next(3);
+        this.OBSERVABLE$.next(7);
+        this.OBSERVABLE$.next(10);
+
+        // Pipe should execute only ONCE per emission, not N times for N listeners
+        expect(pipeExecutions).to.be.equal(3);
+        expect(received1).to.deep.equal([7, 10]);
+        expect(received2).to.deep.equal([7, 10]);
+    }
+
+    @test 'group() should support array of listeners'() {
+        const received1: string[] = [];
+        const received2: string[] = [];
+        const received3: string[] = [];
+
+        const group = this.OBSERVABLE$.pipe().group();
+
+        group.add([
+            (x: any) => received1.push(x),
+            (x: any) => received2.push(x),
+            (x: any) => received3.push(x)
+        ]);
+
+        this.OBSERVABLE$.next('test1');
+        this.OBSERVABLE$.next('test2');
+
+        expect(received1).to.deep.equal(['test1', 'test2']);
+        expect(received2).to.deep.equal(['test1', 'test2']);
+        expect(received3).to.deep.equal(['test1', 'test2']);
+    }
+
+    @test 'group() should handle errors independently'() {
+        const received1: string[] = [];
+        const received2: string[] = [];
+        const errors1: any[] = [];
+        const errors2: any[] = [];
+
+        const group = this.OBSERVABLE$.pipe().group();
+
+        group.add(
+            (x: any) => {
+                if (x === 'error1') throw new Error('Error 1');
+                received1.push(x);
+            },
+            (data: any, err: any) => errors1.push(err.message)
+        );
+
+        group.add(
+            (x: any) => {
+                if (x === 'error2') throw new Error('Error 2');
+                received2.push(x);
+            },
+            (data: any, err: any) => errors2.push(err.message)
+        );
+
+        this.OBSERVABLE$.next('ok');
+        this.OBSERVABLE$.next('error1');
+        this.OBSERVABLE$.next('error2');
+        this.OBSERVABLE$.next('ok2');
+
+        expect(received1).to.deep.equal(['ok', 'error2', 'ok2']);
+        expect(received2).to.deep.equal(['ok', 'error1', 'ok2']);
+        expect(errors1).to.deep.equal(['Error 1']);
+        expect(errors2).to.deep.equal(['Error 2']);
+    }
+
+    @test 'group() should work with transformations'() {
+        const received1: number[] = [];
+        const received2: number[] = [];
+
+        const group = this.OBSERVABLE$.pipe()
+            .and((x: any) => x.includes('2'))
+            .group();
+
+        group.add((x: any) => received1.push(x.length));
+        group.add((x: any) => received2.push(x.length));
+
+        this.OBSERVABLE$.of(['1', '2', '12', '123', '456']);
+
+        expect(received1).to.deep.equal([1, 2, 3]);
+        expect(received2).to.deep.equal([1, 2, 3]);
+    }
+
+    @test 'group() should allow chaining add() calls'() {
+        const received1: string[] = [];
+        const received2: string[] = [];
+        const received3: string[] = [];
+
+        this.OBSERVABLE$.pipe()
+            .group()
+            .add((x: any) => received1.push(x))
+            .add((x: any) => received2.push(x))
+            .add((x: any) => received3.push(x));
+
+        this.OBSERVABLE$.next('test');
+
+        expect(received1).to.deep.equal(['test']);
+        expect(received2).to.deep.equal(['test']);
+        expect(received3).to.deep.equal(['test']);
+    }
+
+    @test 'group() should support unsubscribe()'() {
+        const received1: string[] = [];
+        const received2: string[] = [];
+
+        const group = this.OBSERVABLE$.pipe().group();
+
+        group.add((x: any) => received1.push(x));
+        group.add((x: any) => received2.push(x));
+
+        this.OBSERVABLE$.next('before');
+        group.unsubscribe();
+        this.OBSERVABLE$.next('after');
+
+        expect(received1).to.deep.equal(['before']);
+        expect(received2).to.deep.equal(['before']);
+    }
+
+    @test 'group() should work with no pipe (fast path)'() {
+        const received1: string[] = [];
+        const received2: string[] = [];
+
+        const group = this.OBSERVABLE$.pipe().group();
+
+        group.add((x: any) => received1.push(x));
+        group.add((x: any) => received2.push(x));
+
+        this.OBSERVABLE$.next('test1');
+        this.OBSERVABLE$.next('test2');
+
+        expect(received1).to.deep.equal(['test1', 'test2']);
+        expect(received2).to.deep.equal(['test1', 'test2']);
+    }
+
+    @test 'group() with pipe should process value once for all listeners'() {
+        let transformations = 0;
+        const received1: number[] = [];
+        const received2: number[] = [];
+
+        const group = this.OBSERVABLE$.pipe()
+            .and((x: any) => {
+                transformations++;
+                return x > 0;
+            })
+            .group();
+
+        group.add((x: any) => received1.push(x * 2));
+        group.add((x: any) => received2.push(x * 3));
+
+        this.OBSERVABLE$.next(-1);
+        this.OBSERVABLE$.next(5);
+        this.OBSERVABLE$.next(10);
+
+        // Filter should execute 3 times (once per emission), not 6 times (not per listener)
+        expect(transformations).to.be.equal(3);
+        expect(received1).to.deep.equal([10, 20]);
+        expect(received2).to.deep.equal([15, 30]);
+    }
+
+    @test 'group() with unsubscribeBy should unsubscribe when condition met'() {
+        const received1: number[] = [];
+        const received2: number[] = [];
+
+        const group = this.OBSERVABLE$.pipe()
+            .unsubscribeBy((x: any) => x === 5)
+            .group();
+
+        group.add((x: any) => received1.push(x));
+        group.add((x: any) => received2.push(x));
+
+        this.OBSERVABLE$.next(1);
+        this.OBSERVABLE$.next(3);
+        this.OBSERVABLE$.next(5); // Should trigger unsubscribe (value not emitted to listeners)
+        this.OBSERVABLE$.next(7); // Should not be received
+
+        expect(received1).to.deep.equal([1, 3]);
+        expect(received2).to.deep.equal([1, 3]);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0); // All unsubscribed
     }
 }

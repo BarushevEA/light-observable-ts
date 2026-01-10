@@ -68,7 +68,7 @@ const target$ = new Observable<string>('');
 source$.subscribe(target$);
 
 // With filtering via pipe
-source$.pipe().refine(condition).subscribe([target1$, target2$]);
+source$.pipe().and(condition).subscribe([target1$, target2$]);
 ```
 
 ### Complex Stream Composition
@@ -76,7 +76,7 @@ source$.pipe().refine(condition).subscribe([target1$, target2$]);
 Library supports sophisticated reactive patterns with stream branching and multiple filter layers:
 
 ```
-source$ ──┬── pipe().refine() ──→ subscribe([target1$, target2$])
+source$ ──┬── pipe().and() ──→ subscribe([target1$, target2$])
           │                            │           │
           │                      addFilter()   addFilter()
           │                       + pipe()      + pipe()
@@ -84,7 +84,7 @@ source$ ──┬── pipe().refine() ──→ subscribe([target1$, target2$]
           │                            ▼           ▼
           │                       listener1   listener2
           │
-          └── pipe().switch().case() ──→ listener3
+          └── pipe().choice().or() ──→ listener3
 ```
 
 Key capabilities:
@@ -168,14 +168,14 @@ When a test fails and reveals a potential bug in the library:
 
 **AND logic** (chained methods):
 ```typescript
-.pipe().refine(cond1).refine(cond2)  // Both must be true
-.addFilter().filter(cond1).filter(cond2)  // Both must be true
+.pipe().and(cond1).and(cond2)  // Both must be true
+.addFilter().and(cond1).and(cond2)  // Both must be true
 ```
 
 **OR logic** (switch-case):
 ```typescript
-.pipe().switch().case(cond1).case(cond2)  // First true wins
-.addFilter().switch().case(cond1).case(cond2)  // First true wins
+.pipe().choice().or(cond1).or(cond2)  // First true wins
+.addFilter().choice().or(cond1).or(cond2)  // First true wins
 ```
 
 ### Data Transformation with `then<K>()`
@@ -184,9 +184,9 @@ Transform data type in pipe chain:
 ```typescript
 observable$
     .pipe()
-    .refine(str => str.includes("2"))  // filter strings
+    .and(str => str.includes("2"))  // filter strings
     .then<number>(str => str.length)   // transform to number
-    .refine(num => num > 4)            // filter numbers
+    .and(num => num > 4)            // filter numbers
     .subscribe(listener);
 ```
 
@@ -194,7 +194,7 @@ observable$
 
 Send array elements one by one:
 ```typescript
-observable$.stream([item1, item2, item3]);
+observable$.of([item1, item2, item3]);
 // Equivalent to: next(item1); next(item2); next(item3);
 ```
 
@@ -202,7 +202,7 @@ observable$.stream([item1, item2, item3]);
 
 ```typescript
 // Object → JSON string
-observable$.pipe().serialize().subscribe(jsonListener);
+observable$.pipe().toJson().subscribe(jsonListener);
 
 // JSON string → Object
 observable$.pipe().deserialize<MyType>().subscribe(objectListener);

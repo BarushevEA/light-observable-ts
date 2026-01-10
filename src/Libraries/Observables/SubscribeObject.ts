@@ -1,4 +1,4 @@
-import {IErrorCallback, IListener, IObserver, ISubscribeGroup, ISubscribeObject, ISubscriptionLike} from "./Types";
+import {IErrorCallback, IGroupSubscription, IListener, IObserver, ISubscribeGroup, ISubscribeObject, ISubscriptionLike} from "./Types";
 import {Pipe} from "./Pipe";
 import {getListener} from "./FunctionLibs";
 
@@ -31,6 +31,22 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
     piped = false;
 
     /**
+     * Additional listeners for group() subscription pattern.
+     * Allows multiple listeners to share a single pipe execution.
+     *
+     * @type {IListener<T>[] | undefined}
+     */
+    listeners?: IListener<T>[];
+
+    /**
+     * Error handlers corresponding to additional listeners.
+     * Each error handler is paired with its listener by array index.
+     *
+     * @type {IErrorCallback[] | undefined}
+     */
+    errorHandlers?: IErrorCallback[];
+
+    /**
      * Constructs an instance of the class.
      *
      * @param {IObserver<T>} [observable] - The observer instance to be assigned. Optional parameter.
@@ -57,6 +73,39 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
     }
 
     /**
+     * Adds one or more listeners to this group subscription.
+     * Used with the `.group()` operator for optimized multi-listener pattern.
+     *
+     * @param {IListener<T> | IListener<T>[]} listener - A single listener or array of listeners to add.
+     * @param {IErrorCallback | IErrorCallback[]} [errorHandler] - Optional error handler(s) for the listener(s).
+     * @return {IGroupSubscription<T>} Returns this instance cast to IGroupSubscription for chaining.
+     */
+    public add(listener: IListener<T> | IListener<T>[], errorHandler?: IErrorCallback | IErrorCallback[]): IGroupSubscription<T> {
+        // Initialize arrays if not exist
+        if (!this.listeners) {
+            this.listeners = [];
+            this.errorHandlers = [];
+        }
+
+        // Handle array of listeners
+        if (Array.isArray(listener)) {
+            for (let i = 0; i < listener.length; i++) {
+                this.listeners.push(listener[i]);
+                this.errorHandlers!.push(
+                    errorHandler && Array.isArray(errorHandler) ? errorHandler[i] : errorHandler || this.errorHandler
+                );
+            }
+        } else {
+            this.listeners.push(listener);
+            this.errorHandlers!.push(
+                errorHandler && !Array.isArray(errorHandler) ? errorHandler : this.errorHandler
+            );
+        }
+
+        return this as any as IGroupSubscription<T>;
+    }
+
+    /**
      * Unsubscribes the current instance from the associated observer, clears the listener,
      * and resets the internal chain.
      * This method ensures that the instance is properly cleaned up and no longer receives updates.
@@ -79,7 +128,10 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
      */
     send(value: T): void {
         const listener = this.listener;
-        if (!listener) {
+        const hasGroupListeners = this.listeners && this.listeners.length > 0;
+
+        // Unsubscribe only if there's no listener AND no group listeners
+        if (!listener && !hasGroupListeners) {
             this.unsubscribe();
             return;
         }
@@ -87,11 +139,26 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
 
         // Fast path (no pipe)
         if (!this.piped) {
-            try {
-                listener(value);
-            } catch (err) {
-                this.errorHandler(value, err);
+            // Call primary listener if exists
+            if (listener) {
+                try {
+                    listener(value);
+                } catch (err) {
+                    this.errorHandler(value, err);
+                }
             }
+
+            // Emit to additional listeners (group pattern)
+            if (hasGroupListeners) {
+                for (let i = 0; i < this.listeners!.length; i++) {
+                    try {
+                        this.listeners![i](value);
+                    } catch (err) {
+                        this.errorHandlers![i](value, err);
+                    }
+                }
+            }
+
             return;
         }
 
@@ -99,7 +166,40 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
         try {
             this.flow.payload = value;
             this.flow.isBreak = false;
-            this.processChain(listener);
+
+            // Process chain with primary listener if exists
+            if (listener) {
+                this.processChain(listener);
+            } else {
+                // No primary listener, process chain to filter value for group listeners
+                const chain = this.chain;
+                const data = this.flow;
+                const len = chain.length;
+                for (let i = 0; i < len; i++) {
+                    data.isUnsubscribe = false;
+                    data.isAvailable = false;
+
+                    chain[i](data);
+                    if (data.isUnsubscribe) {
+                        this.unsubscribe();
+                        return;
+                    }
+                    if (!data.isAvailable) return; // Value rejected by filter
+                    if (data.isBreak) break;
+                }
+            }
+
+            // Emit to additional listeners (group pattern) with processed value
+            if (hasGroupListeners) {
+                const processedValue = this.flow.payload;
+                for (let i = 0; i < this.listeners!.length; i++) {
+                    try {
+                        this.listeners![i](processedValue);
+                    } catch (err) {
+                        this.errorHandlers![i](processedValue, err);
+                    }
+                }
+            }
         } catch (err) {
             this.errorHandler(value, err);
         }

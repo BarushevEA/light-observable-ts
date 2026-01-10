@@ -69,50 +69,72 @@ export type IOrder = {
 };
 
 /**
- * Represents a generic switch interface.
+ * Represents a choice interface for OR-logic branching.
  *
- * @template T The type of the value to be used in the switch operation.
+ * @template T The type of the value to be used in the choice operation.
  *
- * @property {Function} switch - Defines the method for initiating a switch operation.
- * Returns a `PipeSwitchCase<T>` representing the next step in the switching process.
+ * @property {Function} choice - Defines the method for initiating a choice operation.
+ * Returns a `PipeSwitchCase<T>` representing the next step in the branching process.
  */
 export type ISwitch<T> = {
-    switch(): PipeSwitchCase<T>;
+    choice(): PipeSwitchCase<T>;
 };
 
 /**
- * Represents an interface for an ordered switch mechanism that evaluates
+ * Represents an interface for an ordered choice mechanism that evaluates
  * conditions in a specific sequence and invokes the corresponding logic.
  *
  * This interface is generic and designed to operate with a specific type `T`.
  *
  * @template T The type of data expected by the implementation.
- * @property switch A method intended to handle the ordered evaluation of cases
+ * @property choice A method intended to handle the ordered evaluation of cases
  *                  and return an instance of `PipeSwitchCase<T>`.
  */
 export type IOrderedSwitch<T> = {
-    switch(): PipeSwitchCase<T>;
+    choice(): PipeSwitchCase<T>;
 };
 
 /**
- * Represents an interface defining a contract for a one-time settable subscription mechanism.
+ * Defines an interface for converting a pipe to a group subscription.
+ * The `.group()` method acts as a type finalizer, preventing further operators from being chained.
+ *
+ * @template T The type of the data in the pipe.
+ * @property {function} group - Converts the pipe to IGroupSubscription<T> for multi-listener optimization.
+ */
+export type IGroup<T> = {
+    group(): IGroupSubscription<T>;
+};
+
+/**
+ * Defines an interface for converting an ordered pipe to a group subscription.
+ * The `.group()` method acts as a type finalizer, preventing further operators from being chained.
+ *
+ * @template T The type of the data in the ordered pipe.
+ * @property {function} group - Converts the ordered pipe to IGroupSubscription<T> for multi-listener optimization.
+ */
+export type IOrderedGroup<T> = {
+    group(): IGroupSubscription<T>;
+};
+
+/**
+ * Represents an interface defining a contract for a one-time subscription mechanism.
  *
  * @template T - The type of the data or value associated with the subscription.
  *
- * @property setOnce - A method that ensures the associated subscription can only be set or triggered once.
+ * @property once - A method that ensures the associated subscription can only be triggered once.
  * @returns {ISubscribe<T>} - An instance of ISubscribe with the generic type T.
  */
 export type IOnce<T> = {
-    setOnce(): ISubscribe<T>;
+    once(): ISubscribe<T>;
 };
 
 /**
- * Represents an interface that ensures an ordered item can be set only once.
+ * Represents an interface that ensures an ordered item can be triggered only once.
  *
  * @template T - The type of item to be handled by the implementation.
  */
 export type IOrderedOnce<T> = {
-    setOnce(): IOrderedSubscribe<T>;
+    once(): IOrderedSubscribe<T>;
 };
 
 /**
@@ -136,6 +158,18 @@ export type ISubscriptionLike = {
 };
 
 /**
+ * Represents a group subscription that allows adding multiple listeners to a pipe.
+ * Used as the return type for the `.group()` type finalizer.
+ *
+ * @template T The type of the data emitted to listeners.
+ * @extends ISubscriptionLike Inherits unsubscribe() method.
+ * @property {function} add - Adds one or more listeners to the group with optional error handlers.
+ */
+export type IGroupSubscription<T> = ISubscriptionLike & {
+    add(listener: IListener<T> | IListener<T>[], errorHandler?: IErrorCallback | IErrorCallback[]): IGroupSubscription<T>;
+};
+
+/**
  * Represents a composite interface that combines multiple functionalities for handling events, transformations, and subscriptions in a generic way.
  *
  * @template T The type of the data or events processed by the setup.
@@ -155,6 +189,7 @@ export type ISetup<T> =
     ISwitch<T> &
     ITransform<T> &
     ISerialisation &
+    IGroup<T> &
     ISubscribe<T>;
 
 /**
@@ -181,6 +216,7 @@ export type IOrderedSetup<T> =
     IOrderedSwitch<T> &
     IOrderedTransform<T> &
     IOrderedSerialisation &
+    IOrderedGroup<T> &
     IOrderedSubscribe<T>;
 
 /**
@@ -267,13 +303,27 @@ export type IObserver<T> =
  * Represents a generic stream interface for processing arrays of type T.
  *
  * This interface defines a method to input and handle data streams.
+ * Mirrors for...of semantics (pairs with IObjectStream for objects).
  *
  * @template T The type of the data elements to be streamed.
  * @typedef {Object} IStream
- * @property {(value: T[]) => void} stream A method to handle an array of elements of type T.
+ * @property {(value: T[]) => void} of A method to emit array elements one by one.
  */
 export type IStream<T> = {
-    stream(value: T[]): void;
+    of(value: T[]): void;
+}
+
+/**
+ * Defines an interface for streaming object entries one by one.
+ * Mirrors for...in semantics (pairs with IStream for arrays).
+ *
+ * @template K The type of the object keys.
+ * @template V The type of the object values.
+ * @typedef {Object} IObjectStream
+ * @property {(value: Record<K, V>) => void} in A method to emit object key-value pairs one by one.
+ */
+export type IObjectStream<K extends string | number | symbol, V> = {
+    in(value: Record<K, V>): void;
 }
 
 /**
@@ -434,18 +484,18 @@ export type IOrderedEmitByNegative<T> = {
 };
 
 /**
- * Represents a type that facilitates the refinement of conditions or rules and manages setting up these refinements.
+ * Represents a type that facilitates AND-logic filtering of conditions.
  *
  * @template T - The type of data or element that the methods operate on.
  *
  * @typedef {Object} IEmitByPositive
  *
- * @property {function(condition: ICallback<T>): ISetup<T>} refine - Refines a specific condition by taking an input callback and setting it up.
- * @property {function(conditions: ICallback<T>[]): ISetup<T>} pushRefiners - Pushes an array of callback conditions to further refine the setup process.
+ * @property {function(condition: ICallback<T>): ISetup<T>} and - Applies AND-logic filter condition.
+ * @property {function(conditions: ICallback<T>[]): ISetup<T>} allOf - Applies multiple AND-logic filter conditions (all must pass).
  */
 export type IEmitByPositive<T> = {
-    refine(condition: ICallback<T>): ISetup<T>;
-    pushRefiners(conditions: ICallback<T>[]): ISetup<T>;
+    and(condition: ICallback<T>): ISetup<T>;
+    allOf(conditions: ICallback<T>[]): ISetup<T>;
 };
 
 /**
@@ -456,27 +506,27 @@ export type IEmitByPositive<T> = {
  *
  * @typedef {Object} ITransform
  *
- * @property {function} then - Method that takes a callback function and returns a setup structure for further transformations.
+ * @property {function} map - Method that takes a callback function and returns a setup structure for further transformations.
  * @param {ICallback<T>} condition - The transformation logic applied to the input.
  * @returns {ISetup<K>} A setup structure for additional transformations.
  */
 export type ITransform<T> = {
-    then<K>(condition: ICallback<T>): ISetup<K>;
+    map<K>(condition: ICallback<T>): ISetup<K>;
 };
 
 /**
  * ISerialisation interface defines the structure for objects responsible for
- * handling the serialization and deserialization of data.
+ * handling JSON serialization and deserialization of data.
  *
- * This interface provides methods to serialize data into a specific format
- * and to deserialize data back into a desired type.
+ * This interface provides methods to convert data to JSON string format
+ * and to parse JSON strings back into a desired type.
  *
- * The generic method `deserialize` allows flexibility in defining the type
+ * The generic method `fromJson` allows flexibility in defining the type
  * of data to be returned upon deserialization.
  */
 export type ISerialisation = {
-    serialize(): ISetup<string>;
-    deserialize<K>(): ISetup<K>;
+    toJson(): ISetup<string>;
+    fromJson<K>(): ISetup<K>;
 };
 
 /**
@@ -486,16 +536,16 @@ export type ISerialisation = {
  *
  * @template T - The type of the element being processed.
  *
- * @property {Function} refine - Refines the current state based on a provided condition.
- * This function accepts a single callback condition which determines the refinement logic
+ * @property {Function} and - Applies a single AND-logic filter condition.
+ * This function accepts a single callback condition which determines the filter logic
  * and returns an updated setup instance.
  *
- * @property {Function} pushRefiners - Allows the addition of multiple refinement conditions
- * to the current state. Accepts an array of callback conditions and returns an updated setup instance.
+ * @property {Function} allOf - Applies multiple AND-logic filter conditions (all must pass).
+ * Accepts an array of callback conditions and returns an updated setup instance.
  */
 export type IOrderedEmitByPositive<T> = {
-    refine(condition: ICallback<any>): ISetup<T>;
-    pushRefiners(conditions: ICallback<any>[]): ISetup<T>;
+    and(condition: ICallback<any>): ISetup<T>;
+    allOf(conditions: ICallback<any>[]): ISetup<T>;
 };
 
 /**
@@ -504,7 +554,7 @@ export type IOrderedEmitByPositive<T> = {
  * @template T - The type of the data to be transformed.
  */
 export type IOrderedTransform<T> = {
-    then<K>(condition: ICallback<T>): ISetup<K>;
+    map<K>(condition: ICallback<T>): ISetup<K>;
 };
 
 /**
@@ -514,12 +564,12 @@ export type IOrderedTransform<T> = {
  * @interface
  * @typedef {Object} IOrderedSerialisation
  *
- * @property {function(): ISetup<string>} serialize - Serializes an object or value into a string in a structured and ordered format.
- * @property {function(): ISetup<K>} deserialize - Deserializes a structured and ordered string back into an object or value of type `K`.
+ * @property {function(): ISetup<string>} toJson - Converts an object or value to JSON string in a structured and ordered format.
+ * @property {function(): ISetup<K>} fromJson - Parses a JSON string back into an object or value of type `K`.
  */
 export type IOrderedSerialisation = {
-    serialize(): ISetup<string>;
-    deserialize<K>(): ISetup<K>;
+    toJson(): ISetup<string>;
+    fromJson<K>(): ISetup<K>;
 };
 
 /**
@@ -674,8 +724,8 @@ export type IChainCallback = (data: IPipePayload) => void;
  * @extends ISubscribe<T>
  */
 export type IPipeCase<T> = ISubscribe<T> & {
-    case(condition: ICallback<any>): IPipeCase<T> & ISubscribe<T>;
-    pushCases(conditions: ICallback<any>[]): IPipeCase<T> & ISubscribe<T>;
+    or(condition: ICallback<any>): IPipeCase<T> & ISubscribe<T>;
+    anyOf(conditions: ICallback<any>[]): IPipeCase<T> & ISubscribe<T>;
 };
 /**
  * Represents a combined subscriber that can either be a listener or a setter for observable values.
@@ -724,15 +774,15 @@ export type IFilterSetup<T> = IFilter<T> & IFilterSwitch<T>;
  *
  * @typedef {Object} IFilter
  *
- * @property {function(condition: ICallback<any>): IFilterSetup<T>} filter
- * Applies a single filtering condition to the data set.
+ * @property {function(condition: ICallback<any>): IFilterSetup<T>} and
+ * Applies a single AND-logic filtering condition to the data set.
  *
- * @property {function(conditions: ICallback<any>[]): IFilterSetup<T>} pushFilters
- * Applies multiple filtering conditions to the data set in bulk.
+ * @property {function(conditions: ICallback<any>[]): IFilterSetup<T>} allOf
+ * Applies multiple AND-logic filtering conditions to the data set (all must pass).
  */
 export type IFilter<T> = {
-    filter(condition: ICallback<any>): IFilterSetup<T>;
-    pushFilters(conditions: ICallback<any>[]): IFilterSetup<T>;
+    and(condition: ICallback<any>): IFilterSetup<T>;
+    allOf(conditions: ICallback<any>[]): IFilterSetup<T>;
 };
 
 /**
@@ -745,7 +795,7 @@ export type IFilter<T> = {
  * @template T Type of the context or condition used by the filter switch.
  */
 export type IFilterSwitch<T> = {
-    switch(): FilterSwitchCase<T>;
+    choice(): FilterSwitchCase<T>;
 };
 
 /**
@@ -755,8 +805,8 @@ export type IFilterSwitch<T> = {
  * @template T - The type of the elements to be filtered.
  */
 export type IFilterCase<T> = {
-    case(condition: ICallback<any>): IFilterCase<T>;
-    pushCases(conditions: ICallback<any>[]): IFilterCase<T>;
+    or(condition: ICallback<any>): IFilterCase<T>;
+    anyOf(conditions: ICallback<any>[]): IFilterCase<T>;
 };
 
 /**

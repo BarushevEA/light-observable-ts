@@ -2,6 +2,7 @@ import {
     ICallback,
     IChainCallback,
     IErrorCallback,
+    IGroupSubscription,
     IListener,
     IPipeCase,
     IPipePayload,
@@ -42,7 +43,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
      *
      * @return {ISubscribe<T>} The subscription instance allowing further chaining or management.
      */
-    setOnce(): ISubscribe<T> {
+    once(): ISubscribe<T> {
         return this.push(
             (data: IPipePayload): void => {
                 (<IListener<T>>(<any>this).listener)(data.payload);
@@ -71,48 +72,48 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 
     /**
-     * Applies a refinement condition to the workflow pipeline.
+     * Applies an AND-logic filter condition to the workflow pipeline.
      *
      * @param {ICallback<T>} condition - A callback function that evaluates a condition
      *                                    on the payload data and returns a boolean.
-     * @return {ISetup<T>} Returns the updated setup with the refined condition applied.
+     * @return {ISetup<T>} Returns the updated setup with the filter condition applied.
      */
-    refine(condition: ICallback<T>): ISetup<T> {
+    and(condition: ICallback<T>): ISetup<T> {
         return this.push(
             (data: IPipePayload): void => condition(data.payload) && (data.isAvailable = true) as any
         );
     }
 
     /**
-     * Adds an array of conditions to be processed by the refinement function.
+     * Applies multiple AND-logic filter conditions (all must pass).
      *
-     * @param {ICallback<any>[]} conditions - An array of callback functions to be refined.
+     * @param {ICallback<any>[]} conditions - An array of callback functions to be applied.
      * @return {ISetup<T>} The current setup instance after processing the conditions.
      */
-    pushRefiners(conditions: ICallback<any>[]): ISetup<T> {
+    allOf(conditions: ICallback<any>[]): ISetup<T> {
         if (!Array.isArray(conditions)) return this;
-        for (let i = 0; i < conditions.length; i++) this.refine(conditions[i]);
+        for (let i = 0; i < conditions.length; i++) this.and(conditions[i]);
         return this;
     }
 
     /**
      * Creates and returns a new instance of the PipeSwitchCase class,
-     * enabling conditional logic or case-switch handling for the current context.
+     * enabling OR-logic branching for the current context.
      *
      * @return {PipeSwitchCase<T>} A new instance of PipeSwitchCase associated with the current context.
      */
-    switch(): PipeSwitchCase<T> {
+    choice(): PipeSwitchCase<T> {
         return new PipeSwitchCase<T>(this);
     }
 
     /**
-     * Registers a condition callback to be executed within the pipeline and modifies the payload of the current data.
+     * Transforms the payload using the provided callback and changes the data type.
      * The condition is applied to the current payload and sets a flag indicating its availability.
      *
      * @param {ICallback<T>} condition - The callback function to execute on the current payload. It processes the payload and returns a new value.
      * @return {ISetup<K>} An instance of the setup interface, allowing further chaining of operations.
      */
-    then<K>(condition: ICallback<T>): ISetup<K> {
+    map<K>(condition: ICallback<T>): ISetup<K> {
         return <any>this.push(
             (data: IPipePayload): void => {
                 data.payload = condition(data.payload);
@@ -122,12 +123,12 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 
     /**
-     * Serializes the payload of the given data object into a JSON string and
+     * Converts the payload to a JSON string and
      * sets the `isAvailable` property to true.
      *
-     * @return {ISetup<string>} The modified setup instance with the serialized payload.
+     * @return {ISetup<string>} The modified setup instance with the JSON payload.
      */
-    serialize(): ISetup<string> {
+    toJson(): ISetup<string> {
         return <any>this.push(
             (data: IPipePayload): void => {
                 data.payload = JSON.stringify(data.payload);
@@ -137,19 +138,29 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 
     /**
-     * Deserializes the payload of the provided data into a JavaScript object using JSON.parse
+     * Parses the payload from JSON string into a JavaScript object using JSON.parse
      * and marks the data as available.
      *
      * @template K - The type of the setup to be returned.
-     * @return {ISetup<K>} The setup instance after deserializing the payload.
+     * @return {ISetup<K>} The setup instance after parsing the JSON payload.
      */
-    deserialize<K>(): ISetup<K> {
+    fromJson<K>(): ISetup<K> {
         return <any>this.push(
             (data: IPipePayload): void => {
                 data.payload = JSON.parse(data.payload);
                 data.isAvailable = true;
             }
         ) as ISetup<K>;
+    }
+
+    /**
+     * Converts this pipe to a group subscription for optimized multi-listener pattern.
+     * Acts as a type finalizer - prevents further operator chaining via TypeScript type system.
+     *
+     * @return {IGroupSubscription<T>} A group subscription interface with add() and unsubscribe() methods.
+     */
+    group(): IGroupSubscription<T> {
+        return this as any as IGroupSubscription<T>;
     }
 
     /**

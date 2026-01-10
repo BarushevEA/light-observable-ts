@@ -79,7 +79,7 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> implements IOr
      *
      * @return {IOrderedSubscribe<T>} The subscription instance configured to execute only once.
      */
-    setOnce(): IOrderedSubscribe<T> {
-        return <any>super.setOnce();
+    once(): IOrderedSubscribe<T> {
+        return <any>super.once();
     }
 }

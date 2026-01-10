@@ -111,17 +111,35 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     }
 
     /**
-     * Processes an array of values and triggers the next method for each value if the stream
-     * is not killed or disabled.
+     * Emits array elements one by one. Mirrors for...of semantics.
      *
-     * @param {T[]} values - An array of values to be processed by the stream.
+     * @param {T[]} values - An array of values to be emitted individually.
      * @return {void} This method does not return a value.
      */
-    stream(values: T[]): void {
+    of(values: T[]): void {
         if (this.killed) return;
         if (!this.enabled) return;
 
         for (let i = 0; i < values.length; i++) this.next(values[i]);
+    }
+
+    /**
+     * Emits object key-value pairs one by one. Mirrors for...in semantics.
+     *
+     * @template K - The type of the object keys.
+     * @template V - The type of the object values.
+     * @param {Record<K, V>} obj - An object whose entries will be emitted as {key, value} pairs.
+     * @return {void} This method does not return a value.
+     */
+    in<K extends string | number | symbol, V>(obj: Record<K, V>): void {
+        if (this.killed) return;
+        if (!this.enabled) return;
+
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                this.next({ key, value: obj[key] } as any as T);
+            }
+        }
     }
 
     /**

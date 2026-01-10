@@ -24,14 +24,14 @@ export abstract class SwitchCase<T, P extends IChainContainer, W> {
     }
 
     /**
-     * Adds a conditional case to the processing chain. The case determines
-     * whether further processing should continue based on the provided condition.
+     * Adds an OR-logic case to the processing chain.
+     * Determines whether further processing should continue based on the provided condition.
      *
      * @param {ICallback<any>} condition - A callback function that takes a payload
      * and evaluates a condition. If the condition is met, further processing may be stopped.
      * @return {W} Returns the current instance for method chaining.
      */
-    case(condition: ICallback<any>): W {
+    or(condition: ICallback<any>): W {
         this.counter++;
         const id = this.counter;
         const chain = this.pipe.chain;
@@ -46,15 +46,14 @@ export abstract class SwitchCase<T, P extends IChainContainer, W> {
     }
 
     /**
-     * Adds an array of conditions to the current instance by iterating through the provided array
-     * and adding each individual condition using the `case` method of the instance.
+     * Adds multiple OR-logic cases (first match wins).
      *
      * @param {ICallback<any>[]} conditions - An array of callback functions representing conditions to be added.
      * @return {W} The current instance after all conditions have been added.
      */
-    pushCases(conditions: ICallback<any>[]): W {
+    anyOf(conditions: ICallback<any>[]): W {
         if (!Array.isArray(conditions)) return this as any;
-        for (let i = 0; i < conditions.length; i++) this.case(conditions[i]);
+        for (let i = 0; i < conditions.length; i++) this.or(conditions[i]);
         return this as any;
     }
 }

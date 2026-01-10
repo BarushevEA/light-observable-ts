@@ -17,6 +17,13 @@ EVG Observable - is a light library for simple use.
     - [Observable simple usage](#observable-simple-usage)
     - [Browser simple usage](#browser-simple-usage)
     - [Observable pipe usage](#observable-pipe-usage)
+        - [pipe().once()](#pipeonce)
+        - [pipe().unsubscribeBy()](#pipeunsubscribebycondition)
+        - [pipe().and()](#pipeandcondition)
+        - [pipe().toJson()](#pipetojson)
+        - [pipe().fromJson()](#pipefromjsonk)
+        - [pipe().in()](#pipeink-v)
+        - [pipe().group()](#pipegroup)
     - [Ordered observable](#ordered-observable)
     - [Collector](#collector)
     - [Advanced Usage Example](#advanced-usage-example)
@@ -53,11 +60,12 @@ EVG Observable - is a light library for simple use.
 ### EVG Observable Advantages
 
 - **Dual filtering system** - Inbound (`addFilter`) + Outbound (`pipe`) filters
-- **OR-logic in pipes** - `switch().case()` for branching logic
-- **OR-logic in inbound filters** - `addFilter().switch().case()`
+- **OR-logic in pipes** - `choice().or()` for branching logic
+- **OR-logic in inbound filters** - `addFilter().choice().or()`
 - **Observable-to-Observable subscription** - Direct subscription without adapters
 - **OrderedObservable** - Subscribers with emission order control (not in RxJS)
-- **Batch emission** - `stream()` method for array processing
+- **Batch emission** - `.of()` method for array processing and `.in()` for object iteration
+- **Multi-listener optimization** - `.group()` operator executes pipe once for N listeners
 - **Collector** - Convenient subscription management
 - **Clean code organization** - Simple, readable module structure
 
@@ -233,7 +241,7 @@ observable$.destroy(); // all subscribers have automatically unsubscribed
 
 ## Observable pipe usage
 
-### pipe().setOnce()
+### pipe().once()
 
 Observable will send a value to the subscriber only once, and the subscriber will unsubscribe.
 
@@ -246,7 +254,7 @@ const listener2 = (value: string) => console.log('listener2:', value);
 
 const subscriber1 = observable$
     .pipe()
-    .setOnce()
+    .once()
     .subscribe(listener1);
 const subscriber2 = observable$.subscribe(listener2);
 
@@ -303,11 +311,11 @@ observable$.next({message: "some message3", isNeedUnsubscribe: true});
 // listener2: { message: 'some message3', isNeedUnsubscribe: true }
 ```
 
-### pipe().refine(condition)
+### pipe().and(condition)
 
 Observable will send a value to the listener only if condition returns "true". There is no automatic unsubscription.
 
-### pipe().serialize()
+### pipe().toJson()
 
 To convert the observable's data to JSON format, you can use the serialize method. This method turns the observer's
 input data into a JSON string before sending them to subscribers.
@@ -327,14 +335,14 @@ const listener = (data: string) => {
 const observable = new Observable<IPoint>(null);
 observable
     .pipe()
-    .serialize()
+    .toJson()
     .subscribe(listener);
 observable.next(rawObject);
 ```
 
-### pipe().deserialize&lt;K&gt;()
+### pipe().fromJson&lt;K&gt;()
 
-The deserialize method is used to convert data received from the observer from a JSON string back into a JavaScript
+The fromJson method is used to convert data received from the observer from a JSON string back into a JavaScript
 object.
 Return Value: An ISetup&lt;K&gt; object, where K is the type of data resulting from the transformation.
 
@@ -354,7 +362,7 @@ const listener = (data: IPoint) => {
 const observable = new Observable<string>("");
 observable
     .pipe()
-    .deserialize<IPoint>()
+    .fromJson<IPoint>()
     .subscribe(listener);
 observable.next(json);
 ```
@@ -401,7 +409,7 @@ observable$.next('SOME DATA');
 // Print to console - listener2: SOME DATA
 // Print to console - listener1: SOME DATA
 
-// Also we can use observable$.setDescendingSort() or observable$.setAscendingSort()
+// Also we can use observable$.descendingSort() or observable$.ascendingSort()
 
 //Thus, we can control the order in which the data is received by the listeners.
 ```
@@ -535,36 +543,36 @@ const blondAndBlack = (person: Person) => {
 
 // Apply the filters to men$ and women$
 men$.addFilter()
-    .pushFilters(personValidationFilters)
-    .filter(menFilter);
+    .allOf(personValidationFilters)
+    .and(menFilter);
 
 women$.addFilter()
-    .pushFilters(personValidationFilters)
-    .filter(womenFilter);
+    .allOf(personValidationFilters)
+    .and(womenFilter);
 
 // Subscribe the callback function to the created Observables
 men$.pipe()
-    .pushRefiners(personValidationFilters)
+    .allOf(personValidationFilters)
     .subscribe(manReadyToWork);
 women$.pipe()
-    .pushRefiners(personValidationFilters)
+    .allOf(personValidationFilters)
     .subscribe(womanReadyToWork);
 
 // Stream the list of people by applying the age filters
 personal$.pipe()
-    .refine(youngAgeFilter)
-    .refine(oldAgeFilter)
+    .and(youngAgeFilter)
+    .and(oldAgeFilter)
     .subscribe([men$, women$]);
 
 // Stream the list of people considering the hair color
 personal$.pipe()
-    .switch()
-    .case(blackFilter)
-    .case(blondFilter)
+    .choice()
+    .or(blackFilter)
+    .or(blondFilter)
     .subscribe(blondAndBlack);
 
 // Start streaming the list of people
-personal$.stream([
+personal$.of([
     new Person('Alex', 35, GENDER.MAN, MAJOR.DOCTOR, HAIR.BLOND),
     new Person('John', 45, GENDER.MAN, MAJOR.DRIVER, HAIR.BLACK),
     new Person('Alice', 30, GENDER.WOMAN, MAJOR.DOCTOR, HAIR.BROWN),
@@ -599,7 +607,7 @@ Observable an invaluable tool for managing asynchronous events.
 Built with the developer's needs in mind, EVG Observable provides a wealth of capabilities at your disposal, making
 event handling a breeze.
 
-Here is an advanced example of the `pipe` usage which introduces a new method called `then`. It allows transforming
+Here is an advanced example of the `pipe` usage which introduces a method called `map`. It allows transforming
 payload data in the pipe chain by applying a user callback function.
 
 Here is the syntax:
@@ -612,14 +620,14 @@ const targetListener = (num: number) => console.log(num);
 
 targetObservable$
     .pipe()
-    .refine(str => str.includes("2"))      // check if a string contains "2"
-    .then<number>(str => str.length)       // transform the string to its length
-    .refine(num => num > 4)                // filter out the lengths that is greater than 4
-    .then<number>(num => num * 2)          // multiply the length by 2
-    .setOnce()                             // make sure this action only happens once
+    .and(str => str.includes("2"))      // check if a string contains "2"
+    .map<number>(str => str.length)       // transform the string to its length
+    .and(num => num > 4)                // filter out the lengths that is greater than 4
+    .map<number>(num => num * 2)          // multiply the length by 2
+    .once()                             // make sure this action only happens once
     .subscribe(targetListener);            // subscribe the listener to the observable
 
-targetObservable$.stream([
+targetObservable$.of([
     "1",
     "12",
     "123",
@@ -635,10 +643,117 @@ targetObservable$.stream([
 ]);
 ```
 
-In this example, the observable is first refined with a condition to check for a string that includes "2". This string,
-if it passes the condition, is then transformed into its length via a then invocation. Further, this length is filtered
+In this example, the observable is first filtered with a condition to check for a string that includes "2". This string,
+if it passes the condition, is then transformed into its length via a map invocation. Further, this length is filtered
 down to lengths that are greater than 4. The lengths that pass this condition are thus doubled and the resulting
-observable is set to be a once-off observable to which a listener is subscribed. `
+observable is set to be a once-off observable to which a listener is subscribed.
+
+### pipe().in&lt;K, V&gt;()
+
+The `in()` operator iterates over object properties, emitting values (or transformed values) for each key-value pair. This is useful for processing object data streams.
+
+Usage Example:
+
+```typescript
+import {Observable} from "evg_observable";
+
+type User = { name: string; age: number };
+const users: Record<string, User> = {
+    user1: { name: "Alice", age: 30 },
+    user2: { name: "Bob", age: 25 },
+    user3: { name: "Charlie", age: 35 }
+};
+
+const observable$ = new Observable<Record<string, User>>(users);
+const listener = (user: User) => console.log('User:', user.name, user.age);
+
+observable$
+    .pipe()
+    .in<string, User>()  // Iterate over object, emit each value
+    .subscribe(listener);
+
+// Output:
+// User: Alice 30
+// User: Bob 25
+// User: Charlie 35
+```
+
+You can also transform values during iteration:
+
+```typescript
+const upperCaseListener = (name: string) => console.log('Name:', name);
+
+observable$
+    .pipe()
+    .in<string, User>((user) => user.name.toUpperCase())  // Transform each value
+    .subscribe(upperCaseListener);
+
+// Output:
+// Name: ALICE
+// Name: BOB
+// Name: CHARLIE
+```
+
+### pipe().group()
+
+The `group()` operator provides multi-listener optimization. When multiple listeners need to receive the same processed value, `group()` executes the pipe chain only once and distributes the result to all listeners.
+
+**Key benefit**: For N listeners, pipe executes 1 time instead of N times.
+
+Usage Example:
+
+```typescript
+import {Observable} from "evg_observable";
+
+const observable$ = new Observable<number>(0);
+
+let transformCount = 0;
+const expensiveTransform = (x: number) => {
+    transformCount++;
+    return x * x;  // Simulate expensive operation
+};
+
+// Create group subscription
+const group = observable$
+    .pipe()
+    .and((x) => x > 0)                    // Filter
+    .map<number>(expensiveTransform)      // Transform (executes once per emission)
+    .group();
+
+// Add multiple listeners - they all share the same pipe result
+group.add((x) => console.log('Listener 1:', x));
+group.add((x) => console.log('Listener 2:', x));
+group.add((x) => console.log('Listener 3:', x));
+
+observable$.next(5);  // transformCount = 1 (not 3!)
+
+// Output:
+// Listener 1: 25
+// Listener 2: 25
+// Listener 3: 25
+// transformCount = 1
+```
+
+With error handling per listener:
+
+```typescript
+const group = observable$.pipe().group();
+
+group.add(
+    (x) => {
+        if (x < 0) throw new Error('Negative value');
+        console.log('Listener 1:', x);
+    },
+    (data, err) => console.log('Error in listener 1:', err.message)
+);
+
+group.add(
+    (x) => console.log('Listener 2:', x)
+);
+
+observable$.next(5);   // Both listeners receive
+observable$.next(-1);  // Listener 1 throws, listener 2 still receives
+```
 
 ## Methods
 
@@ -650,7 +765,7 @@ observable is set to be a once-off observable to which a listener is subscribed.
 | `.unSubscribe(subscriber)` | void                  | unsubscribe listener from observable                                             |
 | `.unsubscribeAll()`        | void                  | unsubscribe all listeners from the current observable                            |
 | `.next(value)`             | void                  | emit data to listeners                                                           |
-| `.stream(value[])`         | void                  | pass data to listeners in parts of the array                                     |
+| `.of(value[])`         | void                  | pass data to listeners in parts of the array                                     |
 | `.getValue()`              | value                 | will return the last value sent, or the value that was set during initialization |
 | `.size()`                  | number                | will return the current number of subscribers                                    |
 | `.disable()`               | void                  | disable emission                                                                 |
@@ -664,16 +779,19 @@ observable is set to be a once-off observable to which a listener is subscribed.
 
 | method                               | will return                            | description                                                                                                                                                                                                             |
 |:-------------------------------------|:---------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `.setOnce()`                         | pipe object                            | observable will send a value to the subscriber only once, and the subscriber will unsubscribe.                                                                                                                          |
+| `.once()`                         | pipe object                            | observable will send a value to the subscriber only once, and the subscriber will unsubscribe.                                                                                                                          |
 | `.unsubscribeBy(*condition)`         | pipe object                            | observable will send a value to the subscriber as long as the condition is negative, on the first positive result, the subscriber will unsubscribe                                                                      |
-| `.refine(*condition)`                | pipe object                            | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |
-| `.pushRefiners(*conditions)`         | pipe object                            | This method allows you to add a group of conditions for filtering data in the pipeline chain.                                                                                                                           |
-| `.switch()`                          | SwitchCase object                      | transitions the pipe into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored. This allows you to handle multiple cases more conveniently. |
-| `.case(*condition)`                  | PipeCase object                        | Adds a condition to the chain of cases. The entire chain operates on the principle of "OR". This is different from other pipe methods which, when chained, operate on the principle of "AND".                           |
-| `.pushCases(*conditions)`            | PipeCase object                        | This method allows you to add a group of conditions for filtering cases data in the pipeline chain.                                                                                                                     |
-| `.then<K>(condition: ICallback<T>)`  | Observable instance with new data type | This method allows transforming payload data in the pipe chain by applying user callback function. `condition` should be a function that takes the current data and returns transformed data of possibly another type.  |
-| `.serialize()`                       | pipe object                            | Converts the observers data into a JSON string.                                                                                                                                                                         |
-| `.deserialize<K>()`                  | pipe object                            | Converts a JSON string into an object of type K.                                                                                                                                                                        |
+| `.and(*condition)`                | pipe object                            | observable will send a value to the listener only if condition returns "true", there is no automatic unsubscription                                                                                                     |
+| `.allOf(*conditions)`         | pipe object                            | This method allows you to add a group of conditions for filtering data in the pipeline chain.                                                                                                                           |
+| `.choice()`                          | SwitchCase object                      | transitions the pipe into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored. This allows you to handle multiple cases more conveniently. |
+| `.or(*condition)`                  | PipeCase object                        | Adds a condition to the chain of cases. The entire chain operates on the principle of "OR". This is different from other pipe methods which, when chained, operate on the principle of "AND".                           |
+| `.anyOf(*conditions)`            | PipeCase object                        | This method allows you to add a group of conditions for filtering cases data in the pipeline chain.                                                                                                                     |
+| `.map<K>(transform: ICallback<T>)`  | Observable instance with new data type | This method allows transforming payload data in the pipe chain by applying user callback function. `transform` should be a function that takes the current data and returns transformed data of possibly another type.  |
+| `.toJson()`                       | pipe object                            | Converts the observers data into a JSON string.                                                                                                                                                                         |
+| `.fromJson<K>()`                  | pipe object                            | Converts a JSON string into an object of type K.                                                                                                                                                                        |
+| `.of<K, V>(transform?: ICallback<K>)`| pipe object                            | Iterates over array elements. For each element, emits it to subscribers. Optional transform function processes each element before emission.                                                                             |
+| `.in<K, V>(transform?: ICallback<V>)`| pipe object                            | Iterates over object key-value pairs. For each key, emits the value to subscribers. Optional transform function processes each value before emission.                                                                   |
+| `.group()`                           | IGroupSubscription                     | Creates a group subscription for multi-listener optimization. Pipe chain executes once, result is shared with all listeners added via `.add()`. Type finalizer - no further operators can be chained.                   |
 | `.subscribe(listener)`               | subscriber                             | subscribe listener to observable                                                                                                                                                                                        |
 
 _*condition_ - this is a function that should return a value that will affect the behavior of the subscriber
@@ -683,11 +801,11 @@ _*condition_ - this is a function that should return a value that will affect th
 | Method                      | Will Return          | Description                                                                                                                                                                       |
 |:----------------------------|:---------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `.addFilter()`              | InboundFilter object | Transitions the Observable into the mode of adding inbound filters.                                                                                                               |
-| `.filter(*condition)`       | InboundFilter object | Part of the filter chain that operates on the principle of "AND". If the condition returns `true`, the filter passes the data along the chain.                                    |
-| `.pushFilters(*conditions)` | InboundFilter object | This method allows you to add a group of conditions for filtering data in the chain.                                                                                              |
-| `.switch()`                 | InboundFilter object | Transitions the filter into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored.                     
-| `.case(*condition)`         | InboundFilter object | Adds a condition to the chain of cases that operate on the principle of "OR". This is different from other filter methods which, when chained, operate on the principle of "AND". |
-| `.pushCases(*conditions)`   | InboundFilter object | This method allows you to add a group of conditions for filtering cases data in the chain.                                                                                        |
+| `.and(*condition)`       | InboundFilter object | Part of the filter chain that operates on the principle of "AND". If the condition returns `true`, the filter passes the data along the chain.                                    |
+| `.allOf(*conditions)` | InboundFilter object | This method allows you to add a group of conditions for filtering data in the chain.                                                                                              |
+| `.choice()`                 | InboundFilter object | Transitions the filter into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored.                     
+| `.or(*condition)`         | InboundFilter object | Adds a condition to the chain of cases that operate on the principle of "OR". This is different from other filter methods which, when chained, operate on the principle of "AND". |
+| `.anyOf(*conditions)`   | InboundFilter object | This method allows you to add a group of conditions for filtering cases data in the chain.                                                                                        |
 
 _*condition_ - this is a function that should return a value that will affect the behavior of the subscriber
 
@@ -711,8 +829,8 @@ Has the same methods as subscriber. But there is an "order" field and two new me
 
 | method                 | will return | description                  |
 |:-----------------------|:------------|:-----------------------------|
-| `.setAscendingSort()`  | boolean     | set order by ascending sort  |
-| `.setDescendingSort()` | boolean     | set order by descending sort |
+| `.ascendingSort()`  | boolean     | set order by ascending sort  |
+| `.descendingSort()` | boolean     | set order by descending sort |
 
 ### Collector
 

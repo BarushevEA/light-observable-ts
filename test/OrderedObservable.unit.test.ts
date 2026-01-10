@@ -168,7 +168,7 @@ class OrderedObservableUnitTest {
         const listener = (value: string) => expect(value).to.be.equal(str);
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .setOnce()
+            .once()
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         this.ORDERED_OBSERVABLE$.next(str);
@@ -188,7 +188,7 @@ class OrderedObservableUnitTest {
 
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .setOnce()
+            .once()
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) this.ORDERED_OBSERVABLE$.next(str[counter]);
@@ -437,7 +437,7 @@ class OrderedObservableUnitTest {
         const condition = () => true;
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .refine(condition)
+            .and(condition)
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         this.ORDERED_OBSERVABLE$.next(str);
@@ -456,7 +456,7 @@ class OrderedObservableUnitTest {
         const condition = () => false;
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .refine(condition)
+            .and(condition)
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         this.ORDERED_OBSERVABLE$.next(str);
@@ -479,7 +479,7 @@ class OrderedObservableUnitTest {
         const condition = () => counter > 4;
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .refine(condition)
+            .and(condition)
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
@@ -504,7 +504,7 @@ class OrderedObservableUnitTest {
         const condition = () => counter < 5;
         const subscribeObject = this.ORDERED_OBSERVABLE$
             .pipe()
-            .refine(condition)
+            .and(condition)
             .subscribe(listener, errorHandler);
         expect(this.ORDERED_OBSERVABLE$.size()).to.be.equal(1);
         for (; counter < 10; counter++) {
@@ -930,7 +930,7 @@ class OrderedObservableUnitTest {
     }
 
     @test 'order three subscribers by setAscendingSort'() {
-        this.ORDERED_OBSERVABLE$.setAscendingSort();
+        this.ORDERED_OBSERVABLE$.ascendingSort();
 
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
@@ -966,7 +966,7 @@ class OrderedObservableUnitTest {
     }
 
     @test 'order three subscribers by setDescendingSort'() {
-        this.ORDERED_OBSERVABLE$.setDescendingSort();
+        this.ORDERED_OBSERVABLE$.descendingSort();
 
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
@@ -1227,7 +1227,7 @@ class OrderedObservableUnitTest {
             accum.push(data);
         };
         this.ORDERED_OBSERVABLE$.subscribe(listener1, errorHandler);
-        this.ORDERED_OBSERVABLE$.stream(streamArr);
+        this.ORDERED_OBSERVABLE$.of(streamArr);
         expect(streamArr).to.be.deep.equal(accum);
         expect(10).to.be.equal(counter);
     }
@@ -1246,7 +1246,7 @@ class OrderedObservableUnitTest {
             accum.push(data);
         };
         this.ORDERED_OBSERVABLE$.subscribe(listener1, errorHandler);
-        this.ORDERED_OBSERVABLE$.stream(streamArr);
+        this.ORDERED_OBSERVABLE$.of(streamArr);
         expect(streamArr).to.be.deep.equal(accum);
         expect(5).to.be.equal(counter);
     }
@@ -1265,7 +1265,7 @@ class OrderedObservableUnitTest {
             accum.push(data);
         };
         this.ORDERED_OBSERVABLE$.subscribe(listener1, errorHandler);
-        this.ORDERED_OBSERVABLE$.stream(streamArr);
+        this.ORDERED_OBSERVABLE$.of(streamArr);
         expect(streamArr).to.be.deep.equal(accum);
         expect(1).to.be.equal(counter);
     }
@@ -1284,7 +1284,7 @@ class OrderedObservableUnitTest {
             accum.push(data);
         };
         this.ORDERED_OBSERVABLE$.subscribe(listener1, errorHandler);
-        this.ORDERED_OBSERVABLE$.stream(streamArr);
+        this.ORDERED_OBSERVABLE$.of(streamArr);
         expect(streamArr).to.be.deep.equal(accum);
         expect(0).to.be.equal(counter);
     }
@@ -1304,7 +1304,7 @@ class OrderedObservableUnitTest {
         };
         this.ORDERED_OBSERVABLE$.subscribe(listener1, errorHandler);
         this.ORDERED_OBSERVABLE$.destroy();
-        this.ORDERED_OBSERVABLE$.stream(streamArr);
+        this.ORDERED_OBSERVABLE$.of(streamArr);
         expect([]).to.be.deep.equal(accum);
         expect(0).to.be.equal(counter);
         expect(true).to.be.equal(this.ORDERED_OBSERVABLE$.isDestroyed);
@@ -1326,13 +1326,13 @@ class OrderedObservableUnitTest {
         };
         this.ORDERED_OBSERVABLE$.subscribe(listener1, errorHandler);
         this.ORDERED_OBSERVABLE$.disable();
-        this.ORDERED_OBSERVABLE$.stream(streamArr);
+        this.ORDERED_OBSERVABLE$.of(streamArr);
         expect([]).to.be.deep.equal(accum);
         expect(0).to.be.equal(counter);
         expect(false).to.be.equal(this.ORDERED_OBSERVABLE$.isEnable);
         expect(1).to.be.equal(this.ORDERED_OBSERVABLE$.size());
         this.ORDERED_OBSERVABLE$.enable();
-        this.ORDERED_OBSERVABLE$.stream(streamArr);
+        this.ORDERED_OBSERVABLE$.of(streamArr);
         expect(streamArr).to.be.deep.equal(accum);
         expect(3).to.be.equal(counter);
         expect(true).to.be.equal(this.ORDERED_OBSERVABLE$.isEnable);
@@ -1353,9 +1353,9 @@ class OrderedObservableUnitTest {
             if (counter === 2) expect("22325").to.be.equal(data);
         };
         this.ORDERED_OBSERVABLE$.pipe()
-            .refine(data => data.length === 5)
-            .refine(data => data[2] === "3")
-            .refine(data => data[4] === "5")
+            .and(data => data.length === 5)
+            .and(data => data[2] === "3")
+            .and(data => data[4] === "5")
             .subscribe(listener1, errorHandler);
 
         this.ORDERED_OBSERVABLE$.next("11315");
@@ -1443,8 +1443,8 @@ class OrderedObservableUnitTest {
             if (counter === 1) expect("1234").to.be.equal(data);
         };
         this.ORDERED_OBSERVABLE$.pipe()
-            .refine(data => data.length < 5)
-            .setOnce()
+            .and(data => data.length < 5)
+            .once()
             .subscribe(listener1, errorHandler);
 
         this.ORDERED_OBSERVABLE$.next("11315");
@@ -1472,7 +1472,7 @@ class OrderedObservableUnitTest {
             if (counter === 1) expect("11315").to.be.equal(data);
         };
         this.ORDERED_OBSERVABLE$.pipe()
-            .refine((str) => str === "11315")
+            .and((str) => str === "11315")
             .subscribe(listener1, errorHandler);
 
         this.ORDERED_OBSERVABLE$.next("11315");
@@ -1499,8 +1499,8 @@ class OrderedObservableUnitTest {
             counter++;
         };
         this.ORDERED_OBSERVABLE$.pipe()
-            .refine((str) => str === "11315")
-            .refine((str) => str === "1")
+            .and((str) => str === "11315")
+            .and((str) => str === "1")
             .subscribe(listener1, errorHandler);
 
         this.ORDERED_OBSERVABLE$.next("11315");
@@ -1528,8 +1528,8 @@ class OrderedObservableUnitTest {
             if (counter === 1) expect("11315").to.be.equal(data);
         };
         this.ORDERED_OBSERVABLE$.pipe()
-            .refine((str) => str === "11315")
-            .setOnce()
+            .and((str) => str === "11315")
+            .once()
             .subscribe(listener1, errorHandler);
 
         this.ORDERED_OBSERVABLE$.next("11315");
@@ -1561,7 +1561,7 @@ class OrderedObservableUnitTest {
         };
         this.ORDERED_OBSERVABLE$.pipe()
             .unsubscribeBy(data => data === "11")
-            .refine((str) => str === "11315")
+            .and((str) => str === "11315")
             .subscribe(listener1, errorHandler);
 
         this.ORDERED_OBSERVABLE$.next("11315");
@@ -1662,8 +1662,8 @@ class OrderedObservableUnitTest {
         const targetObservable$ = new OrderedObservable("");
         targetObservable$
             .pipe()
-            .refine(str => str.includes("1"))
-            .pushRefiners([
+            .and(str => str.includes("1"))
+            .allOf([
                 str => str.includes("2"),
                 str => str.length < 5,
             ])
@@ -1671,7 +1671,7 @@ class OrderedObservableUnitTest {
 
         this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.ORDERED_OBSERVABLE$.stream([
+        this.ORDERED_OBSERVABLE$.of([
             "1",
             "12",
             "123",
@@ -1706,14 +1706,14 @@ class OrderedObservableUnitTest {
         };
         const targetObservable$ = new OrderedObservable("");
         targetObservable$.pipe()
-            .refine(str => str.includes("1"))
-            .pushRefiners(<any>"10")
-            .refine(str => str.includes("5"))
+            .and(str => str.includes("1"))
+            .allOf(<any>"10")
+            .and(str => str.includes("5"))
             .subscribe(targetListener);
 
         this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.ORDERED_OBSERVABLE$.stream([
+        this.ORDERED_OBSERVABLE$.of([
             "1",
             "12",
             "123",
@@ -1748,17 +1748,17 @@ class OrderedObservableUnitTest {
         };
         const targetObservable$ = new OrderedObservable("");
         targetObservable$.pipe()
-            .switch()
-            .pushCases([
+            .choice()
+            .anyOf([
                 str => str.includes("2"),
                 str => str.includes("5"),
             ])
-            .case(str => str.includes("7"))
+            .or(str => str.includes("7"))
             .subscribe(targetListener);
 
         this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.ORDERED_OBSERVABLE$.stream([
+        this.ORDERED_OBSERVABLE$.of([
             "1",
             "2",
             "3",
@@ -1797,15 +1797,15 @@ class OrderedObservableUnitTest {
         };
         const targetObservable$ = new OrderedObservable("");
         targetObservable$.pipe()
-            .switch()
-            .case(str => str.includes("7"))
-            .pushCases(<any>10)
-            .case(str => str.includes("6"))
+            .choice()
+            .or(str => str.includes("7"))
+            .anyOf(<any>10)
+            .or(str => str.includes("6"))
             .subscribe(targetListener);
 
         this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.ORDERED_OBSERVABLE$.stream([
+        this.ORDERED_OBSERVABLE$.of([
             "1",
             "2",
             "3",
@@ -1845,14 +1845,14 @@ class OrderedObservableUnitTest {
         const targetObservable$ = new Observable("");
         targetObservable$
             .pipe()
-            .refine(str => str.includes("2"))
-            .then<number>(str => str.length)
-            .refine(num => num > 3)
+            .and(str => str.includes("2"))
+            .map<number>(str => str.length)
+            .and(num => num > 3)
             .subscribe(targetListener);
 
         this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.ORDERED_OBSERVABLE$.stream([
+        this.ORDERED_OBSERVABLE$.of([
             "1",
             "12",
             "123",
@@ -1889,15 +1889,15 @@ class OrderedObservableUnitTest {
         const targetObservable$ = new Observable("");
         targetObservable$
             .pipe()
-            .refine(str => str.includes("2"))
-            .then<number>(str => str.length)
-            .refine(num => num > 4)
-            .setOnce()
+            .and(str => str.includes("2"))
+            .map<number>(str => str.length)
+            .and(num => num > 4)
+            .once()
             .subscribe(targetListener);
 
         this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.ORDERED_OBSERVABLE$.stream([
+        this.ORDERED_OBSERVABLE$.of([
             "1",
             "12",
             "123",
@@ -1934,16 +1934,16 @@ class OrderedObservableUnitTest {
         const targetObservable$ = new Observable("");
         targetObservable$
             .pipe()
-            .refine(str => str.includes("2"))
-            .then<number>(str => str.length)
-            .refine(num => num > 4)
-            .then<number>(num => num * 2)
-            .setOnce()
+            .and(str => str.includes("2"))
+            .map<number>(str => str.length)
+            .and(num => num > 4)
+            .map<number>(num => num * 2)
+            .once()
             .subscribe(targetListener);
 
         this.ORDERED_OBSERVABLE$.subscribe([globalCounter, targetObservable$], errorHandler);
 
-        this.ORDERED_OBSERVABLE$.stream([
+        this.ORDERED_OBSERVABLE$.of([
             "1",
             "12",
             "123",
@@ -1975,7 +1975,7 @@ class OrderedObservableUnitTest {
         const observable = new OrderedObservable<{ x: number, y: number }>(null);
         observable
             .pipe()
-            .serialize()
+            .toJson()
             .subscribe(listener);
         observable.next(rawObject);
     }
@@ -1991,7 +1991,7 @@ class OrderedObservableUnitTest {
         const observable = new OrderedObservable<string>("");
         observable
             .pipe()
-            .deserialize<{ x: number, y: number }>()
+            .fromJson<{ x: number, y: number }>()
             .subscribe(listener);
         observable.next(json);
     }
@@ -2013,22 +2013,22 @@ class OrderedObservableUnitTest {
         const observable = new OrderedObservable<number>(0);
         observable.subscribe((v) => v);
 
-        expect(observable.setAscendingSort()).to.be.equal(true);
+        expect(observable.ascendingSort()).to.be.equal(true);
 
         observable.destroy();
 
-        expect(observable.setAscendingSort()).to.be.equal(false);
+        expect(observable.ascendingSort()).to.be.equal(false);
     }
 
     @test 'setDescendingSort after destroy returns false'() {
         const observable = new OrderedObservable<number>(0);
         observable.subscribe((v) => v);
 
-        expect(observable.setDescendingSort()).to.be.equal(true);
+        expect(observable.descendingSort()).to.be.equal(true);
 
         observable.destroy();
 
-        expect(observable.setDescendingSort()).to.be.equal(false);
+        expect(observable.descendingSort()).to.be.equal(false);
     }
 
     @test 'set order on subscription after observable destroy'() {
@@ -2131,10 +2131,10 @@ class OrderedObservableUnitTest {
         sub2.order = 2;
         sub3.order = 3;
 
-        observable.setAscendingSort();
+        observable.ascendingSort();
         observable.next(1);
 
-        observable.setDescendingSort();
+        observable.descendingSort();
         observable.next(2);
 
         // Both next calls should reach all 3 subscribers
