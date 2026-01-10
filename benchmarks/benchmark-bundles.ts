@@ -14,7 +14,7 @@ const RxJSSubject = rxjsBundle.Subject;
 const RxJSFilter = rxjsBundle.filter;
 const RxJSMap = rxjsBundle.map;
 
-console.log('# Bundle vs Bundle: EVG Observable (6.4 kB) vs RxJS UMD (88 kB)');
+console.log('# Bundle vs Bundle: EVG Observable (7.2 kB) vs RxJS UMD (88 kB)');
 console.log('# Both minified for fair comparison\n');
 
 // =============================================================================
@@ -163,4 +163,4 @@ console.log('# Both minified for fair comparison\n');
 }
 
 console.log('# Bundle comparison complete');
-console.log('# EVG Observable: 6.4 kB | RxJS UMD: 88 kB (13.75x larger)');
+console.log('# EVG Observable: 7.2 kB | RxJS UMD: 88 kB (12.2x larger)');

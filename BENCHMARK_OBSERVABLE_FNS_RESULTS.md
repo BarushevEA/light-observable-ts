@@ -6,8 +6,10 @@ Date: 2026-01-10
 
 Performance comparison of two lightweight Observable libraries:
 
-1. **EVG Observable** - True hot observables with original architecture
-2. **observable-fns** - Based on zen-observable, provides Subject for hot observables
+1. **EVG Observable** - True hot observables with original architecture (7.2 kB minified)
+2. **observable-fns** - Based on zen-observable, provides Subject for hot observables (10.8 kB minified)
+
+**Size comparison:** EVG Observable is **1.5x smaller** than observable-fns (7.2 kB vs 10.8 kB)
 
 Benchmarked on Node.js v22.17.1, results averaged over 3 clean runs (no background processes).
 

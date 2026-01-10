@@ -6,9 +6,11 @@ Date: 2026-01-10
 
 Performance comparison of three variants:
 
-1. **Bundle** - Minified JavaScript from `repo/evg_observable.js`
+1. **Bundle** - Minified JavaScript from `repo/evg_observable.js` (7.2 kB)
 2. **TypeScript** - On-the-fly compilation via ts-node
-3. **RxJS** - From node_modules
+3. **RxJS** - From node_modules (88 kB UMD bundle)
+
+**Size comparison:** EVG Observable is **12.2x smaller** than RxJS (7.2 kB vs 88 kB)
 
 ## Test Results
 

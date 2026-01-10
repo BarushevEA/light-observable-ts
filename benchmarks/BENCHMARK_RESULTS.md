@@ -15,7 +15,7 @@ Full benchmark output for EVG Observable library.
 
 ## Bundle vs Bundle Comparison (Fair Comparison)
 
-Comparing minified bundles: **EVG Observable (6.4 kB)** vs **RxJS UMD (88 kB)**
+Comparing minified bundles: **EVG Observable (7.2 kB)** vs **RxJS UMD (88 kB)**
 
 | Test | EVG Bundle | RxJS Bundle | EVG Advantage |
 |------|------------|-------------|---------------|
@@ -27,12 +27,12 @@ Comparing minified bundles: **EVG Observable (6.4 kB)** vs **RxJS UMD (88 kB)**
 | Large payload | **865K** | 199K | **4.3x faster** |
 | Subscribe/unsubscribe 100 | **59K** | 17K | **3.4x faster** |
 
-**Summary:** EVG Observable is **2-6x faster** than RxJS and **13.75x smaller** (6.4 kB vs 88 kB).
+**Summary:** EVG Observable is **2-6x faster** than RxJS and **12.2x smaller** (7.2 kB vs 88 kB).
 
 ### Raw Output
 
 ```
-# Bundle vs Bundle: EVG Observable (6.4 kB) vs RxJS UMD (88 kB)
+# Bundle vs Bundle: EVG Observable (7.2 kB) vs RxJS UMD (88 kB)
 # Both minified for fair comparison
 
 EVG Bundle  - emit 100 values x 1,548,123 ops/sec ±2.49% (83 runs sampled)
@@ -64,7 +64,7 @@ RxJS Bundle - sub/unsub 100 x 17,248 ops/sec ±4.55% (82 runs sampled)
 Fastest is EVG Bundle  - sub/unsub 100
 
 # Bundle comparison complete
-# EVG Observable: 6.4 kB | RxJS UMD: 88 kB (13.75x larger)
+# EVG Observable: 7.2 kB | RxJS UMD: 88 kB (12.2x larger)
 ```
 
 ---
@@ -287,10 +287,10 @@ Fastest is Collector - collection and unsubscription
 
 ## Key Takeaways
 
-1. **Bundle vs Bundle:** EVG Observable is **2-6x faster** and **13.75x smaller** than RxJS
+1. **Bundle vs Bundle:** EVG Observable is **2-6x faster** and **12.2x smaller** than RxJS
 2. **Browser bundle is faster:** Minification provides **3-25% performance boost** over module
 3. **Emit 100 values is the biggest win** at 6.4x faster than RxJS (bundle comparison)
 4. **Large payload handling** is 4.3x faster than RxJS
 5. **Consistent 3-4x advantage** across subscriber counts (10-1000)
-6. **Size comparison:** EVG 6.4 kB vs RxJS 88 kB
+6. **Size comparison:** EVG 7.2 kB vs RxJS 88 kB
 7. **Always benchmark with compiled JS** — tsx/esbuild gives misleading results
