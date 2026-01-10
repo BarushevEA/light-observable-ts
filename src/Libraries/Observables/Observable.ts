@@ -124,11 +124,11 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     }
 
     /**
-     * Emits object key-value pairs one by one. Mirrors for...in semantics.
+     * Emits object key-value pairs one by one as [key, value] tuples. Mirrors for...in semantics.
      *
      * @template K - The type of the object keys.
      * @template V - The type of the object values.
-     * @param {Record<K, V>} obj - An object whose entries will be emitted as {key, value} pairs.
+     * @param {Record<K, V>} obj - An object whose entries will be emitted as [key, value] tuples.
      * @return {void} This method does not return a value.
      */
     in<K extends string | number | symbol, V>(obj: Record<K, V>): void {
@@ -136,8 +136,8 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
         if (!this.enabled) return;
 
         for (const key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                this.next({ key, value: obj[key] } as any as T);
+            if (Object.hasOwn(obj, key)) {
+                this.next([key, obj[key]] as any as T);
             }
         }
     }

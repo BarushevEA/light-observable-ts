@@ -3181,17 +3181,20 @@ class ObservableUnitTest {
         ]);
     }
 
-    @test 'in() should emit object entries as {key, value} pairs'() {
-        const received: Array<{key: string, value: number}> = [];
+    @test 'in() should emit object entries as [key, value] tuples'() {
+        const received: Array<[string, number]> = [];
         const obj = {a: 1, b: 2, c: 3};
 
-        this.OBSERVABLE$.subscribe((pair: any) => received.push(pair));
+        this.OBSERVABLE$.subscribe((tuple: any) => received.push(tuple));
         this.OBSERVABLE$.in(obj);
 
         expect(received.length).to.be.equal(3);
-        expect(received).to.deep.include({key: 'a', value: 1});
-        expect(received).to.deep.include({key: 'b', value: 2});
-        expect(received).to.deep.include({key: 'c', value: 3});
+        expect(received).to.deep.include(['a', 1]);
+        expect(received).to.deep.include(['b', 2]);
+        expect(received).to.deep.include(['c', 3]);
+        // Verify tuple access
+        expect(received[0][0]).to.be.a('string');
+        expect(received[0][1]).to.be.a('number');
     }
 
     @test 'in() should handle empty objects'() {
@@ -3209,8 +3212,8 @@ class ObservableUnitTest {
         const obj = {name: 'Alice', age: '30', city: 'NYC'};
 
         this.OBSERVABLE$.pipe()
-            .and((pair: any) => pair.value.length > 2)
-            .subscribe((pair: any) => received.push(`${pair.key}:${pair.value}`));
+            .and((tuple: any) => tuple[1].length > 2)
+            .subscribe((tuple: any) => received.push(`${tuple[0]}:${tuple[1]}`));
 
         this.OBSERVABLE$.in(obj);
 
@@ -3235,22 +3238,22 @@ class ObservableUnitTest {
         const obj = Object.create({inherited: 'value'});
         obj.own = 'ownValue';
 
-        this.OBSERVABLE$.subscribe((pair: any) => received.push(pair));
+        this.OBSERVABLE$.subscribe((tuple: any) => received.push(tuple));
         this.OBSERVABLE$.in(obj);
 
         expect(received.length).to.be.equal(1);
-        expect(received[0]).to.deep.equal({key: 'own', value: 'ownValue'});
+        expect(received[0]).to.deep.equal(['own', 'ownValue']);
     }
 
     @test 'in() should work with numeric keys'() {
         const received: any[] = [];
         const obj: Record<number, string> = {1: 'one', 2: 'two', 3: 'three'};
 
-        this.OBSERVABLE$.subscribe((pair: any) => received.push(pair));
+        this.OBSERVABLE$.subscribe((tuple: any) => received.push(tuple));
         this.OBSERVABLE$.in(obj);
 
         expect(received.length).to.be.equal(3);
-        expect(received).to.deep.include({key: '1', value: 'one'});
+        expect(received).to.deep.include(['1', 'one']);
     }
 
     @test 'group() should allow adding multiple listeners'() {

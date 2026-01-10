@@ -92,7 +92,7 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
             for (let i = 0; i < listener.length; i++) {
                 this.listeners.push(listener[i]);
                 const handler: IErrorCallback = (errorHandler && Array.isArray(errorHandler))
-                    ? errorHandler[i]
+                    ? (errorHandler[i] ?? this.errorHandler)  // Fallback to default if index out of bounds
                     : (errorHandler as IErrorCallback || this.errorHandler);
                 this.errorHandlers!.push(handler);
             }
