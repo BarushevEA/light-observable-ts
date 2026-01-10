@@ -1,6 +1,6 @@
 {
   "name": "evg_observable",
-  "version": "2.15.7",
+  "version": "2.15.8",
   "description": "Alternative fast and light library version - observable.",
   "main": "src/outLib/index.js",
   "types": "src/outLib/index.d.ts",
