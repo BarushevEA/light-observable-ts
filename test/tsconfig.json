@@ -2,6 +2,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "baseUrl": "./",
+    "rootDir": "../",
     "module": "commonjs",
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,

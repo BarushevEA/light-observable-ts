@@ -909,7 +909,7 @@ class ObservableUnitTest {
         const observable$ = new Observable<number>(0);
         let callCount = 0;
 
-        // Listener that calls destroy during emission
+        // Listener that calls destroys during emission
         const listener = (value: number) => {
             callCount++;
             if (value === 2) {
@@ -921,7 +921,7 @@ class ObservableUnitTest {
         expect(observable$.size()).to.be.equal(1);
 
         observable$.next(1);
-        observable$.next(2); // This triggers destroy during emission
+        observable$.next(2); // This triggers destroyed during emission
         observable$.next(3); // Should not be processed (killed=true)
 
         expect(callCount).to.be.equal(2);
@@ -947,7 +947,7 @@ class ObservableUnitTest {
         observable$.destroy();
         expect(observable$.isDestroyed).to.be.equal(true);
 
-        // Second call should be no-op (line 162 branch)
+        // The second call should be no-op (line 162 branch)
         observable$.destroy();
         expect(observable$.isDestroyed).to.be.equal(true);
     }
@@ -2973,7 +2973,7 @@ class ObservableUnitTest {
             if (v === 2) observable.destroy();
         });
 
-        // Second subscriber should receive value before destroy
+        // The second subscriber should receive value before destruction
         observable.subscribe((v) => {
             received.push(v * 100);
         });
@@ -3006,7 +3006,7 @@ class ObservableUnitTest {
         observable.next(1);
         expect(callCount).to.be.equal(2);
 
-        observable.next(2); // unsubscribeAll is called, but deferred
+        observable.next(2); // unsubscribeAll is called but deferred
         // All subscribers receive the value in this cycle
         expect(callCount).to.be.equal(4);
 
@@ -3057,7 +3057,7 @@ class ObservableUnitTest {
         observable.next(42);
 
         expect(errorCaught).to.be.equal(true);
-        expect(callCount).to.be.equal(1); // second subscriber still called
+        expect(callCount).to.be.equal(1); // the second subscriber still called
     }
 
     @test 'advanced usage: filters, pipes, switch/case, observable-to-observable'() {
@@ -3169,7 +3169,7 @@ class ObservableUnitTest {
             'Emma 35 DRIVER'
         ]);
 
-        // Verify blond and black hair people (all ages)
+        // Verify blond and black hair of people (all ages)
         expect(blondAndBlackPeople).to.deep.equal([
             'Alex 35 BLOND',
             'John 45 BLACK',
@@ -3293,14 +3293,14 @@ class ObservableUnitTest {
         group.add((x: any) => received1.push(x));
         group.add((x: any) => received2.push(x));
 
-        this.OBSERVABLE$.next(3);
-        this.OBSERVABLE$.next(7);
-        this.OBSERVABLE$.next(10);
+        this.OBSERVABLE$.next('3');
+        this.OBSERVABLE$.next('7');
+        this.OBSERVABLE$.next('10');
 
         // Pipe should execute only ONCE per emission, not N times for N listeners
         expect(pipeExecutions).to.be.equal(3);
-        expect(received1).to.deep.equal([7, 10]);
-        expect(received2).to.deep.equal([7, 10]);
+        expect(received1).to.deep.equal(['7', '10']);
+        expect(received2).to.deep.equal(['7', '10']);
     }
 
     @test 'group() should support array of listeners'() {
@@ -3442,9 +3442,9 @@ class ObservableUnitTest {
         group.add((x: any) => received1.push(x * 2));
         group.add((x: any) => received2.push(x * 3));
 
-        this.OBSERVABLE$.next(-1);
-        this.OBSERVABLE$.next(5);
-        this.OBSERVABLE$.next(10);
+        this.OBSERVABLE$.next('-1');
+        this.OBSERVABLE$.next('5');
+        this.OBSERVABLE$.next('10');
 
         // Filter should execute 3 times (once per emission), not 6 times (not per listener)
         expect(transformations).to.be.equal(3);
@@ -3453,23 +3453,87 @@ class ObservableUnitTest {
     }
 
     @test 'group() with unsubscribeBy should unsubscribe when condition met'() {
-        const received1: number[] = [];
-        const received2: number[] = [];
+        const received1: string[] = [];
+        const received2: string[] = [];
 
         const group = this.OBSERVABLE$.pipe()
-            .unsubscribeBy((x: any) => x === 5)
+            .unsubscribeBy((x: any) => x === '5')
             .group();
 
         group.add((x: any) => received1.push(x));
         group.add((x: any) => received2.push(x));
 
-        this.OBSERVABLE$.next(1);
-        this.OBSERVABLE$.next(3);
-        this.OBSERVABLE$.next(5); // Should trigger unsubscribe (value not emitted to listeners)
-        this.OBSERVABLE$.next(7); // Should not be received
+        this.OBSERVABLE$.next('1');
+        this.OBSERVABLE$.next('3');
+        this.OBSERVABLE$.next('5'); // Should trigger unsubscribe (value not emitted to listeners)
+        this.OBSERVABLE$.next('7'); // Should not be received
 
-        expect(received1).to.deep.equal([1, 3]);
-        expect(received2).to.deep.equal([1, 3]);
+        expect(received1).to.deep.equal(['1', '3']);
+        expect(received2).to.deep.equal(['1', '3']);
         expect(this.OBSERVABLE$.size()).to.be.equal(0); // All unsubscribed
+    }
+
+    @test 'group() without primary listener should process pipe chain correctly'() {
+        const observable$ = new Observable<number>(0);
+        const results: number[] = [];
+        let pipeExecutions = 0;
+
+        const group = observable$
+            .pipe()
+            .and(x => {
+                pipeExecutions++;
+                return x > 0;
+            })
+            .map<number>(x => x * 2)
+            .group();  // No primary listener!
+
+        group.add((x: number) => results.push(x));
+
+        observable$.next(-1);  // Should be filtered
+        observable$.next(5);   // Should pass and transform
+
+        expect(pipeExecutions).to.be.equal(2);  // Both emissions processed
+        expect(results).to.deep.equal([10]);  // Only 5 * 2 received
+    }
+
+    @test 'group().add() with partial error handler array should use default handlers'() {
+        const errors: string[] = [];
+        const results: number[] = [];
+        const defaultHandler = (data: any, err: any) => errors.push('default');
+
+        const observable$ = new Observable<number>(0);
+
+        // Create group and set default error handler
+        const group = observable$.pipe().group();
+        (group as any).errorHandler = defaultHandler;  // Set default error handler for fallback
+
+        const listener1 = (x: number) => {
+            results.push(x);
+            throw new Error('error1');
+        };
+        const listener2 = (x: number) => {
+            results.push(x);
+            throw new Error('error2');
+        };
+        const listener3 = (x: number) => {
+            results.push(x);
+            throw new Error('error3');
+        };
+
+        const customHandler = (data: any, err: any) => errors.push('custom');
+
+        // Add 3 listeners but only 1 custom error handler
+        group.add([listener1, listener2, listener3], [customHandler]);
+
+        observable$.next(1);
+
+        // Verify all 3 listeners were called
+        expect(results).to.deep.equal([1, 1, 1]);
+
+        // Verify error handlers
+        expect(errors.length).to.be.equal(3);
+        expect(errors[0]).to.be.equal('custom');   // First listener uses custom handler
+        expect(errors[1]).to.be.equal('default');  // The second listener falls back to default
+        expect(errors[2]).to.be.equal('default');  // The third listener falls back to default
     }
 }

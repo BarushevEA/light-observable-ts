@@ -177,6 +177,10 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
                 const chain = this.chain;
                 const data = this.flow;
                 const len = chain.length;
+
+                // If a chain is empty, the value passes through automatically for group listeners
+                data.isAvailable = len === 0;
+
                 for (let i = 0; i < len; i++) {
                     data.isUnsubscribe = false;
                     data.isAvailable = false;
