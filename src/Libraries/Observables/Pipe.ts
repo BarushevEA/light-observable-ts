@@ -205,4 +205,14 @@ export class PipeSwitchCase<T> extends SwitchCase<T, Pipe<T>, IPipeCase<T>> impl
     subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
         return this.pipe.subscribe(listener, errorHandler);
     }
+
+    /**
+     * Converts this switch-case pipe to a group subscription for optimized multi-listener pattern.
+     * Acts as a type finalizer - prevents further operator chaining via TypeScript type system.
+     *
+     * @return {IGroupSubscription<T>} A group subscription interface with add() and unsubscribe() methods.
+     */
+    group(): IGroupSubscription<T> {
+        return this.pipe as any as IGroupSubscription<T>;
+    }
 }

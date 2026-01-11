@@ -726,6 +726,7 @@ export type IChainCallback = (data: IPipePayload) => void;
 export type IPipeCase<T> = ISubscribe<T> & {
     or(condition: ICallback<any>): IPipeCase<T> & ISubscribe<T>;
     anyOf(conditions: ICallback<any>[]): IPipeCase<T> & ISubscribe<T>;
+    group(): IGroupSubscription<T>;
 };
 /**
  * Represents a combined subscriber that can either be a listener or a setter for observable values.
