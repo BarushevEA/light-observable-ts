@@ -25,6 +25,8 @@ coverage/
 
 # Documentation (keep only essential)
 CLAUDE.md
+BENCHMARK_*.md
+BREAKING_CHANGES.md
 
 # Misc
 *.log
