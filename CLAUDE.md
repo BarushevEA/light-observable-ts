@@ -56,24 +56,18 @@ Value → Inbound Filters (addFilter/switch-case) → Observable → Pipe (refin
 3. **Pipe**: Transforms/filters outgoing values (`refine()`, `then<K>()`, `serialize()`)
 4. **Subscribers**: Receive processed values (can be listeners OR other Observables)
 
-### Key Capability: Observable-to-Observable Subscription
+### Key Capabilities
 
-Observables can subscribe to other Observables, enabling data flow networks:
+- **Multi-subscriber**: Any number of listeners or Observables can subscribe to a single source
+- **Observable-to-Observable subscription**: Observables can subscribe to other Observables, enabling data flow networks
+- **Pipelines**: Chainable transformation/filter chains (`pipe().and().map().subscribe()`)
+- **Dual filtering**: Inbound (`addFilter`) + Outbound (`pipe`) on same Observable
+- **AND/OR logic**: `and()` chains for AND logic, `choice().or()` for OR logic — in both pipes and inbound filters
+- **Stream branching**: One source to multiple Observable targets via `subscribe([target1$, target2$])`
+- **Batch filters**: `pushFilters()` / `pushRefiners()` for filter arrays
+- **Parallel pipelines**: Multiple `pipe()` chains from single source with different logic
 
-```typescript
-const source$ = new Observable<string>('');
-const target$ = new Observable<string>('');
-
-// target$ receives all emissions from source$
-source$.subscribe(target$);
-
-// With filtering via pipe
-source$.pipe().and(condition).subscribe([target1$, target2$]);
-```
-
-### Complex Stream Composition
-
-Library supports sophisticated reactive patterns with stream branching and multiple filter layers:
+#### Stream Composition Example
 
 ```
 source$ ──┬── pipe().and() ──→ subscribe([target1$, target2$])
@@ -87,18 +81,12 @@ source$ ──┬── pipe().and() ──→ subscribe([target1$, target2$])
           └── pipe().choice().or() ──→ listener3
 ```
 
-Key capabilities:
-- **Stream branching**: One source to multiple Observable targets
-- **Dual filtering**: Inbound (`addFilter`) + Outbound (`pipe`) on same Observable
-- **Batch filters**: `pushFilters()` / `pushRefiners()` for filter arrays
-- **Parallel pipelines**: Multiple `pipe()` chains from single source with different logic
-
 ## Common Commands
 
 | Command | Purpose |
 |---------|---------|
-| `npm test` | Run unit tests with Mocha + NYC coverage |
-| `npm run build` | Compile TypeScript to `src/outLib/` |
+| `npm test` | Run unit tests with coverage |
+| `npm run build` | Compile TypeScript for npm publish |
 | `npm run benchmark` | Run performance benchmarks |
 | `npm run benchmark:comparison` | Compare performance against RxJS |
 
@@ -121,7 +109,7 @@ npx mocha --require ./register.js test/Observable.unit.test.ts
 
 - **Collector.ts**: Subscription management utility for bulk operations across multiple subscriptions.
 
-- **Types.ts**: Comprehensive TypeScript interface definitions (800+ lines). Key interfaces: `IObserver<T>`, `ISetup<T>`, `ISubscriptionLike`, `IOrderedSubscriptionLike`, `ICollector`.
+- **Types.ts**: Comprehensive TypeScript interface definitions. Key interfaces: `IObserver<T>`, `ISetup<T>`, `ISubscriptionLike`, `IOrderedSubscriptionLike`, `ICollector`.
 
 ### Public API Exports
 
@@ -131,11 +119,6 @@ export {ISubscriptionLike, IOrderedSubscriptionLike}
 ```
 
 ## Testing
-
-- **Framework**: Mocha with `@testdeck/mocha` class decorators
-- **Assertions**: Chai
-- **Test location**: `test/*.unit.test.ts`
-- **Coverage**: NYC with HTML reports to `./coverage`
 
 Test pattern uses decorator-based classes:
 ```typescript
@@ -250,8 +233,50 @@ Bundle comparison (v3.0.0 API, minified bundles, clean benchmarks):
 
 See `BENCHMARK_BUNDLE_RESULTS.md` for full details.
 
+## Tech Stack
+
+- **Language**: TypeScript (strict mode), target ESNext, module CommonJS
+- **Testing**: Mocha + `@testdeck/mocha` (decorator-based) + Chai + NYC (coverage)
+- **Build**: `tsc --declaration` → `src/outLib/` (npm publish prep — strips comments to reduce package size; no bundler/minifier in this project)
+- **Browser bundle**: `repo/evg_observable.js` — browser build of this library, built in a separate project (no bundling/minification tooling here yet)
+- **Package manager**: npm
+- **No linter/formatter** configured (no ESLint, no Prettier, no .editorconfig)
+
+## Conventions
+
+### Naming
+
+| Element | Convention | Example |
+|---------|-----------|---------|
+| Classes | PascalCase | `Observable`, `Pipe`, `FilterCollection` |
+| Interfaces/Types | `I` + PascalCase | `IObserver<T>`, `ISetup<T>`, `ISubscriptionLike` |
+| Functions/Methods | camelCase | `deleteFromArray()`, `addFilter()`, `getValue()` |
+| Variables | camelCase | `errorCounter`, `subscriptionLike` |
+| Observable instances | camelCase + `$` suffix | `observable$`, `source$` |
+| Test fixtures | UPPER_SNAKE_CASE | `OBSERVABLE$`, `COLLECTOR` |
+
+### File Organization
+
+- Source files: **PascalCase** (`Observable.ts`, `FilterCollection.ts`, `FunctionLibs.ts`)
+- Test files: `{ClassName}.unit.test.ts`
+- Types: all in single `Types.ts` file (~800 lines)
+- Public API: re-exported through `src/Libraries/Observables/index.ts`
+
+### Code Style
+
+- 2-space indentation
+- Named exports (`export class ...`, `export function ...`)
+- Fluent API / method chaining (`.and()`, `.or()`, `.refine()`, `.subscribe()`)
+- JSDoc comments (`/** @template @param @return */`) on public methods
+- Type composition via intersection (`&`) over inheritance for interfaces
+- Protected members for extensibility (`OrderedObservable extends Observable<T>`)
+- Strict mode in src, non-strict in tests (for decorator flexibility)
+
 ## Key Patterns
 
 - **Resource cleanup**: Always use `destroy()`, `unsubscribeAll()`, or `unsubscribe()` for lifecycle management
 - **Performance utilities**: Prefer `quickDeleteFromArray` over `deleteFromArray` for optimized array removal
-- **Type safety**: Strict TypeScript mode enabled; maintain comprehensive interface usage
+
+## API Reference
+
+See [README.md](README.md) for full API documentation, usage examples, and method reference.

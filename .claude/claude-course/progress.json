@@ -21,11 +21,11 @@
         }
       ],
       "tasks": {
-        "create_claude_md": false,
-        "claude_md_quality": false,
-        "add_project_overview": false,
-        "add_tech_stack": false,
-        "add_conventions": false,
+        "create_claude_md": true,
+        "claude_md_quality": true,
+        "add_project_overview": true,
+        "add_tech_stack": true,
+        "add_conventions": true,
         "create_claudeignore": true,
         "test_claude_understanding": false,
         "explore_slash_commands": false,
@@ -99,7 +99,7 @@
     }
   },
   "current_module": "1-foundations-and-commands",
-  "current_task": "create_claude_md",
+  "current_task": "test_claude_understanding",
   "current_session_id": "0dc80f40-cc0a-4faf-ac17-116305e551d3",
   "total_time_spent_minutes": 0,
   "exports": [],
