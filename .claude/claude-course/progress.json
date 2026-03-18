@@ -28,6 +28,12 @@
         {
           "session_id": "545469a2-5532-4a74-bf91-4b6e8fcb1524",
           "started_at": "2026-03-18T00:06:41Z",
+          "ended_at": "2026-03-18T23:01:36Z",
+          "tasks_completed": []
+        },
+        {
+          "session_id": "4baf9653-9101-4bc8-9e08-35e3fc9340e0",
+          "started_at": "2026-03-18T23:01:36Z",
           "ended_at": null,
           "tasks_completed": []
         }
@@ -112,7 +118,7 @@
   },
   "current_module": "1-foundations-and-commands",
   "current_task": "create_custom_command",
-  "current_session_id": "545469a2-5532-4a74-bf91-4b6e8fcb1524",
+  "current_session_id": "4baf9653-9101-4bc8-9e08-35e3fc9340e0",
   "total_time_spent_minutes": 0,
   "exports": [],
   "graduation": {
