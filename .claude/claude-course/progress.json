@@ -9,9 +9,9 @@
   },
   "modules": {
     "1-foundations-and-commands": {
-      "status": "in_progress",
+      "status": "completed",
       "started_at": "2026-03-17T19:01:08Z",
-      "completed_at": null,
+      "completed_at": "2026-03-18T23:15:00Z",
       "sessions": [
         {
           "session_id": "0dc80f40-cc0a-4faf-ac17-116305e551d3",
@@ -49,19 +49,42 @@
         "explore_slash_commands": true,
         "test_session_commands": true,
         "use_plan_mode": true,
-        "create_custom_command": false,
-        "commit_work": false
+        "create_custom_command": true,
+        "commit_work": true
       },
-      "submission": null
+      "submission": {
+        "submitted_at": "2026-03-18T23:16:00Z",
+        "file_path": "/home/grif/WebstormProjects/light-observable-ts/.claude/claude-course/submissions/seminar1-barushev-yevgen-2026-03-18.zip",
+        "file_size_bytes": 1006376
+      }
     },
     "2-skills": {
-      "status": "locked",
-      "started_at": null,
+      "status": "in_progress",
+      "started_at": "2026-03-18T23:17:00Z",
       "completed_at": null,
-      "sessions": [],
+      "sessions": [
+        {
+          "session_id": "e00dfa6f-1644-42e6-8cf5-b626d1ef0752",
+          "started_at": "2026-03-18T23:17:00Z",
+          "ended_at": "2026-03-19T11:14:17Z",
+          "tasks_completed": []
+        },
+        {
+          "session_id": "0be05e6b-b90b-4ac7-83d2-d31f652b83d6",
+          "started_at": "2026-03-19T11:14:17Z",
+          "ended_at": "2026-03-19T11:58:37Z",
+          "tasks_completed": []
+        },
+        {
+          "session_id": "be6a41f2-b0eb-4067-aafb-8cb025d517b9",
+          "started_at": "2026-03-19T11:58:37Z",
+          "ended_at": null,
+          "tasks_completed": []
+        }
+      ],
       "tasks": {
-        "create_skills_directory": false,
-        "understand_codify_workflow": false,
+        "create_skills_directory": true,
+        "understand_codify_workflow": true,
         "write_reference_skill": false,
         "write_action_skill": false,
         "test_skills": false,
@@ -116,9 +139,9 @@
       "submission": null
     }
   },
-  "current_module": "1-foundations-and-commands",
-  "current_task": "create_custom_command",
-  "current_session_id": "4baf9653-9101-4bc8-9e08-35e3fc9340e0",
+  "current_module": "2-skills",
+  "current_task": "write_reference_skill",
+  "current_session_id": "be6a41f2-b0eb-4067-aafb-8cb025d517b9",
   "total_time_spent_minutes": 0,
   "exports": [],
   "graduation": {
