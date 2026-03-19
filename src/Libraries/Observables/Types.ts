@@ -522,8 +522,9 @@ export type ITransform<T> = {
  * interval are silently dropped.
  *
  * @template T - The type of the data being throttled.
- * @param {number} ms - Minimum interval between emissions in milliseconds.
- * @returns {ISetup<T>} A setup structure for additional chaining.
+ *
+ * @property {function} throttle - Applies a throttle with the given cooldown interval.
+ * Accepts a minimum interval in milliseconds between emissions and returns a setup structure for additional chaining.
  */
 export type IThrottle<T> = {
     throttle(ms: number): ISetup<T>;
@@ -576,8 +577,9 @@ export type IOrderedTransform<T> = {
  * Represents an ordered throttle operation using leading-edge strategy.
  *
  * @template T - The type of the data being throttled.
- * @param {number} ms - Minimum interval between emissions in milliseconds.
- * @returns {ISetup<T>} A setup structure for additional chaining.
+ *
+ * @property {function} throttle - Applies a throttle with the given cooldown interval.
+ * Accepts a minimum interval in milliseconds between emissions and returns a setup structure for additional chaining.
  */
 export type IOrderedThrottle<T> = {
     throttle(ms: number): ISetup<T>;
