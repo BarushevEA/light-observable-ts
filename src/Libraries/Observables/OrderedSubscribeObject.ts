@@ -29,7 +29,6 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> implements IOr
      *
      * @param {OrderedObservable<T> | IOrdered<T>} observable - The ordered observable or IOrdered instance to attach to this instance.
      * @param {boolean} [isPipe] - Optional flag indicating if the stream is part of a piping sequence.
-     * @return {void}
      */
     constructor(observable: OrderedObservable<T> | IOrdered<T>, isPipe?: boolean) {
         super(<IObserver<T>>observable, isPipe);

@@ -51,7 +51,6 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
      *
      * @param {IObserver<T>} [observable] - The observer instance to be assigned. Optional parameter.
      * @param {boolean} [isPipe=false] - Determines whether the instance is piped. Defaults to false.
-     * @return {void}
      */
     constructor(observable?: IObserver<T>, isPipe?: boolean) {
         super();

@@ -42,7 +42,7 @@ export class Collector implements ICollector {
      * Unsubscribes from all the currently active subscriptions managed by this instance.
      * If the instance is marked as killed, the method will exit without performing any action.
      *
-     * @return {void | null} Returns `null` if the instance is killed, otherwise does not return a value.
+     * @return {void} Does not return a value.
      */
     unsubscribeAll(): void | null {
         if (this.killed) return;

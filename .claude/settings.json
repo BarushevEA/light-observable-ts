@@ -8,8 +8,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '' && echo '=== Changes Summary ===' && git diff --stat 2>/dev/null || true && echo '' && echo 'Reminder: run /check-changes to review code quality'",
-            "statusMessage": "Checking changes..."
+            "command": "echo \"=== Claude Stop: $(date '+%Y-%m-%d %H:%M:%S') ===\" > /tmp/claude-review.txt && git diff --stat >> /tmp/claude-review.txt 2>/dev/null && echo '' >> /tmp/claude-review.txt && echo 'Run /check-changes for full review' >> /tmp/claude-review.txt",
+            "statusMessage": "Saving changes summary..."
           }
         ]
       }

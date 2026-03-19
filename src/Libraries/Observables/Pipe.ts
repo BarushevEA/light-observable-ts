@@ -223,6 +223,13 @@ export abstract class Pipe<T> implements ISubscribe<T> {
  * @implements {ISubscribe<T>}
  */
 export class PipeSwitchCase<T> extends SwitchCase<T, Pipe<T>, IPipeCase<T>> implements ISubscribe<T> {
+    /**
+     * Subscribes a listener to the underlying pipe, delegating to the pipe's subscribe method.
+     *
+     * @param {IListener<T> | ISetObservableValue} listener - The listener or handler that will receive notifications.
+     * @param {IErrorCallback} [errorHandler] - An optional callback to handle errors during subscription.
+     * @return {ISubscriptionLike | undefined} An object representing the subscription, or undefined if the subscription could not be created.
+     */
     subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
         return this.pipe.subscribe(listener, errorHandler);
     }

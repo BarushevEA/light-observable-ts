@@ -179,7 +179,9 @@ export type IGroupSubscription<T> = ISubscriptionLike & {
  * @property {IOnce<T>} Provides mechanisms for handling one-time subscriptions.
  * @property {ISwitch<T>} Interface for enabling switch-like behavior for managing state or event streams.
  * @property {ITransform<T>} Allows for the transformation of data or events before they are processed or re-emitted.
+ * @property {IThrottle<T>} Provides leading-edge throttle to limit emission frequency.
  * @property {ISerialisation} Includes methods for serializing and deserializing data structures.
+ * @property {IGroup<T>} Converts pipe to group subscription for optimized multi-listener pattern.
  * @property {ISubscribe<T>} Implements standard subscription management functionalities.
  */
 export type ISetup<T> =
@@ -205,7 +207,9 @@ export type ISetup<T> =
  * - One-time execution of operations.
  * - Switching between different ordered setups.
  * - Transformation of data in an ordered way.
+ * - Throttling emissions with leading-edge strategy.
  * - Serialization and deserialization capabilities.
+ * - Group subscription for optimized multi-listener pattern.
  * - Subscription management adhering to order.
  *
  * @template T The type of the data to be handled by the ordered setup.

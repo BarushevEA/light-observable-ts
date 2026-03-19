@@ -16,7 +16,6 @@ export abstract class SwitchCase<T, P extends IChainContainer, W> {
      * Creates an instance of the class and initializes the pipe and counter.
      *
      * @param {P} pipe - The pipe object used for initialization.
-     * @return {void}
      */
     constructor(pipe: P) {
         this.pipe = pipe;

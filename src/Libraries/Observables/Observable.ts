@@ -48,10 +48,11 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     }
 
     /**
-     * Adds an error handler filter to the current filter setup.
+     * Returns the inbound filter setup for this Observable.
+     * Optionally registers an error handler for filter chain errors.
      *
-     * @param {IErrorCallback} [errorHandler] - An optional error handler callback to handle errors in the filter.
-     * @return {IFilterSetup<T>} The updated filter setup object with the specified error handler added.
+     * @param {IErrorCallback} [errorHandler] - An optional error handler callback for filter chain errors.
+     * @return {IFilterSetup<T>} The filter setup object for chaining filter conditions.
      */
     addFilter(errorHandler?: IErrorCallback): IFilterSetup<T> {
         if (errorHandler) this.filters.addErrorHandler(errorHandler);
