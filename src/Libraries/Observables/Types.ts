@@ -188,6 +188,7 @@ export type ISetup<T> =
     IOnce<T> &
     ISwitch<T> &
     ITransform<T> &
+    IThrottle<T> &
     ISerialisation &
     IGroup<T> &
     ISubscribe<T>;
@@ -215,6 +216,7 @@ export type IOrderedSetup<T> =
     IOrderedOnce<T> &
     IOrderedSwitch<T> &
     IOrderedTransform<T> &
+    IOrderedThrottle<T> &
     IOrderedSerialisation &
     IOrderedGroup<T> &
     IOrderedSubscribe<T>;
@@ -515,6 +517,19 @@ export type ITransform<T> = {
 };
 
 /**
+ * Represents a throttle operation using leading-edge strategy.
+ * The first value passes immediately; subsequent values within the cooldown
+ * interval are silently dropped.
+ *
+ * @template T - The type of the data being throttled.
+ * @param {number} ms - Minimum interval between emissions in milliseconds.
+ * @returns {ISetup<T>} A setup structure for additional chaining.
+ */
+export type IThrottle<T> = {
+    throttle(ms: number): ISetup<T>;
+};
+
+/**
  * ISerialisation interface defines the structure for objects responsible for
  * handling JSON serialization and deserialization of data.
  *
@@ -555,6 +570,17 @@ export type IOrderedEmitByPositive<T> = {
  */
 export type IOrderedTransform<T> = {
     map<K>(condition: ICallback<T>): ISetup<K>;
+};
+
+/**
+ * Represents an ordered throttle operation using leading-edge strategy.
+ *
+ * @template T - The type of the data being throttled.
+ * @param {number} ms - Minimum interval between emissions in milliseconds.
+ * @returns {ISetup<T>} A setup structure for additional chaining.
+ */
+export type IOrderedThrottle<T> = {
+    throttle(ms: number): ISetup<T>;
 };
 
 /**

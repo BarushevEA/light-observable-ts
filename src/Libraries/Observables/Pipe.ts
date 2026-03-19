@@ -123,6 +123,27 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 
     /**
+     * Throttles emissions using a leading-edge strategy.
+     * The first value passes immediately; subsequent values within the
+     * cooldown interval are silently dropped.
+     *
+     * @param {number} ms - Minimum interval between emissions in milliseconds.
+     * @return {ISetup<T>} The current setup instance for chaining purposes.
+     */
+    throttle(ms: number): ISetup<T> {
+        let lastEmitTime = 0;
+        return this.push(
+            (data: IPipePayload): void => {
+                const now = Date.now();
+                if (now - lastEmitTime >= ms) {
+                    lastEmitTime = now;
+                    data.isAvailable = true;
+                }
+            }
+        );
+    }
+
+    /**
      * Converts the payload to a JSON string and
      * sets the `isAvailable` property to true.
      *

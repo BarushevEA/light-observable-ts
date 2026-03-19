@@ -104,10 +104,17 @@
       }
     },
     "3-extensions": {
-      "status": "unlocked",
-      "started_at": null,
+      "status": "in_progress",
+      "started_at": "2026-03-19T20:50:00Z",
       "completed_at": null,
-      "sessions": [],
+      "sessions": [
+        {
+          "session_id": "2105b8df-e87c-47f1-8bfb-bb83b9a35d25",
+          "started_at": "2026-03-19T20:50:00Z",
+          "ended_at": null,
+          "tasks_completed": []
+        }
+      ],
       "tasks": {
         "create_hook": false,
         "test_hook": false,
@@ -150,8 +157,8 @@
       "submission": null
     }
   },
-  "current_module": "2-skills",
-  "current_task": "commit_skills",
+  "current_module": "3-extensions",
+  "current_task": "create_hook",
   "current_session_id": "2105b8df-e87c-47f1-8bfb-bb83b9a35d25",
   "total_time_spent_minutes": 0,
   "exports": [],

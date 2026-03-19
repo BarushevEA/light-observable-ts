@@ -1,5 +1,18 @@
 {
   "enabledPlugins": {
     "skill-creator@claude-plugins-official": true
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "agent",
+            "prompt": "Review the current git changes (run git diff) against project conventions: PascalCase for classes, camelCase for functions, I prefix for interfaces, $ suffix for observables, 2-space indent, JSDoc on public methods. Check for console.log leftovers, unused imports, missing cleanup (destroy/unsubscribe). Report issues as a checklist grouped by file. If no source code changes, say 'No source code changes to review'. Use $ARGUMENTS for context.",
+            "statusMessage": "Reviewing code changes..."
+          }
+        ]
+      }
+    ]
   }
 }
