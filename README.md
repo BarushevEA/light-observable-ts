@@ -20,6 +20,7 @@ EVG Observable - is a light library for simple use.
         - [pipe().once()](#pipeonce)
         - [pipe().unsubscribeBy()](#pipeunsubscribebycondition)
         - [pipe().and()](#pipeandcondition)
+        - [pipe().throttle()](#pipethrottlems)
         - [pipe().toJson()](#pipetojson)
         - [pipe().fromJson()](#pipefromjsonk)
         - [pipe().in()](#pipeink-v)
@@ -90,7 +91,7 @@ Benchmarked with minified bundles on Node.js v22.17.1 (v3.0.0 API, averaged over
 
 ### When to use RxJS instead
 
-RxJS is better when you need specialized operators like `debounceTime`, `throttleTime`, `switchMap`, `mergeMap`, `combineLatest`, `withLatestFrom`, or schedulers for async control.
+RxJS is better when you need specialized operators like `debounceTime`, `switchMap`, `mergeMap`, `combineLatest`, `withLatestFrom`, or schedulers for async control.
 
 **For 80% of reactive programming tasks, EVG Observable provides sufficient functionality with significant performance and size benefits.**
 
@@ -333,6 +334,39 @@ observable$.next({message: "some message3", isNeedUnsubscribe: true});
 ### pipe().and(condition)
 
 Observable will send a value to the listener only if condition returns "true". There is no automatic unsubscription.
+
+### pipe().throttle(ms)
+
+Throttle emissions using leading-edge strategy. The first value passes immediately; subsequent values within the cooldown interval are silently dropped.
+
+```ts
+import {Observable} from "evg_observable";
+
+const observable$ = new Observable<string>('');
+const received: string[] = [];
+
+observable$
+    .pipe()
+    .throttle(300)  // Only allow one value per 300ms
+    .subscribe((value: string) => received.push(value));
+
+observable$.next("first");   // passes immediately
+observable$.next("second");  // dropped (within 300ms)
+observable$.next("third");   // dropped (within 300ms)
+// After 300ms...
+observable$.next("fourth");  // passes (interval expired)
+```
+
+Throttle can be combined with other pipe operators:
+
+```ts
+observable$
+    .pipe()
+    .and(str => str.length > 1)    // filter short strings
+    .throttle(500)                  // throttle remaining values
+    .map<number>(str => str.length) // transform to length
+    .subscribe(listener);
+```
 
 ### pipe().toJson()
 
@@ -805,6 +839,7 @@ observable$.next(-1);  // Listener 1 throws, listener 2 still receives
 | `.choice()`                          | SwitchCase object                      | transitions the pipe into switch-case mode. In this mode, only the first condition that returns a positive result is triggered, and all others are ignored. This allows you to handle multiple cases more conveniently. |
 | `.or(*condition)`                  | PipeCase object                        | Adds a condition to the chain of cases. The entire chain operates on the principle of "OR". This is different from other pipe methods which, when chained, operate on the principle of "AND".                           |
 | `.anyOf(*conditions)`            | PipeCase object                        | This method allows you to add a group of conditions for filtering cases data in the pipeline chain.                                                                                                                     |
+| `.throttle(ms: number)`              | pipe object                            | Throttles emissions using leading-edge strategy. First value passes immediately, subsequent values within `ms` interval are dropped.                                                                                    |
 | `.map<K>(transform: ICallback<T>)`  | Observable instance with new data type | This method allows transforming payload data in the pipe chain by applying user callback function. `transform` should be a function that takes the current data and returns transformed data of possibly another type.  |
 | `.toJson()`                       | pipe object                            | Converts the observers data into a JSON string.                                                                                                                                                                         |
 | `.fromJson<K>()`                  | pipe object                            | Converts a JSON string into an object of type K.                                                                                                                                                                        |
