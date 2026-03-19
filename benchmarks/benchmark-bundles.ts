@@ -49,8 +49,8 @@ console.log('# Both minified for fair comparison\n');
     const obsRxJS = new RxJSSubject();
 
     obsEVG.pipe()
-        .refine((v: number) => v % 2 === 0)
-        .then((v: number) => `Value: ${v}`)
+        .and((v: number) => v % 2 === 0)
+        .map((v: number) => `Value: ${v}`)
         .subscribe(() => {});
 
     obsRxJS.pipe(

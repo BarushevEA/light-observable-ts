@@ -85,7 +85,7 @@
       "tasks": {
         "create_skills_directory": true,
         "understand_codify_workflow": true,
-        "write_reference_skill": false,
+        "write_reference_skill": true,
         "write_action_skill": false,
         "test_skills": false,
         "commit_skills": false
@@ -140,7 +140,7 @@
     }
   },
   "current_module": "2-skills",
-  "current_task": "write_reference_skill",
+  "current_task": "write_action_skill",
   "current_session_id": "be6a41f2-b0eb-4067-aafb-8cb025d517b9",
   "total_time_spent_minutes": 0,
   "exports": [],
