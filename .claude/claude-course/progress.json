@@ -59,9 +59,10 @@
       }
     },
     "2-skills": {
-      "status": "in_progress",
+      "status": "completed",
       "started_at": "2026-03-18T23:17:00Z",
-      "completed_at": null,
+      "completed_at": "2026-03-19T20:45:00Z",
+      "submission_file": ".claude/claude-course/submissions/seminar2-barushev-yevgen-2026-03-19.zip",
       "sessions": [
         {
           "session_id": "e00dfa6f-1644-42e6-8cf5-b626d1ef0752",
@@ -78,6 +79,12 @@
         {
           "session_id": "be6a41f2-b0eb-4067-aafb-8cb025d517b9",
           "started_at": "2026-03-19T11:58:37Z",
+          "ended_at": "2026-03-19T20:39:22Z",
+          "tasks_completed": []
+        },
+        {
+          "session_id": "2105b8df-e87c-47f1-8bfb-bb83b9a35d25",
+          "started_at": "2026-03-19T20:39:22Z",
           "ended_at": null,
           "tasks_completed": []
         }
@@ -86,14 +93,18 @@
         "create_skills_directory": true,
         "understand_codify_workflow": true,
         "write_reference_skill": true,
-        "write_action_skill": false,
-        "test_skills": false,
-        "commit_skills": false
+        "write_action_skill": true,
+        "test_skills": true,
+        "commit_skills": true
       },
-      "submission": null
+      "submission": {
+        "submitted_at": "2026-03-19T20:45:00Z",
+        "file_path": "/home/grif/WebstormProjects/light-observable-ts/.claude/claude-course/submissions/seminar2-barushev-yevgen-2026-03-19.zip",
+        "file_size_bytes": 643769
+      }
     },
     "3-extensions": {
-      "status": "locked",
+      "status": "unlocked",
       "started_at": null,
       "completed_at": null,
       "sessions": [],
@@ -140,8 +151,8 @@
     }
   },
   "current_module": "2-skills",
-  "current_task": "write_action_skill",
-  "current_session_id": "be6a41f2-b0eb-4067-aafb-8cb025d517b9",
+  "current_task": "commit_skills",
+  "current_session_id": "2105b8df-e87c-47f1-8bfb-bb83b9a35d25",
   "total_time_spent_minutes": 0,
   "exports": [],
   "graduation": {
