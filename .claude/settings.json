@@ -8,8 +8,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo \"=== Claude Stop: $(date '+%Y-%m-%d %H:%M:%S') ===\" > /tmp/claude-review.txt && git diff --stat >> /tmp/claude-review.txt 2>/dev/null && echo '' >> /tmp/claude-review.txt && echo 'Run /check-changes for full review' >> /tmp/claude-review.txt",
-            "statusMessage": "Saving changes summary..."
+            "command": "touch /tmp/claude-hook-fired",
+            "statusMessage": "Running stop hook..."
           }
         ]
       }

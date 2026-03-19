@@ -71,12 +71,13 @@ export function quickDeleteFromArray<T>(arr: T[], component: T): boolean {
  */
 export function getListener<T>(listenerGroup: ISubscribeGroup<T>): IListener<T> {
     if (Array.isArray(listenerGroup)) {
-        const group: IListener<T>[] = [];
+        const len = listenerGroup.length;
+        const group = new Array<IListener<T>>(len);
 
-        for (let i = 0; i < listenerGroup.length; i++) group.push(wrapListener(<any>listenerGroup[i]));
+        for (let i = 0; i < len; i++) group[i] = wrapListener(<any>listenerGroup[i]);
 
         return (data?: T) => {
-            for (let i = 0; i < group.length; i++) group[i](data);
+            for (let i = 0; i < len; i++) group[i](data);
         };
     }
 
