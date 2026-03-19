@@ -116,10 +116,10 @@
         }
       ],
       "tasks": {
-        "create_hook": false,
-        "test_hook": false,
-        "configure_mcp": false,
-        "test_mcp": false,
+        "create_hook": true,
+        "test_hook": true,
+        "configure_mcp": true,
+        "test_mcp": true,
         "create_advanced_command": false,
         "commit_extensions": false
       },
@@ -158,7 +158,7 @@
     }
   },
   "current_module": "3-extensions",
-  "current_task": "create_hook",
+  "current_task": "create_advanced_command",
   "current_session_id": "2105b8df-e87c-47f1-8bfb-bb83b9a35d25",
   "total_time_spent_minutes": 0,
   "exports": [],
