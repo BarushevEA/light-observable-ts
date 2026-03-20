@@ -21,7 +21,15 @@ import {SwitchCase} from "./AbstractSwitchCase";
  */
 export abstract class Pipe<T> implements ISubscribe<T> {
     chain: IChainCallback [] = [];
-    flow: IPipePayload = {isBreak: false, isUnsubscribe: false, isAvailable: false, payload: null};
+    flow: IPipePayload = {
+        isBreak: false,
+        isUnsubscribe: false,
+        isAvailable: false,
+        debounceMs: 0,
+        debounceTimer: 0,
+        debounceValue: undefined,
+        debounceIndex: 0,
+        payload: null};
 
     /**
      * Subscribes a listener to observe changes or updates. Can optionally handle errors during the subscription process.
@@ -144,6 +152,23 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 
     /**
+     * Debounces emissions using a trailing-edge strategy.
+     * Each new value resets the timer. The value is emitted after `ms`
+     * milliseconds of silence (no new values).
+     *
+     * @param {number} ms - Delay in milliseconds after the last value before emission.
+     * @return {ISetup<T>} The current setup instance for chaining purposes.
+     */
+    debounce(ms: number): ISetup<T> {
+        return this.push(
+            (data: IPipePayload): void => {
+                data.isAvailable = true;
+                data.debounceMs = ms;
+            }
+        );
+    }
+
+    /**
      * Converts the payload to a JSON string and
      * sets the `isAvailable` property to true.
      *
@@ -186,26 +211,52 @@ export abstract class Pipe<T> implements ISubscribe<T> {
 
     /**
      * Processes a chain of functions with the given listener and flow data.
+     * Sets `data.isAvailable = true` when chain completes successfully.
      *
-     * @param {IListener<T>} listener - The listener to be executed after the chain is processed.
-     *                                   Receives the payload of the flow data.
+     * @param {IListener<T>} [listener] - Optional listener executed after chain completes.
      * @return {void} This method does not return a value.
      */
-    processChain(listener: IListener<T>): void {
+    processChain(listener?: IListener<T>): void {
         const chain = this.chain;
         const data = this.flow;
         const len = chain.length;
         for (let i = 0; i < len; i++) {
             data.isUnsubscribe = false;
             data.isAvailable = false;
+            data.debounceMs = 0;
 
             chain[i](data);
             if (data.isUnsubscribe) return (<any>this).unsubscribe();
+
+            if (data.debounceMs > 0) {
+                data.debounceValue = data.payload;
+                data.debounceIndex = i + 1;
+
+                clearTimeout(data.debounceTimer);
+                data.debounceTimer = setTimeout(() => {
+                    data.debounceTimer = 0;
+                    data.payload = data.debounceValue;
+                    data.isBreak = false;
+                    for (let j = data.debounceIndex; j < len; j++) {
+                        data.isUnsubscribe = false;
+                        data.isAvailable = false;
+                        data.debounceMs = 0;
+                        chain[j](data);
+                        if (data.isUnsubscribe) return (<any>this).unsubscribe();
+                        if (!data.isAvailable) return;
+                        if (data.isBreak) break;
+                    }
+                    if (listener) listener(data.payload);
+                }, data.debounceMs);
+                return;
+            }
+
             if (!data.isAvailable) return;
             if (data.isBreak) break;
         }
 
-        return listener(data.payload);
+        data.isAvailable = true;
+        if (listener) listener(data.payload);
     }
 }
 

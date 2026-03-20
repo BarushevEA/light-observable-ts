@@ -2,6 +2,7 @@ import {suite, test} from '@testdeck/mocha';
 import * as _chai from 'chai';
 import {expect} from 'chai';
 import {Observable} from "../src/Libraries/Observables/Observable";
+import {OrderedObservable} from "../src/Libraries/Observables/OrderedObservable";
 import {IOrder} from "../src/Libraries/Observables/Types";
 
 _chai.should();
@@ -3785,5 +3786,143 @@ class ObservableUnitTest {
             expect(received).to.deep.equal(["first", "after-interval"]);
             done();
         }, 60);
+    }
+}
+
+@suite
+class ObservableDebounceTest {
+    OBSERVABLE$: Observable<string>;
+
+    before() {
+        this.OBSERVABLE$ = new Observable<string>("init");
+    }
+
+    @test 'debounce emits value after pause'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$.pipe().debounce(50).subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("hello");
+
+        setTimeout(() => {
+            expect(results).to.deep.equal(["hello"]);
+            sub.unsubscribe();
+            done();
+        }, 60);
+    }
+
+    @test 'debounce emits only last value on rapid calls'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$.pipe().debounce(50).subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("h");
+        this.OBSERVABLE$.next("he");
+        this.OBSERVABLE$.next("hello");
+
+        setTimeout(() => {
+            expect(results).to.deep.equal(["hello"]);
+            sub.unsubscribe();
+            done();
+        }, 60);
+    }
+
+    @test 'debounce with 0ms passes values synchronously'() {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$.pipe().debounce(0).subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("a");
+        this.OBSERVABLE$.next("b");
+        this.OBSERVABLE$.next("c");
+
+        expect(results).to.deep.equal(["a", "b", "c"]);
+        sub.unsubscribe();
+    }
+
+    @test 'debounce works with and() before it'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$
+            .pipe()
+            .and((v: string) => v.length > 2)
+            .debounce(50)
+            .subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("hi");
+        this.OBSERVABLE$.next("hey");
+        this.OBSERVABLE$.next("hello");
+
+        setTimeout(() => {
+            expect(results).to.deep.equal(["hello"]);
+            sub.unsubscribe();
+            done();
+        }, 60);
+    }
+
+    @test 'debounce works with map() after it'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$
+            .pipe()
+            .debounce(50)
+            .map((v: string) => v.toUpperCase())
+            .subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("hello");
+
+        setTimeout(() => {
+            expect(results).to.deep.equal(["HELLO"]);
+            sub.unsubscribe();
+            done();
+        }, 60);
+    }
+
+    @test 'debounce cancels pending timer on unsubscribe'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$.pipe().debounce(50).subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("ghost");
+        sub.unsubscribe();
+
+        setTimeout(() => {
+            expect(results).to.deep.equal([]);
+            done();
+        }, 60);
+    }
+
+    @test 'debounce works with OrderedObservable'(done: Function) {
+        const ordered$ = new OrderedObservable<string>("init");
+        const results: string[] = [];
+        const sub = ordered$.pipe().debounce(50).subscribe((v: string) => results.push(v));
+
+        ordered$.next("ordered");
+
+        setTimeout(() => {
+            expect(results).to.deep.equal(["ordered"]);
+            sub.unsubscribe();
+            ordered$.destroy();
+            done();
+        }, 60);
+    }
+
+    @test 'debounce has independent state per subscriber'(done: Function) {
+        const fast: string[] = [];
+        const slow: string[] = [];
+
+        const subFast = this.OBSERVABLE$.pipe().debounce(30).subscribe((v: string) => fast.push(v));
+        const subSlow = this.OBSERVABLE$.pipe().debounce(80).subscribe((v: string) => slow.push(v));
+
+        this.OBSERVABLE$.next("a");
+        this.OBSERVABLE$.next("b");
+        this.OBSERVABLE$.next("c");
+
+        setTimeout(() => {
+            expect(fast).to.deep.equal(["c"]);
+            expect(slow).to.deep.equal([]);
+        }, 50);
+
+        setTimeout(() => {
+            expect(fast).to.deep.equal(["c"]);
+            expect(slow).to.deep.equal(["c"]);
+            subFast.unsubscribe();
+            subSlow.unsubscribe();
+            done();
+        }, 100);
     }
 }

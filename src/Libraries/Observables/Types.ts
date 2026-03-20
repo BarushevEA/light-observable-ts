@@ -191,6 +191,7 @@ export type ISetup<T> =
     ISwitch<T> &
     ITransform<T> &
     IThrottle<T> &
+    IDebounce<T> &
     ISerialisation &
     IGroup<T> &
     ISubscribe<T>;
@@ -221,6 +222,7 @@ export type IOrderedSetup<T> =
     IOrderedSwitch<T> &
     IOrderedTransform<T> &
     IOrderedThrottle<T> &
+    IOrderedDebounce<T> &
     IOrderedSerialisation &
     IOrderedGroup<T> &
     IOrderedSubscribe<T>;
@@ -590,6 +592,30 @@ export type IOrderedThrottle<T> = {
 };
 
 /**
+ * Provides trailing-edge debounce to delay emission until a pause in the stream.
+ * Each new value resets the timer; emission occurs after `ms` of silence.
+ *
+ * @template T - The type of the data being debounced.
+ *
+ * @property {function} debounce - Applies a debounce with the given delay.
+ * Accepts a delay in milliseconds and returns a setup structure for additional chaining.
+ */
+export type IDebounce<T> = {
+    debounce(ms: number): ISetup<T>;
+};
+
+/**
+ * Provides trailing-edge debounce for ordered observables.
+ *
+ * @template T - The type of the data being debounced.
+ *
+ * @property {function} debounce - Applies a debounce with the given delay.
+ */
+export type IOrderedDebounce<T> = {
+    debounce(ms: number): ISetup<T>;
+};
+
+/**
  * Represents an interface for ordered serialization and deserialization operations.
  * Useful for implementing structured serialization mechanisms that maintain a specific order.
  *
@@ -737,7 +763,7 @@ export type IChainContainer = {
  * - isAvailable: A boolean specifying whether the payload is available for processing.
  * - payload: A flexible property designed to hold any data intended to be carried through the pipe.
  */
-export type IPipePayload = { isBreak: boolean, isUnsubscribe: boolean, isAvailable: boolean, payload: any };
+export type IPipePayload = { isBreak: boolean, isUnsubscribe: boolean, isAvailable: boolean, debounceMs: number, debounceTimer: any, debounceValue: any, debounceIndex: number, payload: any };
 /**
  * Represents a callback function interface for handling chain-related operations.
  * This function is typically invoked with a payload to perform specific operations

@@ -115,6 +115,7 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
      */
     public unsubscribe(): void {
         if (!this.observer) return;
+        clearTimeout(this.flow.debounceTimer);
         this.observer.unSubscribe(this);
         this.observer = <any>null;
         this.listener = <any>null;
@@ -168,34 +169,10 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
             this.flow.payload = value;
             this.flow.isBreak = false;
 
-            // Process chain with primary listener if exists
-            if (listener) {
-                this.processChain(listener);
-            } else {
-                // No primary listener, process chain to filter value for group listeners
-                const chain = this.chain;
-                const data = this.flow;
-                const len = chain.length;
-
-                // If a chain is empty, the value passes through automatically for group listeners
-                data.isAvailable = len === 0;
-
-                for (let i = 0; i < len; i++) {
-                    data.isUnsubscribe = false;
-                    data.isAvailable = false;
-
-                    chain[i](data);
-                    if (data.isUnsubscribe) {
-                        this.unsubscribe();
-                        return;
-                    }
-                    if (!data.isAvailable) return; // Value rejected by filter
-                    if (data.isBreak) break;
-                }
-            }
+            this.processChain(listener);
 
             // Emit to additional listeners (group pattern) with processed value
-            if (hasGroupListeners) {
+            if (hasGroupListeners && this.flow.isAvailable && this.observer) {
                 const processedValue = this.flow.payload;
                 for (let i = 0; i < this.listeners!.length; i++) {
                     try {
