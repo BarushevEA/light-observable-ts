@@ -3901,6 +3901,40 @@ class ObservableDebounceTest {
         }, 60);
     }
 
+    @test 'debounce with and() filter after it rejects value'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$
+            .pipe()
+            .debounce(50)
+            .and((v: string) => v.length > 3)
+            .subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("hi");
+
+        setTimeout(() => {
+            expect(results).to.deep.equal([]);
+            sub.unsubscribe();
+            done();
+        }, 60);
+    }
+
+    @test 'debounce with unsubscribeBy() after it'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$
+            .pipe()
+            .debounce(50)
+            .unsubscribeBy((v: string) => v === "stop")
+            .subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("stop");
+
+        setTimeout(() => {
+            expect(results).to.deep.equal([]);
+            expect(this.OBSERVABLE$.size()).to.be.equal(0);
+            done();
+        }, 60);
+    }
+
     @test 'debounce has independent state per subscriber'(done: Function) {
         const fast: string[] = [];
         const slow: string[] = [];

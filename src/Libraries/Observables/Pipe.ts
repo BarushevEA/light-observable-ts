@@ -232,8 +232,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
                 data.debounceValue = data.payload;
                 data.debounceIndex = i + 1;
 
-                clearTimeout(data.debounceTimer);
-                data.debounceTimer = setTimeout(() => {
+                const continueChain = () => {
                     data.debounceTimer = 0;
                     data.payload = data.debounceValue;
                     data.isBreak = false;
@@ -243,11 +242,21 @@ export abstract class Pipe<T> implements ISubscribe<T> {
                         data.debounceMs = 0;
                         chain[j](data);
                         if (data.isUnsubscribe) return (<any>this).unsubscribe();
+                        if (data.debounceMs > 0) {
+                            data.debounceValue = data.payload;
+                            data.debounceIndex = j + 1;
+                            clearTimeout(data.debounceTimer);
+                            data.debounceTimer = setTimeout(continueChain, data.debounceMs);
+                            return;
+                        }
                         if (!data.isAvailable) return;
                         if (data.isBreak) break;
                     }
                     if (listener) listener(data.payload);
-                }, data.debounceMs);
+                };
+
+                clearTimeout(data.debounceTimer);
+                data.debounceTimer = setTimeout(continueChain, data.debounceMs);
                 return;
             }
 

@@ -169,18 +169,21 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
             this.flow.payload = value;
             this.flow.isBreak = false;
 
-            this.processChain(listener);
-
-            // Emit to additional listeners (group pattern) with processed value
-            if (hasGroupListeners && this.flow.isAvailable && this.observer) {
-                const processedValue = this.flow.payload;
-                for (let i = 0; i < this.listeners!.length; i++) {
-                    try {
-                        this.listeners![i](processedValue);
-                    } catch (err) {
-                        this.errorHandlers![i](processedValue, err);
+            if (hasGroupListeners) {
+                const groupListeners = this.listeners!;
+                const groupErrorHandlers = this.errorHandlers!;
+                this.processChain((value) => {
+                    if (listener) listener(value);
+                    for (let i = 0; i < groupListeners.length; i++) {
+                        try {
+                            groupListeners[i](value);
+                        } catch (err) {
+                            groupErrorHandlers[i](value, err);
+                        }
                     }
-                }
+                });
+            } else {
+                this.processChain(listener);
             }
         } catch (err) {
             this.errorHandler(value, err);
