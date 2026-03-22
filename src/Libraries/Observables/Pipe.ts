@@ -169,6 +169,34 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 
     /**
+     * Suppresses consecutive duplicate values.
+     * A value is emitted only when it differs from the previously emitted value.
+     * The first value always passes through.
+     *
+     * @param {function} [comparator] - Optional function `(previous, current) => boolean`.
+     *   Returns `true` when values are considered equal (suppressed). Defaults to `===`.
+     * @return {ISetup<T>} The current setup instance for chaining purposes.
+     */
+    distinctUntilChanged(comparator?: (previous: T, current: T) => boolean): ISetup<T> {
+        let hasPrevious = false;
+        let previousValue: T;
+        return this.push(
+            (data: IPipePayload): void => {
+                const current = data.payload;
+                if (hasPrevious) {
+                    const isSame = comparator
+                        ? comparator(previousValue, current)
+                        : previousValue === current;
+                    if (isSame) return;
+                }
+                hasPrevious = true;
+                previousValue = current;
+                data.isAvailable = true;
+            }
+        );
+    }
+
+    /**
      * Converts the payload to a JSON string and
      * sets the `isAvailable` property to true.
      *
