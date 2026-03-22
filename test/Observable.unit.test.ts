@@ -4129,6 +4129,28 @@ class ObservableDebounceTest {
         }, 100);
     }
 
+    @test 'debounce works with choice().or() after it'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$
+            .pipe()
+            .debounce(50)
+            .choice()
+            .or((v: string) => v.startsWith("h"))
+            .subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("hello");
+
+        setTimeout(() => {
+            try {
+                expect(results).to.deep.equal(["hello"]);
+                sub.unsubscribe();
+                done();
+            } catch (err) {
+                done(err);
+            }
+        }, 60);
+    }
+
     @test 'unsubscribeAll cancels pending debounce timer'(done: Function) {
         const results: string[] = [];
         this.OBSERVABLE$.pipe().debounce(50).subscribe((v: string) => results.push(v));

@@ -150,17 +150,6 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
                 }
             }
 
-            // Emit to additional listeners (group pattern)
-            if (hasGroupListeners) {
-                for (let i = 0; i < this.listeners!.length; i++) {
-                    try {
-                        this.listeners![i](value);
-                    } catch (err) {
-                        this.errorHandlers![i](value, err);
-                    }
-                }
-            }
-
             return;
         }
 
