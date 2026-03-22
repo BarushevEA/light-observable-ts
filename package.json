@@ -50,17 +50,23 @@
     "typescript": "^5.4.5"
   },
   "keywords": [
-    "EVG Observable",
-    "evg_observable",
-    "Observable",
-    "Ordered observable",
-    "Light observable",
-    "Collector",
-    "Type script",
-    "TypeScript",
-    "TS",
-    "Java script",
-    "JavaScript",
-    "JS"
+    "observable",
+    "reactive",
+    "event-emitter",
+    "rxjs-alternative",
+    "lightweight",
+    "pub-sub",
+    "subscribe",
+    "pipe",
+    "filter",
+    "map",
+    "throttle",
+    "debounce",
+    "distinctUntilChanged",
+    "tap",
+    "state-management",
+    "event-stream",
+    "typescript",
+    "zero-dependencies"
   ]
 }
