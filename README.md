@@ -21,6 +21,9 @@ EVG Observable - is a light library for simple use.
         - [pipe().unsubscribeBy()](#pipeunsubscribebycondition)
         - [pipe().and()](#pipeandcondition)
         - [pipe().throttle()](#pipethrottlems)
+        - [pipe().debounce()](#pipedebouncems)
+        - [pipe().distinctUntilChanged()](#pipedistinctuntilchangedcomparator)
+        - [pipe().tap()](#pipetapfn)
         - [pipe().toJson()](#pipetojson)
         - [pipe().fromJson()](#pipefromjsonk)
         - [pipe().in()](#pipeink-v)
@@ -42,8 +45,8 @@ EVG Observable - is a light library for simple use.
 
 | Metric | EVG Observable | RxJS |
 |--------|----------------|------|
-| **Bundle size** | **7.2 kB** | 88 kB |
-| **Size advantage** | **12.2x smaller** | - |
+| **Bundle size** | **8.0 kB** | 88 kB |
+| **Size advantage** | **11x smaller** | - |
 | **Operations** | ~40 | 100+ |
 | **Performance** | **2-7x faster** | baseline |
 
@@ -91,7 +94,7 @@ Benchmarked with minified bundles on Node.js v22.17.1 (v3.0.0 API, averaged over
 
 ### When to use RxJS instead
 
-RxJS is better when you need specialized operators like `debounceTime`, `switchMap`, `mergeMap`, `combineLatest`, `withLatestFrom`, or schedulers for async control.
+RxJS is better when you need specialized operators like `switchMap`, `mergeMap`, `combineLatest`, `withLatestFrom`, or schedulers for async control.
 
 **For 80% of reactive programming tasks, EVG Observable provides sufficient functionality with significant performance and size benefits.**
 
@@ -104,7 +107,7 @@ Comparison with lightweight libraries in the same weight category (observable-fn
 | Metric | EVG Observable | observable-fns |
 |--------|----------------|----------------|
 | **Weekly downloads** | Growing | 67K |
-| **Bundle size (minified)** | 7.2 kB | 10.8 kB |
+| **Bundle size (minified)** | 8.0 kB | 10.8 kB |
 | **Implementation** | Original architecture | zen-observable re-implementation |
 | **Dependencies** | 0 | 0 |
 | **Architecture** | True hot observables | Cold observables (zen-observable API) |
@@ -366,6 +369,103 @@ observable$
     .throttle(500)                  // throttle remaining values
     .map<number>(str => str.length) // transform to length
     .subscribe(listener);
+```
+
+### pipe().debounce(ms)
+
+Debounce emissions using trailing-edge strategy. Each new value resets the timer. The value is emitted after `ms` milliseconds of silence (no new values).
+
+```ts
+import {Observable} from "evg_observable";
+
+const search$ = new Observable<string>('');
+const results: string[] = [];
+
+search$
+    .pipe()
+    .debounce(300)  // Wait 300ms of silence before emitting
+    .subscribe((value: string) => results.push(value));
+
+search$.next("h");      // timer starts
+search$.next("he");     // timer resets
+search$.next("hello");  // timer resets
+// After 300ms of silence → "hello" is emitted
+```
+
+Debounce can be combined with other pipe operators:
+
+```ts
+observable$
+    .pipe()
+    .and(str => str.length > 2)    // filter short strings first
+    .debounce(200)                  // debounce remaining values
+    .map<number>(str => str.length) // transform to length
+    .subscribe(listener);
+```
+
+### pipe().distinctUntilChanged(comparator?)
+
+Suppresses consecutive duplicate values. A value is emitted only when it differs from the previously emitted value. The first value always passes through.
+
+```ts
+import {Observable} from "evg_observable";
+
+const observable$ = new Observable<number>(0);
+const results: number[] = [];
+
+observable$
+    .pipe()
+    .distinctUntilChanged()
+    .subscribe((value: number) => results.push(value));
+
+observable$.next(1);  // emitted (first value)
+observable$.next(1);  // suppressed (same as previous)
+observable$.next(2);  // emitted (different)
+observable$.next(2);  // suppressed (same as previous)
+observable$.next(1);  // emitted (different from 2)
+// results: [1, 2, 1]
+```
+
+With custom comparator for objects:
+
+```ts
+const users$ = new Observable<{id: number; name: string}>({id: 0, name: ''});
+
+users$
+    .pipe()
+    .distinctUntilChanged((prev, curr) => prev.id === curr.id)
+    .subscribe(user => console.log(user.name));
+
+users$.next({id: 1, name: 'Alice'});         // emitted
+users$.next({id: 1, name: 'Alice Updated'}); // suppressed (same id)
+users$.next({id: 2, name: 'Bob'});           // emitted
+```
+
+### pipe().tap(fn)
+
+Executes a side-effect function on the current value without modifying it. The value passes through unchanged to the next operator. Useful for logging, debugging, or triggering external actions mid-pipeline.
+
+```ts
+import {Observable} from "evg_observable";
+
+const observable$ = new Observable<number>(0);
+
+observable$
+    .pipe()
+    .tap(value => console.log('before filter:', value))
+    .and(value => value > 0)
+    .tap(value => console.log('after filter:', value))
+    .map<string>(value => `Result: ${value}`)
+    .subscribe(result => console.log(result));
+
+observable$.next(5);
+// before filter: 5
+// after filter: 5
+// Result: 5
+
+observable$.next(-1);
+// before filter: -1
+// (filtered out by .and(), tap after filter is not called)
 ```
 
 ### pipe().toJson()
@@ -840,6 +940,9 @@ observable$.next(-1);  // Listener 1 throws, listener 2 still receives
 | `.or(*condition)`                  | PipeCase object                        | Adds a condition to the chain of cases. The entire chain operates on the principle of "OR". This is different from other pipe methods which, when chained, operate on the principle of "AND".                           |
 | `.anyOf(*conditions)`            | PipeCase object                        | This method allows you to add a group of conditions for filtering cases data in the pipeline chain.                                                                                                                     |
 | `.throttle(ms: number)`              | pipe object                            | Throttles emissions using leading-edge strategy. First value passes immediately, subsequent values within `ms` interval are dropped.                                                                                    |
+| `.debounce(ms: number)`              | pipe object                            | Debounces emissions using trailing-edge strategy. Each new value resets the timer. Emits after `ms` milliseconds of silence.                                                                                            |
+| `.distinctUntilChanged(comparator?)` | pipe object                            | Suppresses consecutive duplicate values. Optional `comparator(prev, curr) => boolean` for custom equality. Defaults to `===`.                                                                                          |
+| `.tap(fn: ICallback<T>)`            | pipe object                            | Executes a side-effect function without modifying the value. The value passes through unchanged.                                                                                                                        |
 | `.map<K>(transform: ICallback<T>)`  | Observable instance with new data type | This method allows transforming payload data in the pipe chain by applying user callback function. `transform` should be a function that takes the current data and returns transformed data of possibly another type.  |
 | `.toJson()`                       | pipe object                            | Converts the observers data into a JSON string.                                                                                                                                                                         |
 | `.fromJson<K>()`                  | pipe object                            | Converts a JSON string into an object of type K.                                                                                                                                                                        |

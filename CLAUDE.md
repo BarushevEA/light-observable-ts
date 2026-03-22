@@ -48,12 +48,12 @@ EVG Observable is a lightweight, high-performance Observable library for TypeScr
 ### Data Flow
 
 ```
-Value → Inbound Filters (addFilter/switch-case) → Observable → Pipe (refine/then/serialize) → Subscribers
+Value → Inbound Filters (addFilter/choice) → Observable → Pipe (and/map/toJson/fromJson) → Subscribers
 ```
 
-1. **Inbound Filters**: Pre-process values before they enter the Observable (`addFilter()`, `switch()`)
+1. **Inbound Filters**: Pre-process values before they enter the Observable (`addFilter()`, `choice()`)
 2. **Observable**: Stores current value, manages subscriber list
-3. **Pipe**: Transforms/filters outgoing values (`refine()`, `then<K>()`, `serialize()`)
+3. **Pipe**: Transforms/filters outgoing values (`and()`, `map<K>()`, `toJson()`, `fromJson<K>()`)
 4. **Subscribers**: Receive processed values (can be listeners OR other Observables)
 
 ### Key Capabilities
@@ -64,7 +64,7 @@ Value → Inbound Filters (addFilter/switch-case) → Observable → Pipe (refin
 - **Dual filtering**: Inbound (`addFilter`) + Outbound (`pipe`) on same Observable
 - **AND/OR logic**: `and()` chains for AND logic, `choice().or()` for OR logic — in both pipes and inbound filters
 - **Stream branching**: One source to multiple Observable targets via `subscribe([target1$, target2$])`
-- **Batch filters**: `pushFilters()` / `pushRefiners()` for filter arrays
+- **Batch filters**: `allOf()` / `anyOf()` for filter arrays
 - **Parallel pipelines**: Multiple `pipe()` chains from single source with different logic
 
 #### Stream Composition Example
@@ -87,6 +87,7 @@ source$ ──┬── pipe().and() ──→ subscribe([target1$, target2$])
 |---------|---------|
 | `npm test` | Run unit tests with coverage |
 | `npm run build` | Compile TypeScript for npm publish |
+| `npm run bundle` | Build browser IIFE bundle (`repo/evg_observable.js`) |
 | `npm run benchmark` | Run performance benchmarks |
 | `npm run benchmark:comparison` | Compare performance against RxJS |
 
@@ -103,7 +104,7 @@ npx mocha --require ./register.js test/Observable.unit.test.ts
 
 - **OrderedObservable.ts**: Extended Observable with ordered emission guarantees. Subscribers have an `order` property (numeric) with ascending/descending sort modes.
 
-- **Pipe.ts**: Chainable transformation pipeline with methods like `setOnce()`, `unsubscribeBy()`, `refine()`, `then<K>()`, `serialize()`, `deserialize()`, and switch-case branching.
+- **Pipe.ts**: Chainable transformation pipeline with methods like `once()`, `unsubscribeBy()`, `and()`, `map<K>()`, `tap()`, `throttle()`, `debounce()`, `distinctUntilChanged()`, `toJson()`, `fromJson<K>()`, `group()`, and switch-case branching (`choice().or()`).
 
 - **FilterCollection.ts**: Inbound filter system applied before emitting to subscribers. Supports `addFilter()` chaining with AND logic and `switch()` for OR logic.
 
@@ -143,9 +144,9 @@ When a test fails and reveals a potential bug in the library:
 
 | Method | Behavior | Auto-Unsubscribe |
 |--------|----------|------------------|
-| `setOnce()` | Receive one value then unsubscribe | Yes (after first value) |
+| `once()` | Receive one value then unsubscribe | Yes (after first value) |
 | `unsubscribeBy(condition)` | Receive values until condition is true | Yes (when condition returns true) |
-| `refine(condition)` | Filter values, only pass when true | No |
+| `and(condition)` | Filter values, only pass when true | No |
 
 ### AND vs OR Logic
 
@@ -161,19 +162,53 @@ When a test fails and reveals a potential bug in the library:
 .addFilter().choice().or(cond1).or(cond2)  // First true wins
 ```
 
-### Data Transformation with `then<K>()`
+### Data Transformation with `map<K>()`
 
 Transform data type in pipe chain:
 ```typescript
 observable$
     .pipe()
     .and(str => str.includes("2"))  // filter strings
-    .then<number>(str => str.length)   // transform to number
+    .map<number>(str => str.length)   // transform to number
     .and(num => num > 4)            // filter numbers
     .subscribe(listener);
 ```
 
-### Batch Emission with `stream()`
+### Side Effects with `tap(fn)`
+
+Execute a function without modifying the value:
+```typescript
+observable$
+    .pipe()
+    .tap(value => console.log('debug:', value))  // side effect, value unchanged
+    .and(value => value > 0)
+    .subscribe(listener);
+```
+
+### Rate Limiting: `throttle(ms)` and `debounce(ms)`
+
+```typescript
+// Throttle: leading-edge, first value passes, drops within interval
+observable$.pipe().throttle(300).subscribe(listener);
+
+// Debounce: trailing-edge, emits after ms of silence
+observable$.pipe().debounce(300).subscribe(listener);
+```
+
+### Suppressing Duplicates with `distinctUntilChanged(comparator?)`
+
+```typescript
+// Default: strict equality (===)
+observable$.pipe().distinctUntilChanged().subscribe(listener);
+// 1, 1, 2, 2, 3 → 1, 2, 3
+
+// Custom comparator for objects
+observable$.pipe()
+    .distinctUntilChanged((prev, curr) => prev.id === curr.id)
+    .subscribe(listener);
+```
+
+### Batch Emission with `of()`
 
 Send array elements one by one:
 ```typescript
@@ -188,7 +223,7 @@ observable$.of([item1, item2, item3]);
 observable$.pipe().toJson().subscribe(jsonListener);
 
 // JSON string → Object
-observable$.pipe().deserialize<MyType>().subscribe(objectListener);
+observable$.pipe().fromJson<MyType>().subscribe(objectListener);
 ```
 
 ### Error Handling
@@ -229,7 +264,7 @@ Bundle comparison (v3.0.0 API, minified bundles, clean benchmarks):
 | 5 chained filters | 19K ops/sec | 9K ops/sec | **2.1x faster** |
 | Large payload | 879K ops/sec | 184K ops/sec | **4.8x faster** |
 
-**Key metrics:** Observable creation ~122M ops/sec, bundle size 7.2 kB (12.2x smaller than RxJS).
+**Key metrics:** Observable creation ~122M ops/sec, bundle size 8.0 kB (11x smaller than RxJS).
 
 See `BENCHMARK_BUNDLE_RESULTS.md` for full details.
 
@@ -237,8 +272,9 @@ See `BENCHMARK_BUNDLE_RESULTS.md` for full details.
 
 - **Language**: TypeScript (strict mode), target ESNext, module CommonJS
 - **Testing**: Mocha + `@testdeck/mocha` (decorator-based) + Chai + NYC (coverage)
-- **Build**: `tsc --declaration` → `src/outLib/` (npm publish prep — strips comments to reduce package size; no bundler/minifier in this project)
-- **Browser bundle**: `repo/evg_observable.js` — browser build of this library, built in a separate project (no bundling/minification tooling here yet)
+- **Build**: `tsc --declaration` → `src/outLib/` (npm publish prep — strips comments to reduce package size)
+- **Browser bundle**: `npm run bundle` → `repo/evg_observable.js` (esbuild, IIFE, minified, 8.0 kB)
+- **Bundler**: esbuild (entry: `src/browser-entry.ts` → IIFE bundle exposing Observable, OrderedObservable, Collector on `window`)
 - **Package manager**: npm
 - **No linter/formatter** configured (no ESLint, no Prettier, no .editorconfig)
 
@@ -266,7 +302,7 @@ See `BENCHMARK_BUNDLE_RESULTS.md` for full details.
 
 - 2-space indentation
 - Named exports (`export class ...`, `export function ...`)
-- Fluent API / method chaining (`.and()`, `.or()`, `.refine()`, `.subscribe()`)
+- Fluent API / method chaining (`.and()`, `.or()`, `.map()`, `.tap()`, `.subscribe()`)
 - JSDoc comments (`/** @template @param @return */`) on public methods
 - Type composition via intersection (`&`) over inheritance for interfaces
 - Protected members for extensibility (`OrderedObservable extends Observable<T>`)
