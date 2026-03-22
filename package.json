@@ -20,7 +20,9 @@
     "benchmark:patterns-edge": "ts-node benchmarks/benchmark-patterns-edge-cases.ts",
     "benchmark:patterns-clean": "ts-node benchmarks/benchmark-patterns-clean.ts",
     "benchmark:patterns-final": "ts-node benchmarks/benchmark-patterns-fixed.ts",
-    "benchmark:patterns-vs-competitors": "ts-node benchmarks/benchmark-patterns-vs-competitors.ts"
+    "benchmark:patterns-vs-competitors": "ts-node benchmarks/benchmark-patterns-vs-competitors.ts",
+    "bundle": "esbuild src/browser-entry.ts --bundle --minify --format=iife --outfile=repo/evg_observable.js",
+    "bundle:watch": "esbuild src/browser-entry.ts --bundle --minify --format=iife --outfile=repo/evg_observable.js --watch"
   },
   "repository": {
     "type": "git",
@@ -38,6 +40,7 @@
     "@types/chai": "^4.3.4",
     "benchmark": "^2.1.4",
     "chai": "^4.3.7",
+    "esbuild": "^0.27.4",
     "microtime": "^3.1.1",
     "mocha": "^11.7.5",
     "nyc": "^17.1.0",
