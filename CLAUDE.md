@@ -277,6 +277,49 @@ See `BENCHMARK_BUNDLE_RESULTS.md` for full details.
 - **Resource cleanup**: Always use `destroy()`, `unsubscribeAll()`, or `unsubscribe()` for lifecycle management
 - **Performance utilities**: Prefer `quickDeleteFromArray` over `deleteFromArray` for optimized array removal
 
+## Multi-Agent Patterns
+
+### Pattern: Parallel Feature Development
+
+**Use when**: Implementing independent features simultaneously (e.g., new pipe operators)
+
+**Setup**:
+```bash
+git branch feature-a && git branch feature-b
+git worktree add ../light-observable-ts-feature-a feature-a
+git worktree add ../light-observable-ts-feature-b feature-b
+```
+
+**Agents**:
+1. Main worktree: Coordination, merge, conflict resolution
+2. Feature-a worktree: First feature (implementation + tests)
+3. Feature-b worktree: Second feature (implementation + tests)
+
+**Workflow**:
+1. Create branches and worktrees
+2. Launch Claude in each worktree with independent task
+3. Wait for both agents to complete
+4. **Copy contents of feature branch tmp/ into main branch tmp/ before removing worktrees**
+5. Merge branches, resolve conflicts, run tests
+6. Remove worktrees and delete branches
+
+### Pattern: Implementation + Review
+
+**Use when**: Want quality assurance on generated code
+
+**Workflow**:
+1. First agent implements feature
+2. Second agent reviews and suggests improvements
+3. First agent applies feedback
+4. Repeat until approved
+
+### Cleanup
+```bash
+git worktree remove ../light-observable-ts-feature-a
+git worktree remove ../light-observable-ts-feature-b
+git branch -d feature-a feature-b
+```
+
 ## API Reference
 
 See [README.md](README.md) for full API documentation, usage examples, and method reference.

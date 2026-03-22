@@ -149,10 +149,10 @@
       ],
       "tasks": {
         "use_subagent": true,
-        "create_worktrees": false,
-        "run_parallel_agents": false,
-        "merge_results": false,
-        "document_pattern": false,
+        "create_worktrees": true,
+        "run_parallel_agents": true,
+        "merge_results": true,
+        "document_pattern": true,
         "commit_updates": false
       },
       "submission": null
