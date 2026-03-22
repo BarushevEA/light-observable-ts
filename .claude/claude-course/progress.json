@@ -137,12 +137,18 @@
         {
           "session_id": "f883dce1-a7be-44f3-98df-2d4a6cde2a15",
           "started_at": "2026-03-20T18:54:00Z",
+          "ended_at": "2026-03-22T17:15:23Z",
+          "tasks_completed": []
+        },
+        {
+          "session_id": "9bc0ebe5-e82c-4ba9-8673-61fd3352c240",
+          "started_at": "2026-03-22T17:15:23Z",
           "ended_at": null,
           "tasks_completed": []
         }
       ],
       "tasks": {
-        "use_subagent": false,
+        "use_subagent": true,
         "create_worktrees": false,
         "run_parallel_agents": false,
         "merge_results": false,
@@ -170,7 +176,7 @@
   },
   "current_module": "4-agents",
   "current_task": "use_subagent",
-  "current_session_id": "f883dce1-a7be-44f3-98df-2d4a6cde2a15",
+  "current_session_id": "9bc0ebe5-e82c-4ba9-8673-61fd3352c240",
   "total_time_spent_minutes": 0,
   "exports": [],
   "graduation": {
