@@ -130,9 +130,9 @@
       }
     },
     "4-agents": {
-      "status": "in_progress",
+      "status": "completed",
       "started_at": "2026-03-20T18:54:00Z",
-      "completed_at": null,
+      "completed_at": "2026-03-22T18:30:00Z",
       "sessions": [
         {
           "session_id": "f883dce1-a7be-44f3-98df-2d4a6cde2a15",
@@ -143,8 +143,8 @@
         {
           "session_id": "9bc0ebe5-e82c-4ba9-8673-61fd3352c240",
           "started_at": "2026-03-22T17:15:23Z",
-          "ended_at": null,
-          "tasks_completed": []
+          "ended_at": "2026-03-22T18:30:00Z",
+          "tasks_completed": ["use_subagent", "create_worktrees", "run_parallel_agents", "merge_results", "document_pattern", "commit_updates"]
         }
       ],
       "tasks": {
@@ -153,12 +153,12 @@
         "run_parallel_agents": true,
         "merge_results": true,
         "document_pattern": true,
-        "commit_updates": false
+        "commit_updates": true
       },
       "submission": null
     },
     "5-workflows": {
-      "status": "locked",
+      "status": "unlocked",
       "started_at": null,
       "completed_at": null,
       "sessions": [],
