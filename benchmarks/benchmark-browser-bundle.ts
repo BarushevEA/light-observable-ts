@@ -49,8 +49,8 @@ console.log('# (Creation excluded from measurements)\n');
     const obsRxJS = new Subject<number>();
 
     obsModule.pipe()!
-        .refine((v?: number) => v !== undefined && v % 2 === 0)
-        .then<string>((v?: number) => `Value: ${v}`)
+        .and((v?: number) => v !== undefined && v % 2 === 0)
+        .map<string>((v?: number) => `Value: ${v}`)
         .subscribe(() => {});
 
     obsBrowser.pipe()

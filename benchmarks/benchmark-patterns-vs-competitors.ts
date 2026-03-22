@@ -146,15 +146,15 @@ console.log('=== FILTER + TRANSFORM (FORCED EVALUATION) ===\n');
     for (let i = 0; i < subscriberCount; i++) {
         // CRITICAL: Create NEW pipe for EACH subscriber (subscribe() overwrites listener!)
         const pipe = evgEachOwnPipe.pipe()!
-            .refine((v?: number) => v !== undefined && v % 2 === 0)
-            .then<string>((v?: number) => `Value: ${v}`);
+            .and((v?: number) => v !== undefined && v % 2 === 0)
+            .map<string>((v?: number) => `Value: ${v}`);
         pipe.subscribe(value => { if (value) sumEachOwn += value.length; });
     }
 
     // EVG - Shared pipe with array subscription
     const evgSharedPipeInstance = evgSharedPipe.pipe()!
-        .refine((v?: number) => v !== undefined && v % 2 === 0)
-        .then<string>((v?: number) => `Value: ${v}`);
+        .and((v?: number) => v !== undefined && v % 2 === 0)
+        .map<string>((v?: number) => `Value: ${v}`);
 
     const evgArrayListeners = [];
     let sumArray = 0;

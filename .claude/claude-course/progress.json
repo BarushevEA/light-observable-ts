@@ -155,13 +155,24 @@
         "document_pattern": true,
         "commit_updates": true
       },
-      "submission": null
+      "submission": {
+        "submitted_at": "2026-03-22T18:35:00Z",
+        "file_path": "/home/grif/WebstormProjects/light-observable-ts/.claude/claude-course/submissions/seminar4-barushev-yevgen-2026-03-22.zip",
+        "file_size_bytes": 292655
+      }
     },
     "5-workflows": {
-      "status": "unlocked",
-      "started_at": null,
+      "status": "in_progress",
+      "started_at": "2026-03-22T22:42:00Z",
       "completed_at": null,
-      "sessions": [],
+      "sessions": [
+        {
+          "session_id": "39c4d2ad-dac5-42ac-bce6-ff48c98fd7fc",
+          "started_at": "2026-03-22T22:42:00Z",
+          "ended_at": null,
+          "tasks_completed": []
+        }
+      ],
       "tasks": {
         "install_github_app": false,
         "create_github_action": false,
@@ -174,9 +185,9 @@
       "submission": null
     }
   },
-  "current_module": "4-agents",
-  "current_task": "use_subagent",
-  "current_session_id": "9bc0ebe5-e82c-4ba9-8673-61fd3352c240",
+  "current_module": "5-workflows",
+  "current_task": "install_github_app",
+  "current_session_id": "39c4d2ad-dac5-42ac-bce6-ff48c98fd7fc",
   "total_time_spent_minutes": 0,
   "exports": [],
   "graduation": {

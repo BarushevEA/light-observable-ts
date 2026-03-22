@@ -71,16 +71,16 @@ console.log('=== WITH PIPE (Filter + Transform) ===\n');
     for (let i = 0; i < subscriberCount; i++) {
         // IMPORTANT: Create NEW pipe for EACH subscriber (pipe.subscribe() overwrites listener!)
         const pipe = obsEachOwnPipe.pipe()!
-            .refine((v?: number) => v !== undefined && v % 2 === 0)
-            .then<string>((v?: number) => `Value: ${v}`);
+            .and((v?: number) => v !== undefined && v % 2 === 0)
+            .map<string>((v?: number) => `Value: ${v}`);
         pipe.subscribe(() => {});
     }
 
     // Setup: Shared pipe with ARRAY subscription
     const obsSharedPipe = new LightObservable<number>(0);
     const sharedPipe = obsSharedPipe.pipe()!
-        .refine((v?: number) => v !== undefined && v % 2 === 0)
-        .then<string>((v?: number) => `Value: ${v}`);
+        .and((v?: number) => v !== undefined && v % 2 === 0)
+        .map<string>((v?: number) => `Value: ${v}`);
 
     const pipeListeners: Array<() => void> = [];
     for (let i = 0; i < subscriberCount; i++) {
@@ -131,8 +131,8 @@ console.log('=== PIPE OVERHEAD (Array subscription) ===\n');
     // With pipe
     const obsWithPipe = new LightObservable<number>(0);
     const pipe = obsWithPipe.pipe()!
-        .refine((v?: number) => v !== undefined && v % 2 === 0)
-        .then<string>((v?: number) => `Value: ${v}`);
+        .and((v?: number) => v !== undefined && v % 2 === 0)
+        .map<string>((v?: number) => `Value: ${v}`);
 
     const listenersWithPipe: Array<() => void> = [];
     for (let i = 0; i < subscriberCount; i++) {

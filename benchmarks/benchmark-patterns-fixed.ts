@@ -77,8 +77,8 @@ console.log('=== PART 2: WITH PIPE (Filter + Transform) ===\n');
     for (let i = 0; i < subscriberCount; i++) {
         // IMPORTANT: Create NEW pipe for EACH subscriber
         const pipe = obsEachOwnPipe.pipe()!
-            .refine((v?: number) => v !== undefined && v % 2 === 0)
-            .then<string>((v?: number) => `Value: ${v}`);
+            .and((v?: number) => v !== undefined && v % 2 === 0)
+            .map<string>((v?: number) => `Value: ${v}`);
 
         const sub = pipe.subscribe(() => {});
         if (sub) subsEachOwn.push(sub);
@@ -87,8 +87,8 @@ console.log('=== PART 2: WITH PIPE (Filter + Transform) ===\n');
     // Setup: Shared pipe with ARRAY subscription
     const obsSharedPipe = new LightObservable<number>(0);
     const sharedPipe = obsSharedPipe.pipe()!
-        .refine((v?: number) => v !== undefined && v % 2 === 0)
-        .then<string>((v?: number) => `Value: ${v}`);
+        .and((v?: number) => v !== undefined && v % 2 === 0)
+        .map<string>((v?: number) => `Value: ${v}`);
 
     const pipeListeners: Array<() => void> = [];
     for (let i = 0; i < subscriberCount; i++) {
@@ -147,16 +147,16 @@ noPipeArr.subscribe(noPipeListeners);
 const withPipeEach = new LightObservable<number>(0);
 for (let i = 0; i < testCount; i++) {
     withPipeEach.pipe()!
-        .refine((v?: number) => v !== undefined && v % 2 === 0)
-        .then<string>((v?: number) => `Value: ${v}`)
+        .and((v?: number) => v !== undefined && v % 2 === 0)
+        .map<string>((v?: number) => `Value: ${v}`)
         .subscribe(() => {});
 }
 
 // With pipe - shared + array
 const withPipeShared = new LightObservable<number>(0);
 const sharedPipeForOverhead = withPipeShared.pipe()!
-    .refine((v?: number) => v !== undefined && v % 2 === 0)
-    .then<string>((v?: number) => `Value: ${v}`);
+    .and((v?: number) => v !== undefined && v % 2 === 0)
+    .map<string>((v?: number) => `Value: ${v}`);
 const withPipeListeners: Array<() => void> = [];
 for (let i = 0; i < testCount; i++) {
     withPipeListeners.push(() => {});

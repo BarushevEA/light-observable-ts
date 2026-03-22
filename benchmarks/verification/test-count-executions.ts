@@ -1,5 +1,5 @@
 import {Subject as ObservableFnsSubject, multicast} from 'observable-fns';
-import {Observable as LightObservable} from './src/Libraries/Observables';
+import {Observable as LightObservable} from '../../src/Libraries/Observables';
 
 console.log('=== ПОДСЧЕТ ВЫЗОВОВ FILTER ===\n');
 
@@ -11,11 +11,11 @@ console.log('--- EVG Observable ---');
 
     const obs = new LightObservable<number>(0);
     const pipe = obs.pipe()!
-        .refine(v => {
+        .and(v => {
             filterCount++;
             return v !== undefined && v % 2 === 0;
         })
-        .then<string>(v => {
+        .map<string>(v => {
             mapCount++;
             return `Value: ${v}`;
         });
