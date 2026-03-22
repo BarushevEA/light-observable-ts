@@ -192,6 +192,7 @@ export type ISetup<T> =
     ITransform<T> &
     IThrottle<T> &
     IDebounce<T> &
+    IDistinctUntilChanged<T> &
     ISerialisation &
     IGroup<T> &
     ISubscribe<T>;
@@ -223,6 +224,7 @@ export type IOrderedSetup<T> =
     IOrderedTransform<T> &
     IOrderedThrottle<T> &
     IOrderedDebounce<T> &
+    IOrderedDistinctUntilChanged<T> &
     IOrderedSerialisation &
     IOrderedGroup<T> &
     IOrderedSubscribe<T>;
@@ -613,6 +615,32 @@ export type IDebounce<T> = {
  */
 export type IOrderedDebounce<T> = {
     debounce(ms: number): ISetup<T>;
+};
+
+/**
+ * Suppresses consecutive duplicate values in the pipe chain.
+ * A value is emitted only when it differs from the previously emitted value.
+ *
+ * @template T - The type of the data being compared.
+ *
+ * @property {function} distinctUntilChanged - Filters out consecutive duplicates.
+ * Accepts an optional comparator function `(previous, current) => boolean` that returns
+ * `true` when values are considered equal (and should be suppressed).
+ * Defaults to strict equality (`===`).
+ */
+export type IDistinctUntilChanged<T> = {
+    distinctUntilChanged(comparator?: (previous: T, current: T) => boolean): ISetup<T>;
+};
+
+/**
+ * Suppresses consecutive duplicate values for ordered observables.
+ *
+ * @template T - The type of the data being compared.
+ *
+ * @property {function} distinctUntilChanged - Filters out consecutive duplicates.
+ */
+export type IOrderedDistinctUntilChanged<T> = {
+    distinctUntilChanged(comparator?: (previous: T, current: T) => boolean): ISetup<T>;
 };
 
 /**
