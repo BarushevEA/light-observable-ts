@@ -3797,6 +3797,10 @@ class ObservableDebounceTest {
         this.OBSERVABLE$ = new Observable<string>("init");
     }
 
+    after() {
+        this.OBSERVABLE$.destroy();
+    }
+
     @test 'debounce emits value after pause'(done: Function) {
         const results: string[] = [];
         const sub = this.OBSERVABLE$.pipe().debounce(50).subscribe((v: string) => results.push(v));
@@ -3845,10 +3849,11 @@ class ObservableDebounceTest {
             .debounce(50)
             .subscribe((v: string) => results.push(v));
 
-        this.OBSERVABLE$.next("hi");
-        this.OBSERVABLE$.next("hey");
-        this.OBSERVABLE$.next("hello");
+        this.OBSERVABLE$.next("hello");  // passes (len 5 > 2) → debounce stores "hello"
+        this.OBSERVABLE$.next("no");     // rejected (len 2) → debounce NOT reset
 
+        // Без фильтра: debounce хранил бы "no", результат ["no"]
+        // С фильтром: debounce хранит "hello", результат ["hello"]
         setTimeout(() => {
             expect(results).to.deep.equal(["hello"]);
             sub.unsubscribe();
@@ -3947,16 +3952,25 @@ class ObservableDebounceTest {
         this.OBSERVABLE$.next("c");
 
         setTimeout(() => {
-            expect(fast).to.deep.equal(["c"]);
-            expect(slow).to.deep.equal([]);
+            try {
+                expect(fast).to.deep.equal(["c"]);
+                expect(slow).to.deep.equal([]);
+            } catch (err) {
+                done(err);
+                return;
+            }
         }, 50);
 
         setTimeout(() => {
-            expect(fast).to.deep.equal(["c"]);
-            expect(slow).to.deep.equal(["c"]);
-            subFast.unsubscribe();
-            subSlow.unsubscribe();
-            done();
+            try {
+                expect(fast).to.deep.equal(["c"]);
+                expect(slow).to.deep.equal(["c"]);
+                subFast.unsubscribe();
+                subSlow.unsubscribe();
+                done();
+            } catch (err) {
+                done(err);
+            }
         }, 100);
     }
 
@@ -4005,14 +4019,23 @@ class ObservableDebounceTest {
 
         // После 40ms: первый debounce(30) сработал, второй(50) ещё нет
         setTimeout(() => {
-            expect(results).to.deep.equal([]);
+            try {
+                expect(results).to.deep.equal([]);
+            } catch (err) {
+                done(err);
+                return;
+            }
         }, 40);
 
         // После 90ms: оба debounce сработали (30 + 50 = 80ms)
         setTimeout(() => {
-            expect(results).to.deep.equal(["c"]);
-            sub.unsubscribe();
-            done();
+            try {
+                expect(results).to.deep.equal(["c"]);
+                sub.unsubscribe();
+                done();
+            } catch (err) {
+                done(err);
+            }
         }, 100);
     }
 
@@ -4029,14 +4052,23 @@ class ObservableDebounceTest {
 
         // После 50ms: два debounce сработали, третий ещё нет
         setTimeout(() => {
-            expect(results).to.deep.equal([]);
+            try {
+                expect(results).to.deep.equal([]);
+            } catch (err) {
+                done(err);
+                return;
+            }
         }, 50);
 
         // После 70ms: все три debounce сработали (20 + 20 + 20 = 60ms)
         setTimeout(() => {
-            expect(results).to.deep.equal(["x"]);
-            sub.unsubscribe();
-            done();
+            try {
+                expect(results).to.deep.equal(["x"]);
+                sub.unsubscribe();
+                done();
+            } catch (err) {
+                done(err);
+            }
         }, 80);
     }
 
@@ -4054,7 +4086,12 @@ class ObservableDebounceTest {
 
         // После первого debounce(30): and() отклоняет "no" (len <= 2) → второй debounce не запускается
         setTimeout(() => {
-            expect(results).to.deep.equal([]);
+            try {
+                expect(results).to.deep.equal([]);
+            } catch (err) {
+                done(err);
+                return;
+            }
         }, 100);
 
         // Теперь отправляем подходящее значение
@@ -4064,10 +4101,14 @@ class ObservableDebounceTest {
 
         // debounce(30) + debounce(50) = ~80ms после "hello"
         setTimeout(() => {
-            expect(results).to.deep.equal(["hello"]);
-            sub.unsubscribe();
-            done();
-        }, 200);
+            try {
+                expect(results).to.deep.equal(["hello"]);
+                sub.unsubscribe();
+                done();
+            } catch (err) {
+                done(err);
+            }
+        }, 250);
     }
 
     @test 'map() between two debounces transforms between delays'(done: Function) {
