@@ -185,12 +185,14 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
         this.killed = true;
 
         if (!this.process) {
+            this.clearDebounceTimers();
             this._value = <any>null;
             this.subs.length = 0;
             return;
         }
 
         Promise.resolve().then(() => {
+            this.clearDebounceTimers();
             this._value = <any>null;
             this.subs.length = 0;
         });
@@ -207,11 +209,21 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
         if (this.killed) return;
         if (this.process) {
             // Defer removal until next() completes
+            this.clearDebounceTimers();
             const subs = this.subs;
             for (let i = 0; i < subs.length; i++) this.trash.push(subs[i]);
             return;
         }
+        this.clearDebounceTimers();
         this.subs.length = 0;
+    }
+
+    /**
+     * Clears pending debounce timers on all subscribers to prevent memory leaks.
+     */
+    protected clearDebounceTimers(): void {
+        const subs = this.subs;
+        for (let i = 0; i < subs.length; i++) clearTimeout((<any>subs[i]).flow.debounceTimer);
     }
 
     /**

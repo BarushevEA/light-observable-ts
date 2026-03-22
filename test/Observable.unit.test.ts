@@ -3959,4 +3959,145 @@ class ObservableDebounceTest {
             done();
         }, 100);
     }
+
+    @test 'debounce delays group listeners'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$
+            .pipe()
+            .debounce(50)
+            .group()
+            .add((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("hello");
+        expect(results).to.deep.equal([]);
+
+        setTimeout(() => {
+            expect(results).to.deep.equal(["hello"]);
+            sub.unsubscribe();
+            done();
+        }, 60);
+    }
+
+    @test 'destroy cancels pending debounce timer'(done: Function) {
+        const results: string[] = [];
+        this.OBSERVABLE$.pipe().debounce(50).subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("ghost");
+        this.OBSERVABLE$.destroy();
+
+        setTimeout(() => {
+            expect(results).to.deep.equal([]);
+            done();
+        }, 60);
+    }
+
+    @test 'double debounce cascades delays'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$
+            .pipe()
+            .debounce(30)
+            .debounce(50)
+            .subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("a");
+        this.OBSERVABLE$.next("b");
+        this.OBSERVABLE$.next("c");
+
+        // После 40ms: первый debounce(30) сработал, второй(50) ещё нет
+        setTimeout(() => {
+            expect(results).to.deep.equal([]);
+        }, 40);
+
+        // После 90ms: оба debounce сработали (30 + 50 = 80ms)
+        setTimeout(() => {
+            expect(results).to.deep.equal(["c"]);
+            sub.unsubscribe();
+            done();
+        }, 100);
+    }
+
+    @test 'triple debounce cascades all delays'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$
+            .pipe()
+            .debounce(20)
+            .debounce(20)
+            .debounce(20)
+            .subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("x");
+
+        // После 50ms: два debounce сработали, третий ещё нет
+        setTimeout(() => {
+            expect(results).to.deep.equal([]);
+        }, 50);
+
+        // После 70ms: все три debounce сработали (20 + 20 + 20 = 60ms)
+        setTimeout(() => {
+            expect(results).to.deep.equal(["x"]);
+            sub.unsubscribe();
+            done();
+        }, 80);
+    }
+
+    @test 'and() between two debounces filters after first delay'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$
+            .pipe()
+            .debounce(30)
+            .and((v: string) => v.length > 2)
+            .debounce(50)
+            .subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("hi");
+        this.OBSERVABLE$.next("no");
+
+        // После первого debounce(30): and() отклоняет "no" (len <= 2) → второй debounce не запускается
+        setTimeout(() => {
+            expect(results).to.deep.equal([]);
+        }, 100);
+
+        // Теперь отправляем подходящее значение
+        setTimeout(() => {
+            this.OBSERVABLE$.next("hello");
+        }, 110);
+
+        // debounce(30) + debounce(50) = ~80ms после "hello"
+        setTimeout(() => {
+            expect(results).to.deep.equal(["hello"]);
+            sub.unsubscribe();
+            done();
+        }, 200);
+    }
+
+    @test 'map() between two debounces transforms between delays'(done: Function) {
+        const results: string[] = [];
+        const sub = this.OBSERVABLE$
+            .pipe()
+            .debounce(30)
+            .map((v: string) => v.toUpperCase())
+            .debounce(50)
+            .subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("hello");
+
+        setTimeout(() => {
+            expect(results).to.deep.equal(["HELLO"]);
+            sub.unsubscribe();
+            done();
+        }, 100);
+    }
+
+    @test 'unsubscribeAll cancels pending debounce timer'(done: Function) {
+        const results: string[] = [];
+        this.OBSERVABLE$.pipe().debounce(50).subscribe((v: string) => results.push(v));
+
+        this.OBSERVABLE$.next("ghost");
+        this.OBSERVABLE$.unsubscribeAll();
+
+        setTimeout(() => {
+            expect(results).to.deep.equal([]);
+            done();
+        }, 60);
+    }
 }
