@@ -131,6 +131,23 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 
     /**
+     * Executes a side-effect function on the current payload without modifying it.
+     * The value passes through unchanged to the next operator in the chain.
+     * Useful for logging, debugging, or triggering external actions mid-pipeline.
+     *
+     * @param {ICallback<T>} fn - Side-effect function called with the current payload.
+     * @return {ISetup<T>} The current setup instance for chaining purposes.
+     */
+    tap(fn: ICallback<T>): ISetup<T> {
+        return this.push(
+            (data: IPipePayload): void => {
+                fn(data.payload);
+                data.isAvailable = true;
+            }
+        );
+    }
+
+    /**
      * Throttles emissions using a leading-edge strategy.
      * The first value passes immediately; subsequent values within the
      * cooldown interval are silently dropped.

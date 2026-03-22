@@ -4163,4 +4163,112 @@ class ObservableDebounceTest {
             done();
         }, 60);
     }
+
+    @test 'tap() calls side-effect and delivers value to subscriber'() {
+        const tapped: string[] = [];
+        const received: string[] = [];
+
+        const sub = this.OBSERVABLE$.pipe()
+            .tap((v: string) => tapped.push(v))
+            .subscribe((v: string) => received.push(v));
+
+        this.OBSERVABLE$.next("hello");
+        this.OBSERVABLE$.next("world");
+
+        expect(tapped).to.deep.equal(["hello", "world"]);
+        expect(received).to.deep.equal(["hello", "world"]);
+        sub.unsubscribe();
+    }
+
+    @test 'tap() does not modify payload'() {
+        const received: string[] = [];
+
+        const sub = this.OBSERVABLE$.pipe()
+            .tap((v: string) => v + "_modified")
+            .subscribe((v: string) => received.push(v));
+
+        this.OBSERVABLE$.next("original");
+
+        expect(received).to.deep.equal(["original"]);
+        sub.unsubscribe();
+    }
+
+    @test 'tap() works after and() filter'() {
+        const tapped: string[] = [];
+        const received: string[] = [];
+
+        const sub = this.OBSERVABLE$.pipe()
+            .and((v: string) => v.length > 3)
+            .tap((v: string) => tapped.push(v))
+            .subscribe((v: string) => received.push(v));
+
+        this.OBSERVABLE$.next("hi");
+        this.OBSERVABLE$.next("hello");
+        this.OBSERVABLE$.next("no");
+        this.OBSERVABLE$.next("world");
+
+        expect(tapped).to.deep.equal(["hello", "world"]);
+        expect(received).to.deep.equal(["hello", "world"]);
+        sub.unsubscribe();
+    }
+
+    @test 'tap() before and after map() sees correct values'() {
+        const obs$ = new Observable<string>('');
+        const tappedBefore: string[] = [];
+        const tappedAfter: number[] = [];
+        const received: number[] = [];
+
+        const sub = obs$.pipe()
+            .tap((v: string) => tappedBefore.push(v))
+            .map<number>((v: string) => v.length)
+            .tap((v: number) => tappedAfter.push(v))
+            .subscribe((v: number) => received.push(v));
+
+        obs$.next("ab");
+        obs$.next("abcde");
+
+        expect(tappedBefore).to.deep.equal(["ab", "abcde"]);
+        expect(tappedAfter).to.deep.equal([2, 5]);
+        expect(received).to.deep.equal([2, 5]);
+        sub.unsubscribe();
+        obs$.destroy();
+    }
+
+    @test 'multiple tap() calls execute in order'() {
+        const log: string[] = [];
+
+        const sub = this.OBSERVABLE$.pipe()
+            .tap(() => log.push("first"))
+            .tap(() => log.push("second"))
+            .tap(() => log.push("third"))
+            .subscribe(() => log.push("listener"));
+
+        this.OBSERVABLE$.next("test");
+
+        expect(log).to.deep.equal(["first", "second", "third", "listener"]);
+        sub.unsubscribe();
+    }
+
+    @test 'tap() works before choice().or()'() {
+        const obs$ = new Observable<number>(0);
+        const tapped: number[] = [];
+        const received: number[] = [];
+
+        const sub = obs$.pipe()
+            .tap((v: number) => tapped.push(v))
+            .choice()
+            .or((v: number) => v === 1)
+            .or((v: number) => v === 3)
+            .subscribe((v: number) => received.push(v));
+
+        obs$.next(1);
+        obs$.next(2);
+        obs$.next(3);
+        obs$.next(4);
+
+        expect(tapped).to.deep.equal([1, 2, 3, 4]);
+        expect(received).to.deep.equal([1, 3]);
+        sub.unsubscribe();
+        obs$.destroy();
+    }
 }
