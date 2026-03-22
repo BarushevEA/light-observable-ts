@@ -192,6 +192,7 @@ export type ISetup<T> =
     ITransform<T> &
     IThrottle<T> &
     IDebounce<T> &
+    ITap<T> &
     ISerialisation &
     IGroup<T> &
     ISubscribe<T>;
@@ -223,6 +224,7 @@ export type IOrderedSetup<T> =
     IOrderedTransform<T> &
     IOrderedThrottle<T> &
     IOrderedDebounce<T> &
+    IOrderedTap<T> &
     IOrderedSerialisation &
     IOrderedGroup<T> &
     IOrderedSubscribe<T>;
@@ -613,6 +615,30 @@ export type IDebounce<T> = {
  */
 export type IOrderedDebounce<T> = {
     debounce(ms: number): ISetup<T>;
+};
+
+/**
+ * Executes a side-effect function on the current payload without modifying it.
+ * The value passes through unchanged to the next operator in the chain.
+ *
+ * @template T - The type of the data being observed.
+ *
+ * @property {function} tap - Applies a side-effect function to the current value.
+ * Accepts a callback and returns a setup structure for additional chaining.
+ */
+export type ITap<T> = {
+    tap(fn: ICallback<T>): ISetup<T>;
+};
+
+/**
+ * Side-effect operator for ordered observables.
+ *
+ * @template T - The type of the data being observed.
+ *
+ * @property {function} tap - Applies a side-effect function to the current value.
+ */
+export type IOrderedTap<T> = {
+    tap(fn: ICallback<T>): ISetup<T>;
 };
 
 /**
