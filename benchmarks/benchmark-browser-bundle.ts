@@ -54,8 +54,8 @@ console.log('# (Creation excluded from measurements)\n');
         .subscribe(() => {});
 
     obsBrowser.pipe()
-        .refine((v: number) => v % 2 === 0)
-        .then((v: number) => `Value: ${v}`)
+        .and((v: number) => v % 2 === 0)
+        .map((v: number) => `Value: ${v}`)
         .subscribe(() => {});
 
     obsRxJS.pipe(
