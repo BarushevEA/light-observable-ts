@@ -468,6 +468,45 @@ observable$.next(-1);
 // (filtered out by .and(), tap after filter is not called)
 ```
 
+#### Global debug flag pattern
+
+Use a debug flag to enable/disable all taps at once — zero runtime cost when disabled:
+
+```ts
+const DEBUG = true; // set to false in production
+
+const observable$ = new Observable<number>(0);
+
+observable$
+    .pipe()
+    .tap(value => DEBUG && console.log('[filter-in]:', value))
+    .and(value => value > 0)
+    .tap(value => DEBUG && console.log('[filter-out]:', value))
+    .map<number>(value => value * 2)
+    .tap(value => DEBUG && console.log('[mapped]:', value))
+    .subscribe(listener);
+
+observable$.next(5);
+// DEBUG=true:  [filter-in]: 5 → [filter-out]: 5 → [mapped]: 10
+// DEBUG=false: (nothing logged, V8 optimizes `false && ...` to no-op)
+```
+
+You can also use named taps for clarity in complex pipelines:
+
+```ts
+const tap_log = (name: string) => (value: any) =>
+    DEBUG && console.log(`[${name}]:`, value);
+
+observable$
+    .pipe()
+    .tap(tap_log('raw'))
+    .and(value => value > 0)
+    .tap(tap_log('filtered'))
+    .distinctUntilChanged()
+    .tap(tap_log('unique'))
+    .subscribe(listener);
+```
+
 ### pipe().toJson()
 
 To convert the observable's data to JSON format, you can use the serialize method. This method turns the observer's

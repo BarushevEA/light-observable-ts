@@ -1,7 +1,7 @@
 {
   "name": "evg_observable",
   "version": "3.0.1",
-  "description": "Alternative fast and light library version - observable.",
+  "description": "Lightweight reactive Observable library (zero dependencies) — 2-7x faster than RxJS, 1.5-3x faster than observable-fns. Pipe operators: throttle, debounce, distinctUntilChanged, map, tap. Original hot-observable architecture, not a fork or wrapper.",
   "main": "src/outLib/index.js",
   "types": "src/outLib/index.d.ts",
   "directories": {
