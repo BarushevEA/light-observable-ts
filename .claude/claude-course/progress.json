@@ -182,7 +182,7 @@
       "tasks": {
         "install_github_app": true,
         "create_github_action": true,
-        "test_headless": false,
+        "test_headless": true,
         "create_automation_script": false,
         "test_workflow": false,
         "document_workflows": false,
@@ -192,7 +192,7 @@
     }
   },
   "current_module": "5-workflows",
-  "current_task": "test_headless",
+  "current_task": "create_automation_script",
   "current_session_id": "01cfa5a1-87bf-4f6f-ae9b-65a5f30778c4",
   "total_time_spent_minutes": 0,
   "exports": [],
