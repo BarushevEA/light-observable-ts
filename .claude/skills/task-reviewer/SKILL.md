@@ -56,19 +56,43 @@ Where `{task_name}` corresponds to a task directory at `tmp/{task_name}/`.
    - **Decorator pattern**: Uses `@suite` / `@test` from `@testdeck/mocha`?
    - **Assertions**: Uses Chai `expect` style?
 
-### Step 4: Regression Analysis
+### Step 4: Determine Base Branch
 
-Compare against the stage branch (`dev`) to assess regression risk:
+Find the branch to compare against for regression analysis. Check in this order and use
+the first one that exists:
 
-1. Run `git diff dev..HEAD -- <changed-files>` for each modified source file (not test files)
+1. `dev`
+2. `stage`
+3. `main`
+4. `master`
+
+Run `git branch --list dev stage main master` and pick the first match. Use this branch
+for all `git diff` comparisons below.
+
+### Step 5: Regression Analysis
+
+Compare against the base branch determined in Step 4:
+
+1. Run `git diff {base_branch}..HEAD -- <changed-files>` for each modified source file (not test files)
 2. For each diff, assess:
    - **Breaking changes**: Does this change any public API signatures?
    - **Behavioral changes**: Could existing subscribers receive different values?
    - **Side effects**: Are there new side effects in existing methods?
    - **Dependency impact**: If a core file (Observable.ts, Pipe.ts, FilterCollection.ts) was modified, trace the impact to dependent code
-3. Run `npm test` to verify all existing tests still pass
+3. Run `npm test` and capture the full output — include the exact number of passing/failing tests in the review
 
-### Step 5: Documentation Check
+### Step 6: Run Benchmarks
+
+Run `npm run benchmark` to verify performance hasn't degraded. In the review, include:
+- Whether benchmarks ran successfully
+- Key metrics (ops/sec for relevant operations)
+- Any notable performance changes compared to baseline expectations
+
+If the task touches performance-critical code (Observable.ts, Pipe.ts, FilterCollection.ts),
+also run `npm run benchmark:comparison` to compare against RxJS and verify the library
+maintains its performance advantage.
+
+### Step 7: Documentation Check
 
 1. Does the implementation match what the plan describes?
 2. Are there deviations logged in the history?
@@ -91,7 +115,7 @@ If the directory doesn't exist, create it and start with `review_V1.md`.
 **Date:** {YYYY-MM-DD}
 **Plan version reviewed:** v{N}
 **Branch:** {current branch}
-**Compared against:** dev
+**Compared against:** {base_branch} (first found: dev > stage > main > master)
 
 ---
 
@@ -165,6 +189,28 @@ If the directory doesn't exist, create it and start with `review_V1.md`.
 | {file} | {Low/Medium/High} | {why} |
 
 **All existing tests pass:** {Yes / No (list failures)}
+
+---
+
+## Test Run Output
+
+```
+{exact npm test output: N passing, N failing, execution time}
+```
+
+---
+
+## Benchmark Results
+
+**`npm run benchmark`:** {Passed / Failed}
+
+| Operation | ops/sec | Notes |
+|-----------|---------|-------|
+| {relevant operation} | {N} | {comparison to expected baseline if available} |
+
+{If benchmark:comparison was run, include the comparison table here}
+
+**Performance regression detected:** {Yes (describe) / No}
 
 ---
 
