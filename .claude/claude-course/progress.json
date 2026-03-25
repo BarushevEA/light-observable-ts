@@ -169,13 +169,19 @@
         {
           "session_id": "39c4d2ad-dac5-42ac-bce6-ff48c98fd7fc",
           "started_at": "2026-03-22T22:42:00Z",
+          "ended_at": "2026-03-25T21:29:00Z",
+          "tasks_completed": []
+        },
+        {
+          "session_id": "01cfa5a1-87bf-4f6f-ae9b-65a5f30778c4",
+          "started_at": "2026-03-25T21:29:38Z",
           "ended_at": null,
           "tasks_completed": []
         }
       ],
       "tasks": {
-        "install_github_app": false,
-        "create_github_action": false,
+        "install_github_app": true,
+        "create_github_action": true,
         "test_headless": false,
         "create_automation_script": false,
         "test_workflow": false,
@@ -186,8 +192,8 @@
     }
   },
   "current_module": "5-workflows",
-  "current_task": "install_github_app",
-  "current_session_id": "39c4d2ad-dac5-42ac-bce6-ff48c98fd7fc",
+  "current_task": "test_headless",
+  "current_session_id": "01cfa5a1-87bf-4f6f-ae9b-65a5f30778c4",
   "total_time_spent_minutes": 0,
   "exports": [],
   "graduation": {
