@@ -356,6 +356,35 @@ git worktree remove ../light-observable-ts-feature-b
 git branch -d feature-a feature-b
 ```
 
+## Automated Workflows
+
+### GitHub Actions
+
+| Workflow | File | Trigger | Description |
+|----------|------|---------|-------------|
+| Claude Code | `.github/workflows/claude.yml` | `@claude` in PR/issue comments | Interactive — responds to mentions, applies fixes, answers questions |
+| Claude PR Review | `.github/workflows/claude-review.yml` | PR opened/updated | Automatic — reviews every PR for quality, bugs, performance, bundle size |
+
+Both use `CLAUDE_CODE_OAUTH_TOKEN` secret (OAuth, no API costs).
+
+### Automation Scripts
+
+Scripts in `scripts/` use Claude headless mode (`claude -p`). See `scripts/README.md` for details.
+
+| Script | Mode | Purpose |
+|--------|------|---------|
+| `claude-review-files.sh` | read-only | Review diff against base branch |
+| `claude-pr-prep.sh` | read-only | Run tests + generate PR description |
+| `claude-full-check.sh` | read-only | Review → PR prep pipeline |
+
+### Headless Mode Reference
+
+```bash
+claude -p "prompt" --print --max-turns 5       # read-only, text output
+claude -p "prompt" --output-format json         # machine-parseable output
+claude -p "prompt" --max-turns 10               # write mode (can edit files)
+```
+
 ## API Reference
 
 See [README.md](README.md) for full API documentation, usage examples, and method reference.

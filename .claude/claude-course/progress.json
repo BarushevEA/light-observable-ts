@@ -185,14 +185,14 @@
         "test_headless": true,
         "create_automation_script": true,
         "test_workflow": true,
-        "document_workflows": false,
+        "document_workflows": true,
         "final_commit": false
       },
       "submission": null
     }
   },
   "current_module": "5-workflows",
-  "current_task": "document_workflows",
+  "current_task": "final_commit",
   "current_session_id": "01cfa5a1-87bf-4f6f-ae9b-65a5f30778c4",
   "total_time_spent_minutes": 0,
   "exports": [],
