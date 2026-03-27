@@ -68,6 +68,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
      * @return {ISubscribe<T>} The subscription instance allowing further chaining or management.
      */
     take(n: number): ISubscribe<T> {
+        if (n < 0) n = 0;
         let count = 0;
         return this.push(
             (data: IPipePayload): void => {

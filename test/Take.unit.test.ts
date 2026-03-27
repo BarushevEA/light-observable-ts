@@ -2,6 +2,7 @@ import {suite, test} from '@testdeck/mocha';
 import * as _chai from 'chai';
 import {expect} from 'chai';
 import {Observable} from "../src/Libraries/Observables/Observable";
+import {OrderedObservable} from "../src/Libraries/Observables/OrderedObservable";
 
 _chai.should();
 _chai.expect;
@@ -212,5 +213,37 @@ class TakeUnitTest {
         expect(received).to.deep.equal(["a", "b"]);
         expect(errorCounter).to.be.equal(0);
         expect(this.OBSERVABLE$.size()).to.be.equal(0);
+    }
+
+    @test 'take(-1) behaves like take(0) — no values delivered'() {
+        const received: string[] = [];
+
+        this.OBSERVABLE$.pipe()
+            .take(-1)
+            .subscribe((v: string) => received.push(v));
+
+        this.OBSERVABLE$.next("a");
+        this.OBSERVABLE$.next("b");
+
+        expect(received).to.deep.equal([]);
+        expect(this.OBSERVABLE$.size()).to.be.equal(0);
+    }
+
+    @test 'take works with OrderedObservable'() {
+        const ordered$ = new OrderedObservable<string>("");
+        const received: string[] = [];
+
+        ordered$.pipe()
+            .take(2)
+            .subscribe((v: string) => received.push(v));
+
+        expect(ordered$.size()).to.be.equal(1);
+
+        ordered$.next("a");
+        ordered$.next("b");
+        ordered$.next("c");
+
+        expect(received).to.deep.equal(["a", "b"]);
+        expect(ordered$.size()).to.be.equal(0);
     }
 }

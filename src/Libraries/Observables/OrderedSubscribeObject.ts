@@ -81,4 +81,15 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> implements IOr
     once(): IOrderedSubscribe<T> {
         return <any>super.once();
     }
+
+    /**
+     * Passes the first N values through the pipe, then automatically unsubscribes.
+     * Ordered variant — delegates to Pipe.take() with correct return type.
+     *
+     * @param {number} n - The number of values to receive before unsubscribing.
+     * @return {IOrderedSubscribe<T>} The subscription instance configured to take N values.
+     */
+    take(n: number): IOrderedSubscribe<T> {
+        return <any>super.take(n);
+    }
 }
