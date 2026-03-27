@@ -138,6 +138,25 @@ export type IOrderedOnce<T> = {
 };
 
 /**
+ * Passes the first N values through the pipe, then automatically unsubscribes.
+ * Generalization of `once()` — `once()` is equivalent to `take(1)`.
+ *
+ * @template T - The type of the data handled by the subscription.
+ */
+export type ITake<T> = {
+    take(n: number): ISubscribe<T>;
+};
+
+/**
+ * Ordered variant of ITake — passes the first N values, then unsubscribes.
+ *
+ * @template T - The type of the data handled by the subscription.
+ */
+export type IOrderedTake<T> = {
+    take(n: number): IOrderedSubscribe<T>;
+};
+
+/**
  * Interface representing an observable value that can be updated by emitting a new value.
  *
  * ISetObservableValue provides a `next` method that allows sending new values to be observed by subscribers.
@@ -188,6 +207,7 @@ export type ISetup<T> =
     IUnsubscribeByPositive<T> &
     IEmitByPositive<T> &
     IOnce<T> &
+    ITake<T> &
     ISwitch<T> &
     ITransform<T> &
     IThrottle<T> &
@@ -221,6 +241,7 @@ export type IOrderedSetup<T> =
     IOrderedUnsubscribeByPositive<T> &
     IOrderedEmitByPositive<T> &
     IOrderedOnce<T> &
+    IOrderedTake<T> &
     IOrderedSwitch<T> &
     IOrderedTransform<T> &
     IOrderedThrottle<T> &

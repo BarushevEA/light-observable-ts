@@ -61,6 +61,28 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 
     /**
+     * Passes the first N values through the pipe, then automatically unsubscribes.
+     * Generalization of `once()` — `once()` is equivalent to `take(1)`.
+     *
+     * @param {number} n - The number of values to receive before unsubscribing.
+     * @return {ISubscribe<T>} The subscription instance allowing further chaining or management.
+     */
+    take(n: number): ISubscribe<T> {
+        let count = 0;
+        return this.push(
+            (data: IPipePayload): void => {
+                if (count >= n) {
+                    data.isUnsubscribe = true;
+                    return;
+                }
+                count++;
+                (<IListener<T>>(<any>this).listener)(data.payload);
+                if (count >= n) data.isUnsubscribe = true;
+            }
+        );
+    }
+
+    /**
      * Unsubscribes based on a given condition. The condition is evaluated against
      * the payload, and if the condition returns true, the subscription is marked
      * for unsubscription.
