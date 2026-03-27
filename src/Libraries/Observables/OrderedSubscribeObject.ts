@@ -92,4 +92,15 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> implements IOr
     take(n: number): IOrderedSubscribe<T> {
         return <any>super.take(n);
     }
+
+    /**
+     * Ignores the first N values, then passes all subsequent values through.
+     * Ordered variant — delegates to Pipe.skip() with correct return type.
+     *
+     * @param {number} n - The number of values to ignore before passing values through.
+     * @return {IOrderedSetup<T>} The setup instance for chaining purposes.
+     */
+    skip(n: number): IOrderedSetup<T> {
+        return <any>super.skip(n);
+    }
 }

@@ -84,6 +84,27 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 
     /**
+     * Ignores the first N values in the pipe, then passes all subsequent values through.
+     * Mirror of `take(n)` — skip drops the head, take drops the tail.
+     *
+     * @param {number} n - The number of values to ignore before passing values through.
+     * @return {ISetup<T>} The current setup instance for chaining purposes.
+     */
+    skip(n: number): ISetup<T> {
+        if (n < 0) n = 0;
+        let count = 0;
+        return this.push(
+            (data: IPipePayload): void => {
+                if (count < n) {
+                    count++;
+                    return;
+                }
+                data.isAvailable = true;
+            }
+        );
+    }
+
+    /**
      * Unsubscribes based on a given condition. The condition is evaluated against
      * the payload, and if the condition returns true, the subscription is marked
      * for unsubscription.

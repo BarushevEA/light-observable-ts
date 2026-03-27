@@ -157,6 +157,25 @@ export type IOrderedTake<T> = {
 };
 
 /**
+ * Ignores the first N values in the pipe, then passes all subsequent values through.
+ * Mirror of `take(n)` — skip drops the head, take drops the tail.
+ *
+ * @template T - The type of the data handled by the pipe.
+ */
+export type ISkip<T> = {
+    skip(n: number): ISetup<T>;
+};
+
+/**
+ * Ordered variant of ISkip — ignores the first N values, then passes all through.
+ *
+ * @template T - The type of the data handled by the pipe.
+ */
+export type IOrderedSkip<T> = {
+    skip(n: number): IOrderedSetup<T>;
+};
+
+/**
  * Interface representing an observable value that can be updated by emitting a new value.
  *
  * ISetObservableValue provides a `next` method that allows sending new values to be observed by subscribers.
@@ -208,6 +227,7 @@ export type ISetup<T> =
     IEmitByPositive<T> &
     IOnce<T> &
     ITake<T> &
+    ISkip<T> &
     ISwitch<T> &
     ITransform<T> &
     IThrottle<T> &
@@ -242,6 +262,7 @@ export type IOrderedSetup<T> =
     IOrderedEmitByPositive<T> &
     IOrderedOnce<T> &
     IOrderedTake<T> &
+    IOrderedSkip<T> &
     IOrderedSwitch<T> &
     IOrderedTransform<T> &
     IOrderedThrottle<T> &
