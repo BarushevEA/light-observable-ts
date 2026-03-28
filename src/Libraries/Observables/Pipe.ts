@@ -342,26 +342,31 @@ export abstract class Pipe<T> implements ISubscribe<T> {
                 data.debounceIndex = i + 1;
 
                 const continueChain = () => {
-                    data.debounceTimer = 0;
-                    data.payload = data.debounceValue;
-                    data.isBreak = false;
-                    for (let j = data.debounceIndex; j < len; j++) {
-                        data.isUnsubscribe = false;
-                        data.isAvailable = false;
-                        data.debounceMs = 0;
-                        chain[j](data);
-                        if (data.isUnsubscribe) return (<any>this).unsubscribe();
-                        if (data.debounceMs > 0) {
-                            data.debounceValue = data.payload;
-                            data.debounceIndex = j + 1;
-                            clearTimeout(data.debounceTimer);
-                            data.debounceTimer = setTimeout(continueChain, data.debounceMs);
-                            return;
+                    try {
+                        data.debounceTimer = 0;
+                        data.payload = data.debounceValue;
+                        data.isBreak = false;
+                        for (let j = data.debounceIndex; j < len; j++) {
+                            data.isUnsubscribe = false;
+                            data.isAvailable = false;
+                            data.debounceMs = 0;
+                            chain[j](data);
+                            if (data.isUnsubscribe) return (<any>this).unsubscribe();
+                            if (data.debounceMs > 0) {
+                                data.debounceValue = data.payload;
+                                data.debounceIndex = j + 1;
+                                clearTimeout(data.debounceTimer);
+                                data.debounceTimer = setTimeout(continueChain, data.debounceMs);
+                                return;
+                            }
+                            if (!data.isAvailable) return;
+                            if (data.isBreak) break;
                         }
-                        if (!data.isAvailable) return;
-                        if (data.isBreak) break;
+                        if (listener) listener(data.payload);
+                    } catch (err) {
+                        const errorHandler = (<any>this).errorHandler;
+                        if (errorHandler) errorHandler(data.payload, err);
                     }
-                    if (listener) listener(data.payload);
                 };
 
                 clearTimeout(data.debounceTimer);
