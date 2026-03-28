@@ -3,14 +3,28 @@
   "version": "3.1.0",
   "description": "Lightweight reactive Observable library (zero dependencies) — 2-7x faster than RxJS, 1.5-3x faster than observable-fns. Pipe operators: throttle, debounce, distinctUntilChanged, map, tap. Original hot-observable architecture, not a fork or wrapper.",
   "main": "src/outLib/index.js",
+  "module": "src/outLib-esm/index.mjs",
   "types": "src/outLib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./src/outLib/index.d.ts",
+        "default": "./src/outLib-esm/index.mjs"
+      },
+      "require": {
+        "types": "./src/outLib/index.d.ts",
+        "default": "./src/outLib/index.js"
+      }
+    }
+  },
   "directories": {
     "test": "test"
   },
   "scripts": {
     "test": "nyc ./node_modules/.bin/_mocha 'test/**/*.test.ts'",
     "remove": "rm -rf ./src/Libraries; rm -rf ./test; rm .mocharc.json; rm .nyrc.json; rm register.js; rm tsconfig.json",
-    "build": "tsc --declaration; npm run remove",
+    "build": "tsc --declaration && npm run build:esm && npm run remove",
+    "build:esm": "esbuild src/Libraries/Observables/index.ts --bundle --format=esm --minify --outfile=src/outLib-esm/index.mjs",
     "benchmark": "ts-node benchmarks/benchmark.ts",
     "benchmark:comparison": "ts-node benchmarks/benchmark-comparison.ts",
     "benchmark:competitors": "ts-node benchmarks/benchmark-competitors.ts",

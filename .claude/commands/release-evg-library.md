@@ -68,7 +68,7 @@ git checkout -b publish-<version>
 npm run build
 ```
 
-This runs `tsc --declaration` and then the `remove` script which cleans source files.
+This runs `tsc --declaration` (CJS), then `build:esm` (esbuild ESM), then the `remove` script which cleans source files.
 
 ### Step 6: Verify clean package
 
@@ -78,7 +78,10 @@ Check what will be published:
 npm pack --dry-run
 ```
 
-Confirm no dev files are included (tests, benchmarks, .claude/, etc. should be excluded by .npmignore).
+Confirm:
+- `src/outLib/index.js` and `src/outLib/index.d.ts` are included (CJS + types)
+- `src/outLib-esm/index.mjs` is included (ESM)
+- No dev files are included (tests, benchmarks, .claude/, etc. should be excluded by .npmignore)
 
 ### Step 7: Publish
 
