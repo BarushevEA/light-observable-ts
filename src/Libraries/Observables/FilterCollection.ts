@@ -52,7 +52,7 @@ export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
      */
     and(condition: ICallback<any>): IFilterSetup<T> {
         return this.push(
-            (data: IFilterPayload): void => condition(data.payload) && (data.isAvailable = true) as any
+            (data: IFilterPayload): void => { if (condition(data.payload)) data.isAvailable = true; }
         );
     }
 

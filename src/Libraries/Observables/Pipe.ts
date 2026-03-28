@@ -132,7 +132,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
      */
     and(condition: ICallback<T>): ISetup<T> {
         return this.push(
-            (data: IPipePayload): void => condition(data.payload) && (data.isAvailable = true) as any
+            (data: IPipePayload): void => { if (condition(data.payload)) data.isAvailable = true; }
         );
     }
 

@@ -17,15 +17,6 @@ export type ISwitch<T> = {
 };
 
 /**
- * Represents an interface for an ordered choice mechanism.
- *
- * @template T The type of data expected by the implementation.
- */
-export type IOrderedSwitch<T> = {
-    choice(): PipeSwitchCase<T>;
-};
-
-/**
  * Defines an interface for converting a pipe to a group subscription.
  *
  * @template T The type of the data in the pipe.
@@ -164,29 +155,11 @@ export type ITransform<T> = {
 };
 
 /**
- * Represents an interface for an ordered transformation sequence.
- *
- * @template T - The type of the data to be transformed.
- */
-export type IOrderedTransform<T> = {
-    map<K>(condition: ICallback<T>): ISetup<K>;
-};
-
-/**
  * Represents a throttle operation using leading-edge strategy.
  *
  * @template T - The type of the data being throttled.
  */
 export type IThrottle<T> = {
-    throttle(ms: number): ISetup<T>;
-};
-
-/**
- * Represents an ordered throttle operation using leading-edge strategy.
- *
- * @template T - The type of the data being throttled.
- */
-export type IOrderedThrottle<T> = {
     throttle(ms: number): ISetup<T>;
 };
 
@@ -200,29 +173,11 @@ export type IDebounce<T> = {
 };
 
 /**
- * Provides trailing-edge debounce for ordered observables.
- *
- * @template T - The type of the data being debounced.
- */
-export type IOrderedDebounce<T> = {
-    debounce(ms: number): ISetup<T>;
-};
-
-/**
  * Suppresses consecutive duplicate values in the pipe chain.
  *
  * @template T - The type of the data being compared.
  */
 export type IDistinctUntilChanged<T> = {
-    distinctUntilChanged(comparator?: (previous: T, current: T) => boolean): ISetup<T>;
-};
-
-/**
- * Suppresses consecutive duplicate values for ordered observables.
- *
- * @template T - The type of the data being compared.
- */
-export type IOrderedDistinctUntilChanged<T> = {
     distinctUntilChanged(comparator?: (previous: T, current: T) => boolean): ISetup<T>;
 };
 
@@ -236,26 +191,9 @@ export type ITap<T> = {
 };
 
 /**
- * Side-effect operator for ordered observables.
- *
- * @template T - The type of the data being observed.
- */
-export type IOrderedTap<T> = {
-    tap(fn: ICallback<T>): ISetup<T>;
-};
-
-/**
  * ISerialisation interface defines the structure for JSON serialization and deserialization.
  */
 export type ISerialisation = {
-    toJson(): ISetup<string>;
-    fromJson<K>(): ISetup<K>;
-};
-
-/**
- * Represents an interface for ordered serialization and deserialization operations.
- */
-export type IOrderedSerialisation = {
     toJson(): ISetup<string>;
     fromJson<K>(): ISetup<K>;
 };
@@ -295,13 +233,13 @@ export type IOrderedSetup<T> =
     IOrderedTake<T> &
     IOrderedSkip<T> &
     IOrderedScan<T> &
-    IOrderedSwitch<T> &
-    IOrderedTransform<T> &
-    IOrderedThrottle<T> &
-    IOrderedDebounce<T> &
-    IOrderedDistinctUntilChanged<T> &
-    IOrderedTap<T> &
-    IOrderedSerialisation &
+    ISwitch<T> &
+    ITransform<T> &
+    IThrottle<T> &
+    IDebounce<T> &
+    IDistinctUntilChanged<T> &
+    ITap<T> &
+    ISerialisation &
     IOrderedGroup<T> &
     IOrderedSubscribe<T>;
 

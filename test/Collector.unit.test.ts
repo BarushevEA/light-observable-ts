@@ -97,7 +97,7 @@ class CollectorUnitTest {
         expect(this.COLLECTOR.size()).to.be.equal(0);
         this.COLLECTOR.unsubscribe(subscriptionLike);
         expect(this.COLLECTOR.size()).to.be.equal(0);
-        expect((<any>subscriptionLike).observer).to.be.equal(null);
+        expect((<any>subscriptionLike).observer).to.be.equal(undefined);
     }
 
     // unsubscribeAll() on an empty collector does not affect external subscriptions —

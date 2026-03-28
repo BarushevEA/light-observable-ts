@@ -1,6 +1,13 @@
 import {Observable, OrderedObservable, Collector} from './Libraries/Observables';
 
-const w = window as any;
-w.Observable = Observable;
-w.OrderedObservable = OrderedObservable;
-w.Collector = Collector;
+declare global {
+    interface Window {
+        Observable: typeof Observable;
+        OrderedObservable: typeof OrderedObservable;
+        Collector: typeof Collector;
+    }
+}
+
+window.Observable = Observable;
+window.OrderedObservable = OrderedObservable;
+window.Collector = Collector;

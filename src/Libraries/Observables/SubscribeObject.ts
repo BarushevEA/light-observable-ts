@@ -117,8 +117,8 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
         if (!this.observer) return;
         clearTimeout(this.flow.debounceTimer);
         this.observer.unSubscribe(this);
-        this.observer = <any>null;
-        this.listener = <any>null;
+        this.observer = undefined;
+        this.listener = undefined;
         this.chain.length = 0;
     }
 

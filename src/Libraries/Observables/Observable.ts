@@ -41,7 +41,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     protected process = false;
     protected trash: ISubscriptionLike[] = [];
     protected filters = new FilterCollection<T>();
-    protected _value: T;
+    protected _value: T | null;
 
     constructor(value: T) {
         this._value = value;
@@ -111,7 +111,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
 
         if (this.killed) {
             this.clearDebounceTimers();
-            this._value = <any>null;
+            this._value = null;
             this.subs.length = 0;
             return;
         }
@@ -195,7 +195,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
 
         if (!this.process) {
             this.clearDebounceTimers();
-            this._value = <any>null;
+            this._value = null;
             this.subs.length = 0;
         }
     }
@@ -236,7 +236,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
      */
     public getValue(): T | undefined {
         if (this.killed) return undefined;
-        return this._value;
+        return this._value!;
     }
 
     /**
