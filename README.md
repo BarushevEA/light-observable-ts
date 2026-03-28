@@ -1,4 +1,6 @@
 [![Socket Badge](https://socket.dev/api/badge/npm/package/evg_observable)](https://socket.dev/npm/package/evg_observable)
+<a href="https://www.npmjs.com/package/evg_observable"><img alt="npm version" src="https://img.shields.io/npm/v/evg_observable.svg?style=flat-square"></a>
+<a href="https://bundlephobia.com/result?p=evg_observable"><img alt="Bundle size" src="https://badgen.net/bundlephobia/min/evg_observable"></a>
 <h1 align=center style="color: saddlebrown">
 EVG Observable
 </h1>
@@ -24,6 +26,9 @@ EVG Observable - is a light library for simple use.
         - [pipe().debounce()](#pipedebouncems)
         - [pipe().distinctUntilChanged()](#pipedistinctuntilchangedcomparator)
         - [pipe().tap()](#pipetapfn)
+        - [pipe().take()](#pipetaken)
+        - [pipe().skip()](#pipeskipn)
+        - [pipe().scan()](#pipescanfn-seed)
         - [pipe().toJson()](#pipetojson)
         - [pipe().fromJson()](#pipefromjsonk)
         - [pipe().in()](#pipeink-v)
@@ -45,9 +50,9 @@ EVG Observable - is a light library for simple use.
 
 | Metric | EVG Observable | RxJS |
 |--------|----------------|------|
-| **Bundle size** | **8.0 kB** | 88 kB |
-| **Size advantage** | **11x smaller** | - |
-| **Operations** | ~40 | 100+ |
+| **Bundle size** | **8.4 kB** | 88 kB |
+| **Size advantage** | **10x smaller** | - |
+| **Operations** | ~43 | 100+ |
 | **Performance** | **2-7x faster** | baseline |
 
 ### Performance Comparison (Bundle vs Bundle)
@@ -107,7 +112,7 @@ Comparison with lightweight libraries in the same weight category (observable-fn
 | Metric | EVG Observable | observable-fns |
 |--------|----------------|----------------|
 | **Weekly downloads** | Growing | 67K |
-| **Bundle size (minified)** | 8.0 kB | 10.8 kB |
+| **Bundle size (minified)** | 8.4 kB | 9.9 kB |
 | **Implementation** | Original architecture | zen-observable re-implementation |
 | **Dependencies** | 0 | 0 |
 | **Architecture** | True hot observables | Cold observables (zen-observable API) |
@@ -505,6 +510,100 @@ observable$
     .distinctUntilChanged()
     .tap(tap_log('unique'))
     .subscribe(listener);
+```
+
+### pipe().take(n)
+
+Passes the first N values through the pipe, then automatically unsubscribes. Generalization of `once()` — `once()` is equivalent to `take(1)`.
+
+```ts
+import {Observable} from "evg_observable";
+
+const observable$ = new Observable<string>('');
+const received: string[] = [];
+
+observable$
+    .pipe()
+    .take(3)
+    .subscribe((value: string) => received.push(value));
+
+observable$.next("a");  // received: ["a"]
+observable$.next("b");  // received: ["a", "b"]
+observable$.next("c");  // received: ["a", "b", "c"] — auto-unsubscribed
+observable$.next("d");  // not received
+```
+
+Combine with filters and transforms:
+
+```ts
+observable$
+    .pipe()
+    .and(str => str.length > 2)    // filter short strings
+    .take(2)                        // take first 2 that pass
+    .subscribe(listener);
+```
+
+### pipe().skip(n)
+
+Ignores the first N values in the pipe, then passes all subsequent values through. Mirror of `take(n)`.
+
+```ts
+import {Observable} from "evg_observable";
+
+const observable$ = new Observable<string>('');
+const received: string[] = [];
+
+observable$
+    .pipe()
+    .skip(2)
+    .subscribe((value: string) => received.push(value));
+
+observable$.next("a");  // skipped
+observable$.next("b");  // skipped
+observable$.next("c");  // received: ["c"]
+observable$.next("d");  // received: ["c", "d"]
+```
+
+Combine skip + take for window slicing:
+
+```ts
+observable$
+    .pipe()
+    .skip(2)    // skip first 2
+    .take(3)    // take next 3, then unsubscribe
+    .subscribe(listener);
+```
+
+### pipe().scan&lt;K&gt;(fn, seed)
+
+Accumulator operator — each value passes through a reducer function, the accumulated result is emitted. Like `Array.reduce()` for streams.
+
+```ts
+import {Observable} from "evg_observable";
+
+const observable$ = new Observable<number>(0);
+const sums: number[] = [];
+
+observable$
+    .pipe()
+    .scan<number>((acc, val) => acc + val, 0)
+    .subscribe((sum: number) => sums.push(sum));
+
+observable$.next(1);   // sums: [1]
+observable$.next(2);   // sums: [1, 3]
+observable$.next(3);   // sums: [1, 3, 6]
+```
+
+Type-changing scan (string → number):
+
+```ts
+const observable$ = new Observable<string>('');
+
+observable$
+    .pipe()
+    .scan<number>((acc, str) => acc + str.length, 0)
+    .and(total => total > 5)
+    .subscribe(total => console.log('Total chars:', total));
 ```
 
 ### pipe().toJson()
@@ -982,7 +1081,10 @@ observable$.next(-1);  // Listener 1 throws, listener 2 still receives
 | `.debounce(ms: number)`              | pipe object                            | Debounces emissions using trailing-edge strategy. Each new value resets the timer. Emits after `ms` milliseconds of silence.                                                                                            |
 | `.distinctUntilChanged(comparator?)` | pipe object                            | Suppresses consecutive duplicate values. Optional `comparator(prev, curr) => boolean` for custom equality. Defaults to `===`.                                                                                          |
 | `.tap(fn: ICallback<T>)`            | pipe object                            | Executes a side-effect function without modifying the value. The value passes through unchanged.                                                                                                                        |
+| `.take(n: number)`                   | pipe object                            | Passes the first N values, then auto-unsubscribes. Generalization of `once()`.                                                                                                                                          |
+| `.skip(n: number)`                   | pipe object                            | Ignores the first N values, then passes all subsequent values through. Mirror of `take()`.                                                                                                                              |
 | `.map<K>(transform: ICallback<T>)`  | Observable instance with new data type | This method allows transforming payload data in the pipe chain by applying user callback function. `transform` should be a function that takes the current data and returns transformed data of possibly another type.  |
+| `.scan<K>(fn, seed)`                | pipe object with new type K            | Accumulator — each value passes through reducer `fn(acc, val) => newAcc`, emits accumulated result. Like `Array.reduce()` for streams.                                                                                  |
 | `.toJson()`                       | pipe object                            | Converts the observers data into a JSON string.                                                                                                                                                                         |
 | `.fromJson<K>()`                  | pipe object                            | Converts a JSON string into an object of type K.                                                                                                                                                                        |
 | `.of<K, V>(transform?: ICallback<K>)`| pipe object                            | Iterates over array elements. For each element, emits it to subscribers. Optional transform function processes each element before emission.                                                                             |

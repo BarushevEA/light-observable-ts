@@ -104,7 +104,7 @@ npx mocha --require ./register.js test/Observable.unit.test.ts
 
 - **OrderedObservable.ts**: Extended Observable with ordered emission guarantees. Subscribers have an `order` property (numeric) with ascending/descending sort modes.
 
-- **Pipe.ts**: Chainable transformation pipeline with methods like `once()`, `unsubscribeBy()`, `and()`, `map<K>()`, `tap()`, `throttle()`, `debounce()`, `distinctUntilChanged()`, `toJson()`, `fromJson<K>()`, `group()`, and switch-case branching (`choice().or()`).
+- **Pipe.ts**: Chainable transformation pipeline with methods like `once()`, `take()`, `skip()`, `unsubscribeBy()`, `and()`, `map<K>()`, `scan<K>()`, `tap()`, `throttle()`, `debounce()`, `distinctUntilChanged()`, `toJson()`, `fromJson<K>()`, `group()`, and switch-case branching (`choice().or()`).
 
 - **FilterCollection.ts**: Inbound filter system applied before emitting to subscribers. Supports `addFilter()` chaining with AND logic and `switch()` for OR logic.
 
@@ -145,8 +145,10 @@ When a test fails and reveals a potential bug in the library:
 | Method | Behavior | Auto-Unsubscribe |
 |--------|----------|------------------|
 | `once()` | Receive one value then unsubscribe | Yes (after first value) |
+| `take(n)` | Receive first N values then unsubscribe | Yes (after N values) |
 | `unsubscribeBy(condition)` | Receive values until condition is true | Yes (when condition returns true) |
 | `and(condition)` | Filter values, only pass when true | No |
+| `skip(n)` | Ignore first N values, pass all after | No |
 
 ### AND vs OR Logic
 
@@ -172,6 +174,30 @@ observable$
     .map<number>(str => str.length)   // transform to number
     .and(num => num > 4)            // filter numbers
     .subscribe(listener);
+```
+
+### Accumulator with `scan<K>(fn, seed)`
+
+Each value passes through a reducer, accumulated result is emitted:
+```typescript
+observable$
+    .pipe()
+    .scan<number>((acc, val) => acc + val, 0)  // running sum
+    .subscribe(listener);
+// 1 → 1, 2 → 3, 3 → 6
+```
+
+### Slicing with `take(n)` and `skip(n)`
+
+```typescript
+// take(n): receive first N values, then auto-unsubscribe
+observable$.pipe().take(3).subscribe(listener);  // gets 3 values, done
+
+// skip(n): ignore first N values, pass the rest
+observable$.pipe().skip(2).subscribe(listener);  // skips 2, then all pass
+
+// Combine for window slicing: skip 2, take 3
+observable$.pipe().skip(2).take(3).subscribe(listener);
 ```
 
 ### Side Effects with `tap(fn)`
@@ -264,7 +290,7 @@ Bundle comparison (v3.0.0 API, minified bundles, clean benchmarks):
 | 5 chained filters | 19K ops/sec | 9K ops/sec | **2.1x faster** |
 | Large payload | 879K ops/sec | 184K ops/sec | **4.8x faster** |
 
-**Key metrics:** Observable creation ~122M ops/sec, bundle size 8.0 kB (11x smaller than RxJS).
+**Key metrics:** Observable creation ~122M ops/sec, bundle size 8.4 kB (10x smaller than RxJS).
 
 See `BENCHMARK_BUNDLE_RESULTS.md` for full details.
 
@@ -273,7 +299,7 @@ See `BENCHMARK_BUNDLE_RESULTS.md` for full details.
 - **Language**: TypeScript (strict mode), target ESNext, module CommonJS
 - **Testing**: Mocha + `@testdeck/mocha` (decorator-based) + Chai + NYC (coverage)
 - **Build**: `tsc --declaration` → `src/outLib/` (npm publish prep — strips comments to reduce package size)
-- **Browser bundle**: `npm run bundle` → `repo/evg_observable.js` (esbuild, IIFE, minified, 8.0 kB)
+- **Browser bundle**: `npm run bundle` → `repo/evg_observable.js` (esbuild, IIFE, minified, 8.4 kB)
 - **Bundler**: esbuild (entry: `src/browser-entry.ts` → IIFE bundle exposing Observable, OrderedObservable, Collector on `window`)
 - **Package manager**: npm
 - **No linter/formatter** configured (no ESLint, no Prettier, no .editorconfig)
