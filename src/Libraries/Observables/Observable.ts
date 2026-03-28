@@ -108,6 +108,14 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
         for (let i = 0; i < len; i++) subs[i].send(value);
 
         this.process = false;
+
+        if (this.killed) {
+            this.clearDebounceTimers();
+            this._value = <any>null;
+            this.subs.length = 0;
+            return;
+        }
+
         this.trash.length && this.clearTrash();
     }
 
@@ -175,8 +183,9 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     /**
      * Cleans up resources and terminates any ongoing processes or subscriptions associated with the instance.
      *
-     * Sets the internal state to indicate it has been destroyed. If a process is associated, waits until the process is no longer active
-     * before clearing internal data and subscriptions.
+     * Sets the internal state to indicate it has been destroyed. If called during emission (process === true),
+     * physical cleanup is deferred until the current next() completes — all subscribers receive the current value,
+     * then resources are freed synchronously.
      *
      * @return {void} Does not return any value.
      */
@@ -188,14 +197,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
             this.clearDebounceTimers();
             this._value = <any>null;
             this.subs.length = 0;
-            return;
         }
-
-        Promise.resolve().then(() => {
-            this.clearDebounceTimers();
-            this._value = <any>null;
-            this.subs.length = 0;
-        });
     }
 
     /**

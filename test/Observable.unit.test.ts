@@ -551,7 +551,7 @@ class ObservableUnitTest {
         expect(0).to.be.equal(errorCounter);
     }
 
-    @test 'destroy during emission (async cleanup)'() {
+    @test 'destroy during emission (sync cleanup)'() {
         let errorCounter = 0;
         const errorHandler = (errorData: any, errorMessage: any) => {
             expect(false).to.be.equal(!!errorMessage);
@@ -560,7 +560,7 @@ class ObservableUnitTest {
         const observable$ = new Observable<number>(0);
         let callCount = 0;
 
-        // Listener that calls destroys during emission
+        // Listener that calls destroy during emission
         const listener = (value: number) => {
             callCount++;
             if (value === 2) {
@@ -572,21 +572,16 @@ class ObservableUnitTest {
         expect(observable$.size()).to.be.equal(1);
 
         observable$.next(1);
-        observable$.next(2); // This triggers destroyed during emission
+        observable$.next(2); // This triggers destroy during emission
         observable$.next(3); // Should not be processed (killed=true)
 
         expect(callCount).to.be.equal(2);
         expect(observable$.isDestroyed).to.be.equal(true);
-        expect(0).to.be.equal(errorCounter);
+        expect(errorCounter).to.be.equal(0);
 
-        // Wait for Promise.resolve().then() to complete
-        return new Promise<void>(resolve => {
-            setTimeout(() => {
-                expect(observable$.getValue()).to.be.undefined;
-                expect(observable$.size()).to.be.equal(0);
-                resolve();
-            }, 0);
-        });
+        // Cleanup happens synchronously after next() completes — no Promise needed
+        expect(observable$.getValue()).to.be.undefined;
+        expect(observable$.size()).to.be.equal(0);
     }
 
     @test 'destroy called twice (idempotent)'() {
@@ -2639,6 +2634,58 @@ class ObservableUnitTest {
         observable.next(3); // killed, nothing happens
         expect(received).to.be.eql([10, 100, 20, 200]);
         expect(observable.isDestroyed).to.be.equal(true);
+    }
+
+    @test 'destroy during emission cleans up synchronously after next()'() {
+        const observable = new Observable<string>("init");
+
+        observable.subscribe((v) => {
+            if (v === "trigger") observable.destroy();
+        });
+
+        observable.next("trigger");
+
+        // Cleanup is synchronous — no microtask needed
+        expect(observable.getValue()).to.be.undefined;
+        expect(observable.size()).to.be.equal(0);
+        expect(observable.isDestroyed).to.be.equal(true);
+    }
+
+    @test 'nested next() after destroy during emission is blocked'() {
+        const observable = new Observable<number>(0);
+        let callCount = 0;
+
+        observable.subscribe((v) => {
+            callCount++;
+            if (v === 1) {
+                observable.destroy();
+                observable.next(2); // killed=true, should be blocked
+            }
+        });
+
+        observable.next(1);
+        expect(callCount).to.be.equal(1);
+        expect(observable.isDestroyed).to.be.equal(true);
+    }
+
+    @test 'multiple subscribers all receive value before sync destroy cleanup'() {
+        const observable = new Observable<number>(0);
+        const received: number[] = [];
+
+        observable.subscribe((v) => {
+            received.push(1);
+            if (v === 5) observable.destroy();
+        });
+        observable.subscribe((v) => { received.push(2); });
+        observable.subscribe((v) => { received.push(3); });
+
+        observable.next(5);
+
+        // All 3 subscribers received the value
+        expect(received).to.be.eql([1, 2, 3]);
+        // Cleanup happened synchronously
+        expect(observable.getValue()).to.be.undefined;
+        expect(observable.size()).to.be.equal(0);
     }
 
     @test 'unsubscribeAll during next() is safe - uses deferred cleanup'() {
