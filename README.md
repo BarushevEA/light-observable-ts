@@ -28,7 +28,7 @@ EVG Observable - is a light library for simple use.
         - [pipe().tap()](#pipetapfn)
         - [pipe().take()](#pipetaken)
         - [pipe().skip()](#pipeskipn)
-        - [pipe().scan()](#pipescanfn-seed)
+        - [pipe().scan()](#pipescankfn-seed)
         - [pipe().toJson()](#pipetojson)
         - [pipe().fromJson()](#pipefromjsonk)
         - [pipe().in()](#pipeink-v)
