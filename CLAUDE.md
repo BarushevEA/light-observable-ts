@@ -290,7 +290,7 @@ Bundle comparison (v3.0.0 API, minified bundles, clean benchmarks):
 | 5 chained filters | 19K ops/sec | 9K ops/sec | **2.1x faster** |
 | Large payload | 879K ops/sec | 184K ops/sec | **4.8x faster** |
 
-**Key metrics:** Observable creation ~122M ops/sec, bundle size 8.4 kB (10x smaller than RxJS).
+**Key metrics:** Observable creation ~122M ops/sec, bundle size 9.4 kB per bundlephobia (6.8x smaller than RxJS 63.6 kB), browser IIFE bundle 8.4 kB.
 
 See `BENCHMARK_BUNDLE_RESULTS.md` for full details.
 
