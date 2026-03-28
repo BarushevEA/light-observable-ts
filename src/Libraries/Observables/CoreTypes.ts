@@ -87,7 +87,7 @@ export type ISubscribeCounter = {
  * Represents a generic stream interface for processing arrays of type T.
  *
  * This interface defines a method to input and handle data streams.
- * Mirrors for...of semantics (pairs with IObjectStream for objects).
+ * Mirrors for...of semantics — emits array elements one by one.
  *
  * @template T The type of the data elements to be streamed.
  * @typedef {Object} IStream
