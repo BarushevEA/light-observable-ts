@@ -277,20 +277,18 @@ observable$.size();         // Get subscriber count
 
 ## Performance (vs RxJS)
 
-Bundle comparison (v3.0.0 API, minified bundles, clean benchmarks):
+Bundle comparison (v3.1.0 API, minified bundles, Node.js v20.18.3):
 
 | Operation | EVG Observable | RxJS | Advantage |
 |-----------|----------------|------|-----------|
-| Emit 100 values | 1,662K ops/sec | 239K ops/sec | **7.0x faster** |
-| Filter + transform | 340K ops/sec | 149K ops/sec | **2.3x faster** |
-| 10 subscribers | 9,946K ops/sec | 3,500K ops/sec | **2.8x faster** |
-| 100 subscribers | 1,236K ops/sec | 432K ops/sec | **2.9x faster** |
-| 1000 subscribers | 124K ops/sec | 41K ops/sec | **3.0x faster** |
-| Batch of(100) | 906K ops/sec | 176K ops/sec | **5.1x faster** |
-| 5 chained filters | 19K ops/sec | 9K ops/sec | **2.1x faster** |
-| Large payload | 879K ops/sec | 184K ops/sec | **4.8x faster** |
+| Emit 100 values | 2,955K ops/sec | 508K ops/sec | **5.8x faster** |
+| Filter + transform | 615K ops/sec | 237K ops/sec | **2.6x faster** |
+| 10 subscribers | 21,881K ops/sec | 7,556K ops/sec | **2.9x faster** |
+| 100 subscribers | 2,284K ops/sec | 907K ops/sec | **2.5x faster** |
+| 1000 subscribers | 181K ops/sec | 81K ops/sec | **2.2x faster** |
+| Large payload | 1,455K ops/sec | 370K ops/sec | **3.9x faster** |
 
-**Key metrics:** Observable creation ~122M ops/sec, bundle size 9.4 kB per bundlephobia (6.8x smaller than RxJS 63.6 kB), browser IIFE bundle 8.4 kB.
+**Key metrics:** Bundle size 9.4 kB per bundlephobia (6.8x smaller than RxJS 63.6 kB), browser IIFE bundle 8.4 kB.
 
 See `BENCHMARK_BUNDLE_RESULTS.md` for full details.
 

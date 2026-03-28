@@ -53,11 +53,23 @@ EVG Observable - is a light library for simple use.
 | **Bundle size** | **9.4 kB** | 63.6 kB |
 | **Size advantage** | **6.8x smaller** | - |
 | **Operations** | ~43 | 100+ |
-| **Performance** | **2-7x faster** | baseline |
+| **Performance** | **2-6x faster** | baseline |
 
 ### Performance Comparison (Bundle vs Bundle)
 
-Benchmarked with minified bundles on Node.js v22.17.1 (v3.0.0 API, averaged over 3 clean runs):
+Benchmarked with minified bundles on Node.js v20.18.3 (v3.1.0 API):
+
+| Test | EVG Observable | RxJS | Advantage |
+|------|----------------|------|-----------|
+| Emit 100 values | 2,955K ops/sec | 508K ops/sec | **5.8x faster** |
+| Filter + transform | 615K ops/sec | 237K ops/sec | **2.6x faster** |
+| 10 subscribers | 21,881K ops/sec | 7,556K ops/sec | **2.9x faster** |
+| 100 subscribers | 2,284K ops/sec | 907K ops/sec | **2.5x faster** |
+| 1000 subscribers | 181K ops/sec | 81K ops/sec | **2.2x faster** |
+| Large payload | 1,455K ops/sec | 370K ops/sec | **3.9x faster** |
+
+<details>
+<summary>Previous results (v3.0.0 API, Node.js v22.17.1, averaged over 3 clean runs)</summary>
 
 | Test | EVG Observable | RxJS | Advantage |
 |------|----------------|------|-----------|
@@ -69,20 +81,6 @@ Benchmarked with minified bundles on Node.js v22.17.1 (v3.0.0 API, averaged over
 | Batch emission - of(100) | 906K ops/sec | 176K ops/sec | **5.1x faster** |
 | 5 chained filters | 19K ops/sec | 9K ops/sec | **2.1x faster** |
 | Large payload | 879K ops/sec | 184K ops/sec | **4.8x faster** |
-
-<details>
-<summary>Previous results (v2.x API, measured in different conditions)</summary>
-
-| Test | EVG Observable | RxJS | Advantage |
-|------|----------------|------|-----------|
-| Emit 100 values | 1,548K ops/sec | 240K ops/sec | **6.4x faster** |
-| Filter + transform | 353K ops/sec | 164K ops/sec | **2.1x faster** |
-| 10 subscribers | 9,078K ops/sec | 2,900K ops/sec | **3.1x faster** |
-| 100 subscribers | 1,245K ops/sec | 336K ops/sec | **3.7x faster** |
-| 1000 subscribers | 122K ops/sec | 33K ops/sec | **3.7x faster** |
-| Large payload | 865K ops/sec | 199K ops/sec | **4.3x faster** |
-
-**Note**: v3.0.0 performance is equal or better than v2.x (emit: +7%, 10 subs: +10%). The API redesign with more flexible pipe system maintains excellent performance while providing enhanced functionality.
 </details>
 
 ### EVG Observable Advantages
