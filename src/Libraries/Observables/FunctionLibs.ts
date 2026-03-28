@@ -76,7 +76,7 @@ export function getListener<T>(listenerGroup: ISubscribeGroup<T>): IListener<T> 
 
         for (let i = 0; i < len; i++) group[i] = wrapListener(<any>listenerGroup[i]);
 
-        return (data?: T) => {
+        return (data: T) => {
             for (let i = 0; i < len; i++) group[i](data);
         };
     }

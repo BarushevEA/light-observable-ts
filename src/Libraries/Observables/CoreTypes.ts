@@ -6,7 +6,7 @@
  * @param {T} [value] - An optional parameter of type `T` passed to the callback function.
  * @returns {any} - The return type of the callback function is not specified and can be of any type.
  */
-export type ICallback<T> = (value?: T) => any;
+export type ICallback<T> = (value: T) => any;
 
 /**
  * Represents a callback function to handle error scenarios.
