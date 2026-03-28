@@ -1,10 +1,12 @@
 # Development and config files
 .claude/
+.claudeignore
 .config/
 .github/
 .idea/
 .nyc_output/
 tmp/
+scripts/
 
 # Source files (keep only compiled output)
 src/Libraries/
