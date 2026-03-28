@@ -8,6 +8,7 @@ tmp/
 
 # Source files (keep only compiled output)
 src/Libraries/
+src/browser-entry.ts
 test/
 *.ts
 !*.d.ts
@@ -27,6 +28,11 @@ coverage/
 CLAUDE.md
 BENCHMARK_*.md
 BREAKING_CHANGES.md
+
+# Scripts and misc dev files
+scripts/
+.claudeignore
+repo/evg_observable.old.js
 
 # Misc
 *.log
