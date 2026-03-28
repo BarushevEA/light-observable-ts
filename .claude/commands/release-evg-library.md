@@ -72,7 +72,20 @@ This runs `tsc --declaration` (CJS), then `build:esm` (esbuild ESM), then the `r
 
 ### Step 6: Verify clean package
 
-Check what will be published:
+#### 6a. Verify package.json fields
+
+Read `package.json` and confirm these fields are present and correct:
+
+| Field | Expected value |
+|-------|---------------|
+| `"main"` | `"src/outLib/index.js"` |
+| `"module"` | `"src/outLib-esm/index.mjs"` |
+| `"types"` | `"src/outLib/index.d.ts"` |
+| `"exports"` | Conditional exports with `"import"` and `"require"` subpaths, each with `"types"` and `"default"` |
+
+If any field is missing or incorrect — STOP and fix before publishing.
+
+#### 6b. Verify packed files
 
 ```bash
 npm pack --dry-run
