@@ -29,6 +29,7 @@
     "benchmark:comparison": "ts-node benchmarks/benchmark-comparison.ts",
     "benchmark:competitors": "ts-node benchmarks/benchmark-competitors.ts",
     "benchmark:browser": "ts-node benchmarks/benchmark-browser-bundle.ts",
+    "benchmark:esm": "ts-node benchmarks/benchmark-esm-bundle.ts",
     "benchmark:bundles": "ts-node benchmarks/benchmark-bundles.ts",
     "benchmark:patterns": "ts-node benchmarks/benchmark-subscription-patterns.ts",
     "benchmark:patterns-edge": "ts-node benchmarks/benchmark-patterns-edge-cases.ts",
