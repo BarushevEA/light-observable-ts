@@ -43,7 +43,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
     protected filters = new FilterCollection<T>();
     protected _value: T | null;
 
-    constructor(value: T) {
+    constructor(value: T | null = null) {
         this._value = value;
     }
 
