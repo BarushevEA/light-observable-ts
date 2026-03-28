@@ -175,6 +175,26 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 
     /**
+     * Accumulator operator — each value passes through a reducer function,
+     * the accumulated result is emitted. Like `Array.reduce()` for streams.
+     *
+     * @template K The type of the accumulated value.
+     * @param {function} fn - Reducer function `(accumulator, value) => newAccumulator`.
+     * @param {K} seed - Initial value of the accumulator.
+     * @return {ISetup<K>} An instance of the setup interface with the accumulated type.
+     */
+    scan<K>(fn: (accumulator: K, value: T) => K, seed: K): ISetup<K> {
+        let accumulator = seed;
+        return <any>this.push(
+            (data: IPipePayload): void => {
+                accumulator = fn(accumulator, data.payload);
+                data.payload = accumulator;
+                data.isAvailable = true;
+            }
+        ) as ISetup<K>;
+    }
+
+    /**
      * Executes a side-effect function on the current payload without modifying it.
      * The value passes through unchanged to the next operator in the chain.
      * Useful for logging, debugging, or triggering external actions mid-pipeline.

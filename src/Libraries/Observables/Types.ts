@@ -176,6 +176,25 @@ export type IOrderedSkip<T> = {
 };
 
 /**
+ * Accumulator operator — each value passes through a reducer function,
+ * the accumulated result is emitted. Like `Array.reduce()` for streams.
+ *
+ * @template T - The type of the incoming data.
+ */
+export type IScan<T> = {
+    scan<K>(fn: (accumulator: K, value: T) => K, seed: K): ISetup<K>;
+};
+
+/**
+ * Ordered variant of IScan — accumulator with correct ordered return type.
+ *
+ * @template T - The type of the incoming data.
+ */
+export type IOrderedScan<T> = {
+    scan<K>(fn: (accumulator: K, value: T) => K, seed: K): IOrderedSetup<K>;
+};
+
+/**
  * Interface representing an observable value that can be updated by emitting a new value.
  *
  * ISetObservableValue provides a `next` method that allows sending new values to be observed by subscribers.
@@ -228,6 +247,7 @@ export type ISetup<T> =
     IOnce<T> &
     ITake<T> &
     ISkip<T> &
+    IScan<T> &
     ISwitch<T> &
     ITransform<T> &
     IThrottle<T> &
@@ -263,6 +283,7 @@ export type IOrderedSetup<T> =
     IOrderedOnce<T> &
     IOrderedTake<T> &
     IOrderedSkip<T> &
+    IOrderedScan<T> &
     IOrderedSwitch<T> &
     IOrderedTransform<T> &
     IOrderedThrottle<T> &

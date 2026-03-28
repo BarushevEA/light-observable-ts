@@ -103,4 +103,17 @@ export class OrderedSubscribeObject<T> extends SubscribeObject<T> implements IOr
     skip(n: number): IOrderedSetup<T> {
         return <any>super.skip(n);
     }
+
+    /**
+     * Accumulator operator — each value passes through a reducer function.
+     * Ordered variant — delegates to Pipe.scan() with correct return type.
+     *
+     * @template K The type of the accumulated value.
+     * @param {function} fn - Reducer function `(accumulator, value) => newAccumulator`.
+     * @param {K} seed - Initial value of the accumulator.
+     * @return {IOrderedSetup<K>} The setup instance with the accumulated type.
+     */
+    scan<K>(fn: (accumulator: K, value: T) => K, seed: K): IOrderedSetup<K> {
+        return <any>super.scan(fn, seed);
+    }
 }
