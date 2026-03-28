@@ -257,10 +257,9 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
      * @return An object implementing the ISubscriptionLike interface that represents the subscription,
      *         or undefined if the subscription is not successful.
      */
-    public subscribe(observer: ISubscribeGroup<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
-        if (this.killed) return undefined;
-        if (!this.isListener(observer)) return undefined;
+    public subscribe(observer: ISubscribeGroup<T>, errorHandler?: IErrorCallback): ISubscriptionLike {
         const subscribeObject = new SubscribeObject(this, false);
+        if (this.killed || !this.isListener(observer)) return subscribeObject;
         this.addObserver(subscribeObject, observer, errorHandler);
         return subscribeObject;
     }

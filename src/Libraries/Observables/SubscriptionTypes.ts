@@ -36,7 +36,7 @@ export type IGroupSubscription<T> = ISubscriptionLike & {
  * @template T The type of data or events being subscribed to.
  */
 export type ISubscribe<T> = {
-    subscribe(listener: ISubscribeGroup<T>, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
+    subscribe(listener: ISubscribeGroup<T>, errorHandler?: IErrorCallback): ISubscriptionLike;
 };
 
 /**

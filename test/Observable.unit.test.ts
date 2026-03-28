@@ -838,7 +838,7 @@ class ObservableUnitTest {
         };
         const listener1 = undefined;
         const subscribe = this.OBSERVABLE$.subscribe(listener1, errorHandler);
-        expect(undefined).to.be.equal(subscribe);
+        expect(subscribe).to.not.be.equal(undefined);
         expect(0).to.be.equal(this.OBSERVABLE$.size());
         expect(0).to.be.equal(errorCounter);
     }

@@ -38,7 +38,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
      * @param {IErrorCallback} [errorHandler] - An optional callback to handle errors that occur during subscription.
      * @return {ISubscriptionLike | undefined} An object representing the subscription, or undefined if the subscription could not be created.
      */
-    abstract subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined;
+    abstract subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike;
 
     private push(callback: IChainCallback): ISetup<T> {
         this.chain.push(callback);
@@ -399,7 +399,7 @@ export class PipeSwitchCase<T> extends SwitchCase<T, Pipe<T>, IPipeCase<T>> impl
      * @param {IErrorCallback} [errorHandler] - An optional callback to handle errors during subscription.
      * @return {ISubscriptionLike | undefined} An object representing the subscription, or undefined if the subscription could not be created.
      */
-    subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike | undefined {
+    subscribe(listener: IListener<T> | ISetObservableValue, errorHandler?: IErrorCallback): ISubscriptionLike {
         return this.pipe.subscribe(listener, errorHandler);
     }
 

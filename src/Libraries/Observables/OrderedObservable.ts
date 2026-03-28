@@ -73,9 +73,9 @@ export class OrderedObservable<T>
      * @param {IErrorCallback} [errorHandler] - An optional handler to process errors during execution.
      * @return {IOrderedSubscriptionLike | undefined} Returns an instance of IOrderedSubscriptionLike if the listener is valid; otherwise, returns undefined.
      */
-    subscribe(listener: ISubscribeGroup<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike | undefined {
-        if (!this.isListener(listener)) return undefined;
+    subscribe(listener: ISubscribeGroup<T>, errorHandler?: IErrorCallback): IOrderedSubscriptionLike {
         const subscribeObject = new OrderedSubscribeObject(this, false);
+        if (this.killed || !this.isListener(listener)) return subscribeObject;
         this.addObserver(<any>subscribeObject, listener, errorHandler);
         return subscribeObject;
     }

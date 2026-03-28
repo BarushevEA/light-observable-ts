@@ -909,7 +909,7 @@ class OrderedObservableUnitTest {
         };
         const listener1 = undefined;
         const subscribe = this.ORDERED_OBSERVABLE$.subscribe(listener1, errorHandler);
-        expect(undefined).to.be.equal(subscribe);
+        expect(subscribe).to.not.be.equal(undefined);
         expect(0).to.be.equal(this.ORDERED_OBSERVABLE$.size());
         expect(0).to.be.equal(errorCounter);
     }
@@ -1694,12 +1694,13 @@ class OrderedObservableUnitTest {
         expect(received).to.be.eql([10, 100, 20, 200, 300]);
     }
 
-    @test 'subscribe after destroy returns undefined'() {
+    @test 'subscribe after destroy returns inactive subscription'() {
         const observable = new OrderedObservable<number>(0);
         observable.destroy();
 
         const sub = observable.subscribe((v) => v);
-        expect(sub).to.be.equal(undefined);
+        expect(sub).to.not.be.equal(undefined);
+        expect(observable.size()).to.be.equal(0);
     }
 
     @test 'pipe after destroy returns undefined'() {

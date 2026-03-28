@@ -937,9 +937,9 @@ if it passes the condition, is then transformed into its length via a map invoca
 down to lengths that are greater than 4. The lengths that pass this condition are thus doubled and the resulting
 observable is set to be a once-off observable to which a listener is subscribed.
 
-### pipe().in&lt;K, V&gt;()
+### observable.in&lt;K, V&gt;()
 
-The `in()` operator iterates over object properties, emitting values (or transformed values) for each key-value pair. This is useful for processing object data streams.
+The `in()` method iterates over object properties, emitting each key-value pair as a `[key, value]` tuple. Mirrors `for...in` semantics. This is useful for processing object data streams.
 
 Usage Example:
 
@@ -953,34 +953,33 @@ const users: Record<string, User> = {
     user3: { name: "Charlie", age: 35 }
 };
 
-const observable$ = new Observable<Record<string, User>>(users);
-const listener = (user: User) => console.log('User:', user.name, user.age);
+const observable$ = new Observable<[string, User]>(null);
+const listener = (entry: [string, User]) => console.log('User:', entry[0], entry[1].name, entry[1].age);
 
-observable$
-    .pipe()
-    .in<string, User>()  // Iterate over object, emit each value
-    .subscribe(listener);
+observable$.subscribe(listener);
+observable$.in<string, User>(users);  // Emits [key, value] tuples one by one
 
 // Output:
-// User: Alice 30
-// User: Bob 25
-// User: Charlie 35
+// User: user1 Alice 30
+// User: user2 Bob 25
+// User: user3 Charlie 35
 ```
 
-You can also transform values during iteration:
+You can also use pipe operators on the emitted tuples:
 
 ```typescript
-const upperCaseListener = (name: string) => console.log('Name:', name);
+const observable$ = new Observable<[string, User]>(null);
 
 observable$
     .pipe()
-    .in<string, User>((user) => user.name.toUpperCase())  // Transform each value
-    .subscribe(upperCaseListener);
+    .and(([key, user]) => user.age > 28)  // Filter by age
+    .subscribe(([key, user]) => console.log('Name:', user.name));
+
+observable$.in<string, User>(users);
 
 // Output:
-// Name: ALICE
-// Name: BOB
-// Name: CHARLIE
+// Name: Alice
+// Name: Charlie
 ```
 
 ### pipe().group()
