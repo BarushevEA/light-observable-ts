@@ -30,6 +30,9 @@ CLAUDE.md
 BENCHMARK_*.md
 BREAKING_CHANGES.md
 
+# Old bundles
+repo/evg_observable.old.js
+
 # Misc
 *.log
 *.tgz
