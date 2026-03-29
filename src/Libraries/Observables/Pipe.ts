@@ -29,7 +29,9 @@ export abstract class Pipe<T> implements ISubscribe<T> {
         debounceTimer: 0,
         debounceValue: undefined,
         debounceIndex: 0,
-        payload: null};
+        payload: null,
+        listener: undefined,
+        index: 0};
 
     /**
      * Subscribes a listener to observe changes or updates. Can optionally handle errors during the subscription process.
@@ -54,7 +56,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     once(): ISubscribe<T> {
         return this.push(
             (data: IPipePayload): void => {
-                (<IListener<T>>(<any>this).listener)(data.payload);
+                if (data.listener) data.listener(data.payload);
                 data.isUnsubscribe = true;
             }
         );
@@ -77,7 +79,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
                     return;
                 }
                 count++;
-                (<IListener<T>>(<any>this).listener)(data.payload);
+                if (data.listener) data.listener(data.payload);
                 if (count >= n) data.isUnsubscribe = true;
             }
         );
@@ -245,6 +247,20 @@ export abstract class Pipe<T> implements ISubscribe<T> {
             (data: IPipePayload): void => {
                 data.isAvailable = true;
                 data.debounceMs = ms;
+                data.debounceValue = data.payload;
+                data.debounceIndex = data.index + 1;
+                const len = this.chain.length;
+                clearTimeout(data.debounceTimer);
+                data.debounceTimer = setTimeout(() => {
+                    try {
+                        data.payload = data.debounceValue;
+                        data.isBreak = false;
+                        this.runChain(data.debounceIndex, len, data);
+                    } catch (err) {
+                        const errorHandler = (<any>this).errorHandler;
+                        if (errorHandler) errorHandler(data.payload, err);
+                    }
+                }, ms);
             }
         );
     }
@@ -325,61 +341,27 @@ export abstract class Pipe<T> implements ISubscribe<T> {
      * @param {IListener<T>} [listener] - Optional listener executed after chain completes.
      * @return {void} This method does not return a value.
      */
-    processChain(listener?: IListener<T>): void {
+    runChain(startIndex: number, len: number, data: IPipePayload): void {
         const chain = this.chain;
-        const data = this.flow;
-        const len = chain.length;
-        for (let i = 0; i < len; i++) {
+        for (let i = startIndex; i < len; i++) {
+            data.index = i;
             data.isUnsubscribe = false;
             data.isAvailable = false;
             data.debounceMs = 0;
-
             chain[i](data);
             if (data.isUnsubscribe) return (<any>this).unsubscribe();
-
-            if (data.debounceMs > 0) {
-                data.debounceValue = data.payload;
-                data.debounceIndex = i + 1;
-
-                const continueChain = () => {
-                    try {
-                        data.debounceTimer = 0;
-                        data.payload = data.debounceValue;
-                        data.isBreak = false;
-                        for (let j = data.debounceIndex; j < len; j++) {
-                            data.isUnsubscribe = false;
-                            data.isAvailable = false;
-                            data.debounceMs = 0;
-                            chain[j](data);
-                            if (data.isUnsubscribe) return (<any>this).unsubscribe();
-                            if (data.debounceMs > 0) {
-                                data.debounceValue = data.payload;
-                                data.debounceIndex = j + 1;
-                                clearTimeout(data.debounceTimer);
-                                data.debounceTimer = setTimeout(continueChain, data.debounceMs);
-                                return;
-                            }
-                            if (!data.isAvailable) return;
-                            if (data.isBreak) break;
-                        }
-                        if (listener) listener(data.payload);
-                    } catch (err) {
-                        const errorHandler = (<any>this).errorHandler;
-                        if (errorHandler) errorHandler(data.payload, err);
-                    }
-                };
-
-                clearTimeout(data.debounceTimer);
-                data.debounceTimer = setTimeout(continueChain, data.debounceMs);
-                return;
-            }
-
+            if (data.debounceMs > 0) return;
             if (!data.isAvailable) return;
             if (data.isBreak) break;
         }
+        if (data.listener) data.listener(data.payload);
+    }
 
-        data.isAvailable = true;
-        if (listener) listener(data.payload);
+    processChain(listener?: IListener<T>): void {
+        const data = this.flow;
+        data.listener = listener;
+        data.isBreak = false;
+        this.runChain(0, this.chain.length, data);
     }
 }
 

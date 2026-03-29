@@ -129,7 +129,7 @@ export type IChainContainer = {
  * within a pipe operation, including breaking, unsubscribing, availability
  * status, and the actual payload to be processed or transmitted.
  */
-export type IPipePayload = { isBreak: boolean, isUnsubscribe: boolean, isAvailable: boolean, debounceMs: number, debounceTimer: any, debounceValue: any, debounceIndex: number, payload: any };
+export type IPipePayload = { isBreak: boolean, isUnsubscribe: boolean, isAvailable: boolean, debounceMs: number, debounceTimer: any, debounceValue: any, debounceIndex: number, payload: any, listener: any, index: number };
 
 /**
  * Represents a callback function interface for handling chain-related operations.
