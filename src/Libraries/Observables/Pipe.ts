@@ -335,11 +335,13 @@ export abstract class Pipe<T> implements ISubscribe<T> {
     }
 
     /**
-     * Processes a chain of functions with the given listener and flow data.
-     * Sets `data.isAvailable = true` when chain completes successfully.
+     * Executes the operator chain starting from a given index.
+     * Calls `data.listener(data.payload)` when the chain completes successfully.
      *
-     * @param {IListener<T>} [listener] - Optional listener executed after chain completes.
-     * @return {void} This method does not return a value.
+     * @param {number} startIndex - The index in the chain to start execution from.
+     * @param {number} len - The total length of the chain to process.
+     * @param {IPipePayload} data - The shared flow payload carrying value, flags, and listener.
+     * @return {void}
      */
     runChain(startIndex: number, len: number, data: IPipePayload): void {
         const chain = this.chain;
@@ -357,6 +359,12 @@ export abstract class Pipe<T> implements ISubscribe<T> {
         if (data.listener) data.listener(data.payload);
     }
 
+    /**
+     * Initializes the flow payload and delegates chain execution to runChain.
+     *
+     * @param {IListener<T>} [listener] - Optional listener called with the final value after chain completes.
+     * @return {void}
+     */
     processChain(listener?: IListener<T>): void {
         const data = this.flow;
         data.listener = listener;
