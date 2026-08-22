@@ -45,6 +45,7 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
      * @type {IListener<T>[] | undefined}
      */
     listeners?: IListener<T>[];
+    hasListeners = false;
 
     /**
      * Error handlers corresponding to additional listeners.
@@ -111,6 +112,8 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
             this.errorHandlers!.push(handler);
         }
 
+        this.hasListeners = true;
+
         return this as any as IGroupSubscription<T>;
     }
 
@@ -138,7 +141,7 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
      */
     send(value: T): void {
         const listener = this.listener;
-        const hasGroupListeners = this.listeners && this.listeners.length > 0;
+        const hasGroupListeners = this.hasListeners;
 
         // Unsubscribe only if there's no listener AND no group listeners
         if (!listener && !hasGroupListeners) {
@@ -150,12 +153,10 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
         // Fast path (no pipe)
         if (!this.piped) {
             // Call primary listener if exists
-            if (listener) {
-                try {
-                    listener(value);
-                } catch (err) {
-                    this.errorHandler(value, err);
-                }
+            try {
+                listener!(value);
+            } catch (err) {
+                this.errorHandler(value, err);
             }
             return;
         }
