@@ -95,9 +95,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
      * @return {void} This method does not return a value.
      */
     public next(value: T): void {
-        if (this.killed) return;
-        if (!this.enabled) return;
-        if (!this.subs.length) return;
+        if (this.killed || !this.enabled || !this.subs.length) return;
         if (!this.filters.isEmpty && !this.filters.processChain(value).isOK) return;
 
         this.process = true;
@@ -296,7 +294,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
      *
      * @return {ISetup<T> | undefined} The created SubscribeObject wrapped in an ISetup<T> interface if the instance is active, otherwise undefined.
      */
-    pipe(): ISetup<T>  {
+    pipe(): ISetup<T> {
         if (this.killed) return <any>undefined;
         const subscribeObject = new SubscribeObject(this, true);
         this.subs.push(subscribeObject);
