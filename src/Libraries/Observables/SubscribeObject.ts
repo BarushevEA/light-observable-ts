@@ -46,6 +46,7 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
      */
     listeners?: IListener<T>[];
     hasListeners = false;
+    groupListener: IListener<T> | undefined;
 
     /**
      * Error handlers corresponding to additional listeners.
@@ -114,6 +115,19 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
 
         this.hasListeners = true;
 
+        const groupListeners = this.listeners!;
+        const groupErrorHandlers = this.errorHandlers!;
+        this.groupListener = (value) => {
+            const len = groupListeners.length;
+            for (let i = 0; i < len; i++) {
+                try {
+                    groupListeners[i](value);
+                } catch (err) {
+                    groupErrorHandlers[i](value, err);
+                }
+            }
+        };
+
         return this as any as IGroupSubscription<T>;
     }
 
@@ -167,18 +181,7 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
         this.flow.isBreak = false;
 
         if (hasGroupListeners) {
-            const groupListeners = this.listeners!;
-            const groupErrorHandlers = this.errorHandlers!;
-            this.processChain((value) => {
-                const len = groupListeners.length;
-                for (let i = 0; i < len; i++) {
-                    try {
-                        groupListeners[i](value);
-                    } catch (err) {
-                        groupErrorHandlers[i](value, err);
-                    }
-                }
-            });
+            this.processChain(this.groupListener);
         } else {
             try {
                 this.processChain(listener);
@@ -224,5 +227,4 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
     set order(value: number) {
         this._order = value;
     }
-
 }
