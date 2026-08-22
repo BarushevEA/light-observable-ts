@@ -96,7 +96,7 @@ export class Observable<T> implements IObserver<T>, IStream<T>, IAddFilter<T> {
      */
     public next(value: T): void {
         if (this.killed || !this.enabled || !this.subs.length) return;
-        if (!this.filters.isEmpty && !this.filters.processChain(value).isOK) return;
+        if (!!this.filters.chain.length && !this.filters.processChain(value).isOK) return;
 
         this.process = true;
         this._value = value;

@@ -25,14 +25,6 @@ export class FilterCollection<T> implements IFilter<T>, IFilterSwitch<T> {
     private errHandler: IErrorCallback | undefined;
 
     /**
-     * Determines whether the chain is empty.
-     * @return {boolean} Returns true if the chain contains no elements, otherwise false.
-     */
-    get isEmpty(): boolean {
-        return !this.chain.length;
-    }
-
-    /**
      * Adds a callback to the filter chain and returns the current instance.
      *
      * @param {IFilterChainCallback} callback - The callback function to be added to the filter chain.
