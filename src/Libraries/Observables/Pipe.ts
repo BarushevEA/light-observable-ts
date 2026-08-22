@@ -20,6 +20,7 @@ import {SwitchCase} from "./AbstractSwitchCase";
  * @template T The type of data handled by this pipeline.
  */
 export abstract class Pipe<T> implements ISubscribe<T> {
+    protected hasControlFlow = false;
     chain: IChainCallback [] = [];
     flow: IPipePayload = {
         isBreak: false,
@@ -31,7 +32,8 @@ export abstract class Pipe<T> implements ISubscribe<T> {
         debounceIndex: 0,
         payload: null,
         listener: undefined,
-        index: 0};
+        index: 0
+    };
 
     /**
      * Subscribes a listener to observe changes or updates. Can optionally handle errors during the subscription process.
@@ -54,6 +56,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
      * @return {ISubscribe<T>} The subscription instance allowing further chaining or management.
      */
     once(): ISubscribe<T> {
+        this.hasControlFlow = true;
         return this.push(
             (data: IPipePayload): void => {
                 if (data.listener) data.listener(data.payload);
@@ -70,6 +73,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
      * @return {ISubscribe<T>} The subscription instance allowing further chaining or management.
      */
     take(n: number): ISubscribe<T> {
+        this.hasControlFlow = true;
         if (n < 0) n = 0;
         let count = 0;
         return this.push(
@@ -117,6 +121,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
      * @return {ISetup<T>} The current setup instance for chaining purposes.
      */
     unsubscribeBy(condition: ICallback<T>): ISetup<T> {
+        this.hasControlFlow = true;
         return this.push(
             (data: IPipePayload): void => {
                 data.isAvailable = true;
@@ -134,7 +139,9 @@ export abstract class Pipe<T> implements ISubscribe<T> {
      */
     and(condition: ICallback<T>): ISetup<T> {
         return this.push(
-            (data: IPipePayload): void => { if (condition(data.payload)) data.isAvailable = true; }
+            (data: IPipePayload): void => {
+                if (condition(data.payload)) data.isAvailable = true;
+            }
         );
     }
 
@@ -157,6 +164,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
      * @return {PipeSwitchCase<T>} A new instance of PipeSwitchCase associated with the current context.
      */
     choice(): PipeSwitchCase<T> {
+        this.hasControlFlow = true;
         return new PipeSwitchCase<T>(this);
     }
 
@@ -243,6 +251,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
      * @return {ISetup<T>} The current setup instance for chaining purposes.
      */
     debounce(ms: number): ISetup<T> {
+        this.hasControlFlow = true;
         return this.push(
             (data: IPipePayload): void => {
                 data.isAvailable = true;
@@ -345,16 +354,24 @@ export abstract class Pipe<T> implements ISubscribe<T> {
      */
     runChain(startIndex: number, len: number, data: IPipePayload): void {
         const chain = this.chain;
-        for (let i = startIndex; i < len; i++) {
-            data.index = i;
-            data.isUnsubscribe = false;
-            data.isAvailable = false;
-            data.debounceMs = 0;
-            chain[i](data);
-            if (data.isUnsubscribe) return (<any>this).unsubscribe();
-            if (data.debounceMs > 0) return;
-            if (!data.isAvailable) return;
-            if (data.isBreak) break;
+        if (this.hasControlFlow) {
+            for (let i = startIndex; i < len; i++) {
+                data.index = i;
+                data.isUnsubscribe = false;
+                data.isAvailable = false;
+                data.debounceMs = 0;
+                chain[i](data);
+                if (data.isUnsubscribe) return (<any>this).unsubscribe();
+                if (data.debounceMs > 0) return;
+                if (!data.isAvailable) return;
+                if (data.isBreak) break;
+            }
+        } else {
+            for (let i = startIndex; i < len; i++) {
+                data.isAvailable = false;
+                chain[i](data);
+                if (!data.isAvailable) return;
+            }
         }
         data.listener(data.payload);
     }
