@@ -356,7 +356,7 @@ export abstract class Pipe<T> implements ISubscribe<T> {
             if (!data.isAvailable) return;
             if (data.isBreak) break;
         }
-        if (data.listener) data.listener(data.payload);
+        data.listener(data.payload);
     }
 
     /**

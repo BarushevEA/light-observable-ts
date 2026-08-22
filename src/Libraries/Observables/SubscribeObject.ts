@@ -1,4 +1,12 @@
-import {IErrorCallback, IGroupSubscription, IListener, IObserver, ISubscribeGroup, ISubscribeObject, ISubscriptionLike} from "./Types";
+import {
+    IErrorCallback,
+    IGroupSubscription,
+    IListener,
+    IObserver,
+    ISubscribeGroup,
+    ISubscribeObject,
+    ISubscriptionLike
+} from "./Types";
 import {Pipe} from "./Pipe";
 import {getListener} from "./FunctionLibs";
 
@@ -154,28 +162,28 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
         }
 
         // Slow path (with pipe)
-        try {
-            this.flow.payload = value;
-            this.flow.isBreak = false;
 
-            if (hasGroupListeners) {
-                const groupListeners = this.listeners!;
-                const groupErrorHandlers = this.errorHandlers!;
-                this.processChain((value) => {
-                    if (listener) listener(value);
-                    for (let i = 0; i < groupListeners.length; i++) {
-                        try {
-                            groupListeners[i](value);
-                        } catch (err) {
-                            groupErrorHandlers[i](value, err);
-                        }
+        this.flow.payload = value;
+        this.flow.isBreak = false;
+
+        if (hasGroupListeners) {
+            const groupListeners = this.listeners!;
+            const groupErrorHandlers = this.errorHandlers!;
+            this.processChain((value) => {
+                for (let i = 0; i < groupListeners.length; i++) {
+                    try {
+                        groupListeners[i](value);
+                    } catch (err) {
+                        groupErrorHandlers[i](value, err);
                     }
-                });
-            } else {
+                }
+            });
+        } else {
+            try {
                 this.processChain(listener);
+            } catch (err) {
+                this.errorHandler(value, err);
             }
-        } catch (err) {
-            this.errorHandler(value, err);
         }
     }
 
