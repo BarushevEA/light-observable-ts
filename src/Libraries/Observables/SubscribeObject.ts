@@ -157,7 +157,6 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
                     this.errorHandler(value, err);
                 }
             }
-
             return;
         }
 
@@ -170,7 +169,8 @@ export class SubscribeObject<T> extends Pipe<T> implements ISubscribeObject<T> {
             const groupListeners = this.listeners!;
             const groupErrorHandlers = this.errorHandlers!;
             this.processChain((value) => {
-                for (let i = 0; i < groupListeners.length; i++) {
+                const len = groupListeners.length;
+                for (let i = 0; i < len; i++) {
                     try {
                         groupListeners[i](value);
                     } catch (err) {
